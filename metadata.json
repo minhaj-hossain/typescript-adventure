@@ -1,0 +1,6 @@
+{
+  "name": "TypeScript Adventure",
+  "description": "A gamified, interactive learning platform where you help rebuild a fantasy Event Management Kingdom by mastering TypeScript.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
