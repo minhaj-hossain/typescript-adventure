@@ -156,7 +156,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Your First Day on the Team",
       narrative:
-        'Minhaj, the Senior Engineer, waves you over to a bare terminal.\n\n"Welcome aboard," he says. "We\'re rebuilding the Event Management System in TypeScript. Every new hire starts the same way."\n\nHe counts on his fingers. "Install Node. Initialize the project. Add TypeScript as a dev dependency."\n\nNothing fancy yet. Just a clean package.json you can build on.\n\nMinhaj taps the screen. "Half our onboarding tickets are people stuck right here. Let\'s get this right the first time."\n\n"It\'s a small step," he admits. "But every future lesson in this course builds on top of this one file."',
+        'Minhaj, the Senior Engineer, waves you over to a bare terminal.\n\n"Welcome aboard. We\'re rebuilding the Event Management System in TypeScript, and every new hire starts the same way: get Node installed, initialize the project, and add TypeScript as a dev dependency. Nothing fancy yet, just a clean package.json we can build on."\n\nMinhaj taps the screen.\n\n"Half our onboarding tickets are people stuck right here, so let\'s get this right the first time."\n\n"It\'s a small step," Minhaj admits, "but every future lesson in this course builds directly on top of this one file."',
       realWorldContext:
         "Every real TypeScript project starts with a working Node/npm toolchain and a package.json declaring TypeScript as a dependency.",
       taskDescription:
@@ -191,7 +191,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "The Rulebook Every Spell Must Obey",
       narrative:
-        'With TypeScript installed, Tasnim the Tech Lead drops a bare tsconfig.json on your desk.\n\n"This is the file that decides how strict we are," she says.\n\n"Last quarter, a teammate\'s editor caught bugs that mine didn\'t. Our configs disagreed."\n\nTasnim wants strict mode on from day one. That way, the whole team catches the same bugs — instead of everyone finding them separately, later, in production.\n\nShe points at the empty file. "Enable strict mode. Do it before you touch a single line of Event code."',
+        'With TypeScript installed, Tasnim the Tech Lead drops a bare tsconfig.json on your desk.\n\n"This is the file that decides how strict we are," she says. "Last quarter a teammate\'s editor caught bugs mine didn\'t, all because our configs disagreed. Tasnim wants strict mode on from day one so the whole team catches the same class of bugs, instead of everyone discovering them separately in production."\n\nShe points at the empty file: "Get strict mode enabled before you touch a single line of Event code."',
       realWorldContext:
         "A shared, strict tsconfig.json ensures every teammate's compiler catches the same bugs, instead of relying on individual discipline.",
       taskDescription: "Enable strict mode in tsconfig.json.",
@@ -220,7 +220,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Stop Re-Running the Compiler by Hand",
       narrative:
-        'Minhaj notices you re-running npx tsc after every single edit.\n\n"You\'re going to wear out that Enter key," he laughs.\n\n"There\'s a watch flag. It recompiles automatically the moment you save. Every engineer on this team runs it in a side terminal, all day long."\n\nMinhaj wants you to add a script to package.json. Call it dev. It should run tsc in watch mode.\n\n"Then the whole team can just type npm run dev," he says. "No one needs to memorize compiler flags."\n\nIt\'s a small habit. But once you\'re touching real Event code, it saves a lot of time.',
+        'Minhaj notices you re-running npx tsc after every single edit.\n\n"You\'re going to wear out that Enter key," they laugh. "There\'s a watch flag that recompiles automatically the moment you save. Every engineer on this team runs it in a side terminal all day."\n\nMinhaj wants you to add a package.json script called dev that runs tsc in watch mode, so the whole team can just type npm run dev instead of memorizing compiler flags.\n\n"Small habit, huge time savings once you\'re touching real Event code."',
       realWorldContext:
         "A shared npm script for watch mode standardizes the dev workflow across the whole team, not just your own muscle memory.",
       taskDescription:
@@ -252,7 +252,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "The Compiler Isn't Yelling At You, It's Warning You",
       narrative:
-        "Jordan, from QA, forwards you your first real compiler error:\n\nType 'string' is not assignable to type 'number'.\n\nYou stare at it for ten minutes. Then Minhaj walks by.\n\n\"Read it out loud,\" he says. \"It's telling you exactly what it expected — and exactly what it got.\"\n\nMinhaj gives you a tiny broken file with one deliberate mistake. He wants you to fix it. Not because the fix is hard, but to prove something: the error message is a map, not a wall.\n\nOnce this clicks, every future error in this course gets easier to read.",
+        "Jordan, QA, forwards you your first real compiler error: Type 'string' is not assignable to type 'number'. You stare at it for ten minutes before Minhaj walks by.\n\n\"Read it out loud,\" they say. \"It's telling you exactly what it expected and exactly what it got.\"\n\nMinhaj has you fix a tiny broken file with one deliberate type mismatch, just to prove the error message is a map, not a wall. Once this clicks, every future error in this course gets easier to read.",
       realWorldContext:
         "Reading a TypeScript error's exact wording, rather than reacting to red text, is the single most useful debugging habit in the whole course.",
       taskDescription:
@@ -287,7 +287,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Welcome to the Royal Accounting Guild",
       narrative:
-        'You\'ve just been rotated onto the billing module.\n\nMinhaj hands you a ledger file. There\'s a live bug in it: the team keeps recording ticket prices as text strings, like "50". So when two prices get added, you get "5050" instead of 100.\n\nFinance is furious.\n\nMinhaj wants a strict primitive guard on ticketPrice. That way, this exact bug becomes impossible to bring back — no matter who touches this file next.\n\nThis is the first Event Management System file you\'ll actually own, end to end. So Minhaj wants it airtight before you move on to anything bigger.',
+        "You've just been rotated onto the billing module. Minhaj hands you a ledger file with a live bug: our team keeps recording ticket prices as text strings like '50', causing '5050' instead of 100 whenever two prices are added. Finance is furious. Minhaj wants a strict primitive guard on ticketPrice so this exact bug becomes impossible to reintroduce, no matter who touches this file next. This is the first Event Management System file you'll actually own. This is the very first file you'll own end to end, so Minhaj wants it airtight before you move on to anything bigger.",
       realWorldContext:
         "TypeScript prevents accidental mixing of text and numbers, which is exactly the bug class silently corrupting the billing totals.",
       taskDescription:
@@ -315,7 +315,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Tasnim's Code Review Comment",
       narrative:
-        "Tasnim leaves a comment on your pull request.\n\n\"You don't need to annotate every single variable,\" she writes. \"The compiler already knows this one is a number.\"\n\nShe points out three lines. Each one has a ': number' or ': string' on a value that's already obvious from its initializer.\n\nTasnim isn't asking you to remove all your types. Just the redundant ones. That way, the real annotations stand out where they actually matter.\n\nClean up the ledger helper. Keep only the annotations you actually need.",
+        "Tasnim leaves a comment on your pull request: you don't need to annotate every single variable, the compiler already knows this one is a number. She points out three lines where you wrote out ': number' and ': string' on values that are obviously typed from their initializer. Tasnim isn't asking you to remove all types, just the redundant ones, so the real annotations stand out where they actually matter. Clean up the ledger helper so only the necessary annotations remain.",
       realWorldContext:
         "Over-annotating obvious values adds noise; letting inference work keeps the codebase readable and highlights annotations that genuinely add information.",
       taskDescription:
@@ -350,7 +350,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Apurba Needs an Attendee Roster",
       narrative:
-        "Apurba, the Product Manager, wants a simple attendee roster feature by Friday: a list of attendee names for check-in.\n\nThere's a reason for the rush. A teammate's earlier attempt let a stray number sneak into the array. Check-in crashed at the venue.\n\nApurba doesn't want a repeat.\n\nMinhaj asks you to type the roster array so it can only ever hold strings. He also wants a helper function that safely adds a new name to it, without breaking that guarantee.\n\nGet this typed correctly, and the roster feature ships clean. Get it wrong, and check-in breaks again at the next event.",
+        "Apurba, the Product Manager, wants a simple attendee roster feature by Friday: a list of attendee names for check-in. A teammate's earlier attempt let a stray number sneak into the array, and check-in crashed at the venue. Apurba doesn't want a repeat. Minhaj asks you to type the roster array so it can only ever hold strings, and to write a helper that safely adds a new name to it without breaking that guarantee. Get this typed correctly and the roster feature ships clean; get it wrong and check-in breaks again at the next event.",
       realWorldContext:
         "Typed arrays prevent an accidental wrong-shaped value from ever entering a collection that every downstream feature assumes is uniform.",
       taskDescription:
@@ -386,7 +386,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Salman's First Event Card Mockup",
       narrative:
-        'Salman, the Designer, sends over a mockup of the first Event card. It shows a title, a date, and a capacity number, all together.\n\nMinhaj wants the underlying data typed to match exactly what Salman designed — before anyone builds the actual component.\n\n"This is the first time in the codebase we describe a whole Event as one typed shape," Minhaj explains, "instead of loose, separate variables."\n\nGet this object type right. Salman\'s entire card design depends on these three fields existing, exactly as planned.',
+        "Salman, the Designer, sends over a mockup of the first Event card: a title, a date, and a capacity number, all shown together. Minhaj wants the underlying data typed to match exactly what Salman designed, before any component gets built. This is the very first time in the codebase we describe a whole Event as one typed shape instead of loose separate variables, Minhaj explains. Get this object type right, since Salman's whole card design depends on these exact three fields existing.",
       realWorldContext:
         "An object type describing an Event's shape is the foundation every later component and API response will build on.",
       taskDescription:
@@ -422,7 +422,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Evans's Pricing Bug",
       narrative:
-        'Evans, the Backend Engineer, pings you. Someone called calculateTotal with a discount as a string, and it silently returned garbage.\n\nEvans is tired of guessing what a function expects just by reading its body.\n\n"I want every parameter and every return type on this function explicitly typed," Evans says. "That way, the function documents its own contract. The compiler enforces it at every call site — not just this one."\n\nNo more guessing what a function expects, line by line, every single time.',
+        "Evans, the Backend Engineer, pings you: someone called calculateTotal with a discount as a string and it silently returned garbage. Evans is tired of guessing what every function expects just by reading its body. They want every parameter and return type on this function explicitly typed, so the function itself documents its own contract and the compiler enforces it at every call site, not just this one. Evans doesn't want to guess anymore what a function expects just by reading its body line by line every single time.",
       realWorldContext:
         "Explicitly typed function signatures turn a function into a self-documenting, compiler-enforced contract instead of a guessing game for every caller.",
       taskDescription: "Type calculateTotal's parameters and return type.",
@@ -457,7 +457,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Jordan Finds a Silent Sorting Bug",
       narrative:
-        "Jordan reports a strange bug: the event list sometimes sorts backwards. It only happens when one specific teammate touches the sort logic.\n\nMinhaj digs in. He finds the problem: the sortEvents function accepts a comparator callback with no type at all. Nothing stops someone from passing one with the arguments swapped.\n\nMinhaj wants a proper function type for the comparator parameter. That way, the compiler catches a wrong-shaped callback before it ever ships — instead of QA catching it after the fact.\n\nOnce the comparator is properly typed, this exact kind of silent sorting bug can never come back.",
+        "Jordan reports that the event list sometimes sorts backwards, only when a specific teammate touches the sort logic. Digging in, Minhaj finds the sortEvents function accepts a comparator callback with no type at all, so nothing stops someone from passing one with swapped arguments. Minhaj wants a proper function type for the comparator parameter, so the compiler catches a wrong-shaped callback before it ever ships, instead of QA catching it after the fact. Once the comparator itself is properly typed, this exact class of silent sorting bug becomes structurally impossible to reintroduce later.",
       realWorldContext:
         "Typing a callback parameter's exact signature is what lets the compiler catch a wrong-shaped function argument at the call site.",
       taskDescription:
@@ -493,7 +493,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Minhaj Catches You Mid-Review",
       narrative:
-        "Evans just wired up an external webhook that pings the Kingdom whenever a third-party ticketing partner sells a seat, but nobody controls what shape that payload actually arrives in. Your first pass types it as any just to make the red squiggle disappear, and Minhaj flags it within minutes of the pull request going up. Any turns off checking completely, right at the exact moment we can trust this data the least, Minhaj says. They want the payload typed as unknown instead, forcing a real narrowing check before anything touches it, plus a proper exhaustive guard on the nearby status switch, so a forgotten case fails to compile instead of silently falling through in production.",
+        'Evans just wired up an external webhook. It pings the Kingdom whenever a third-party ticketing partner sells a seat. But nobody controls what shape that payload actually arrives in.\n\nYour first pass types it as any, just to make the red squiggle disappear. Minhaj flags it within minutes of the pull request going up.\n\n"Any turns off checking completely," Minhaj says, "right at the exact moment we can trust this data the least."\n\nMinhaj wants the payload typed as unknown instead. That forces a real narrowing check before anything touches it. He also wants a proper exhaustive guard on the nearby status switch, so a forgotten case fails to compile — instead of silently falling through in production.',
       realWorldContext:
         "unknown forces a narrowing check before any property access is allowed, while never statically proves every real case in a switch has already been handled.",
       taskDescription:
@@ -535,7 +535,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Tasnim Calls a Halt to Copy-Pasting",
       narrative:
-        "Tasnim pulls you into a quick sync: five different files each redeclare the same inline Event shape, and one of them is already missing a field. This ends today, she says. We need one named interface that every file imports, so a single edit updates every consumer at once. Tasnim wants an Event interface with title, date, and capacity, ready to replace every duplicated inline shape across the codebase. Get this right, Tasnim says, and nobody on the team ever has to hunt down a fifth duplicated copy of this shape again.",
+        'Tasnim pulls you into a quick sync.\n\n"Five different files each redeclare the same inline Event shape," she says. "And one of them is already missing a field."\n\n"This ends today. We need one named interface that every file imports. Then a single edit updates every consumer at once."\n\nTasnim wants an Event interface with title, date, and capacity — ready to replace every duplicated inline shape across the codebase.\n\n"Get this right," she says, "and nobody on the team ever has to hunt down a fifth duplicated copy of this shape again."',
       realWorldContext:
         "A shared, named interface replaces scattered duplicated inline types so a single edit propagates everywhere the type is used.",
       taskDescription:
@@ -571,7 +571,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Apurba's New Filter Feature",
       narrative:
-        "Apurba wants a status filter dropdown on the events dashboard, but the underlying status value doesn't have a clean shape to reference anywhere yet. Tasnim suggests a type alias instead of an interface here, since a status is really a value, not an object with fields. This is your first time reaching for type instead of interface, and Tasnim wants you to understand why: an alias can name any type, not just an object shape. It's a small distinction today, but Tasnim wants you comfortable with it before Stage 3 introduces unions that only type aliases can express.",
+        "Apurba wants a status filter dropdown on the events dashboard. But the underlying status value doesn't have a clean shape to reference anywhere yet.\n\nTasnim suggests a type alias instead of an interface here. A status is really a value, she explains, not an object with fields.\n\nThis is your first time reaching for type instead of interface. Tasnim wants you to understand why: an alias can name any type, not just an object shape.\n\nIt's a small distinction today. But she wants you comfortable with it before Stage 3 introduces unions — something only type aliases can express.",
       realWorldContext:
         "Type aliases can name a value's shape, not just object shapes, making them the right tool once you need to describe a union later.",
       taskDescription:
@@ -606,7 +606,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Salman's Discount Banner Crash",
       narrative:
-        "Salman's new discount banner crashes for every Event that doesn't have a discount code, since not every Event has one. Separately, Jordan found a bug where an Event's id got accidentally overwritten mid-session, breaking a reference elsewhere. Tasnim wants two fixes in the same interface: discountCode should be optional, since it isn't always present, and id should be readonly, since it should never change after creation. Two small modifiers, two real production bugs, Tasnim says, and both fixes belong in the same interface update this time.",
+        "Salman's new discount banner crashes for every Event that doesn't have a discount code. Not every Event has one.\n\nSeparately, Jordan found a bug where an Event's id got accidentally overwritten mid-session, breaking a reference elsewhere.\n\nTasnim wants two fixes in the same interface. discountCode should be optional, since it isn't always present. And id should be readonly, since it should never change after creation.\n\n\"Two small modifiers,\" Tasnim says. \"Two real production bugs. Both fixes belong in the same interface update this time.\"",
       realWorldContext:
         "Optional properties model fields that are genuinely sometimes absent; readonly properties protect identity fields like an id from accidental reassignment.",
       taskDescription:
@@ -639,7 +639,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Apurba Adds a New Event Category",
       narrative:
-        "Apurba wants to launch Workshop events: everything a regular Event has, plus an instructor name and a max seat count. Your first instinct is to copy the whole Event interface into a new one, but Tasnim stops you. That's exactly the duplication problem we fixed two levels ago, she says. She wants WorkshopEvent to extend Event, so it automatically gets every base field for free, plus the two new ones. Get the inheritance right here, and every future specialized Event category gets the same free reuse of the base shape.",
+        'Apurba wants to launch Workshop events: everything a regular Event has, plus an instructor name and a max seat count.\n\nYour first instinct is to copy the whole Event interface into a new one. Tasnim stops you.\n\n"That\'s exactly the duplication problem we fixed two levels ago," she says.\n\nShe wants WorkshopEvent to extend Event. That way, it automatically gets every base field for free, plus the two new ones.\n\nGet the inheritance right here, and every future specialized Event category gets the same free reuse of the base shape.',
       realWorldContext:
         "Interface extension lets a specialized entity reuse a base shape's fields instead of duplicating them, avoiding drift when the base shape changes.",
       taskDescription:
@@ -676,7 +676,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Tasnim's Pre-Launch Review",
       narrative:
-        "Before the team builds any real UI on top of this, Tasnim wants a full review: one Ticket interface referencing an Event by id, with a readonly id of its own and an optional seatNumber field for general-admission tickets that don't get one assigned. This level doesn't teach anything new, Tasnim says. It just proves the last four lessons actually fit together into something the rest of the team can safely build on. No new syntax this time, Tasnim reminds you, just proof that everything from Levels 6 through 9 actually fits together cleanly.",
+        'Before the team builds any real UI on top of this, Tasnim wants a full review: one Ticket interface referencing an Event by id, with a readonly id of its own and an optional seatNumber field for general-admission tickets that don\'t get one assigned.\n\n"This level doesn\'t teach anything new," Tasnim says. "It just proves the last four lessons actually fit together into something the rest of the team can safely build on."\n\n"No new syntax this time," she reminds you. "Just proof that everything from Levels 6 through 9 actually fits together cleanly."',
       realWorldContext:
         "A checkpoint level with no new syntax, forcing interfaces, extension, optional, and readonly to be combined in one realistic domain model.",
       taskDescription:
@@ -713,7 +713,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Apurba's Dashboard Breaks the Moment a Third Event Launches",
       narrative:
-        "Apurba wants a live status dashboard showing state for every currently active event, but your first pass hardcodes two literal event ids as placeholder keys, since those were the only two events that existed when you wrote it. The moment a third event launches the same day, the dashboard doesn't even know the key exists and quietly shows nothing for it. Tasnim explains the real problem: event ids are created dynamically all day long, so the type needs to accept any string key up front, not a fixed guessed-at list decided when the file was written.",
+        "Apurba wants a live status dashboard showing state for every currently active event.\n\nYour first pass hardcodes two literal event ids as placeholder keys, since those were the only two events that existed when you wrote it. The moment a third event launches the same day, the dashboard doesn't even know the key exists. It quietly shows nothing for it.\n\nTasnim explains the real problem: event ids are created dynamically, all day long. So the type needs to accept any string key up front — not a fixed, guessed-at list decided when the file was written.",
       realWorldContext:
         "An index signature models an open-ended dictionary whose exact keys aren't known in advance, which is exactly the shape a live, ever-growing dashboard needs.",
       taskDescription:
@@ -749,7 +749,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Evans's API Now Returns Three Kinds of Events",
       narrative:
-        "Evans's API expansion is live: the events endpoint now returns Concerts, Workshops, and Meetups, three genuinely different shapes bundled under one response. Your render function currently assumes every event looks the same, and it's already crashed twice in staging when a Workshop-only field turned out to be missing on a Meetup. Evans wants a single KingdomEvent type representing exactly these three possibilities, so nothing outside this union can sneak through with the wrong shape ever again, in staging or production.",
+        "Evans's API expansion is live. The events endpoint now returns Concerts, Workshops, and Meetups. These are three genuinely different shapes bundled under one response.\n\nYour render function currently assumes every event looks the same. It has already crashed twice in staging when a Workshop-only field was missing on a Meetup.\n\nEvans wants a single KingdomEvent type representing exactly these three possibilities. That way, nothing outside this union can sneak through with the wrong shape ever again — in staging or production.",
       realWorldContext:
         "A union type models a value that can genuinely be one of several distinct shapes, exactly like Evans's newly expanded API response.",
       taskDescription:
@@ -784,7 +784,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Jordan's Typo Took Down the Dashboard",
       narrative:
-        "Jordan found it: someone typed status as 'Cancled' instead of 'cancelled', and because status was just a plain string, TypeScript never complained. The dashboard silently showed the wrong count for weeks. Tasnim wants this made structurally impossible. She wants EventStatus rewritten as a closed set of exact allowed values, so a typo like this becomes a compile error the moment it's typed, not a bug QA has to hunt down later. Get this locked down and a typo like Jordan's simply can't compile anymore, no matter who's typing it next.",
+        "Jordan found it. Someone typed the status as 'Cancled' instead of 'cancelled'. Because status was just a plain string, TypeScript never complained. The dashboard silently showed the wrong count for weeks.\n\nTasnim wants this made structurally impossible.\n\nShe wants EventStatus rewritten as a closed set of exact allowed values. That way, a typo like this becomes a compile error the moment it is typed, not a bug QA has to hunt down later.\n\nGet this locked down, and a typo like Jordan's simply can't compile anymore — no matter who writes it next.",
       realWorldContext:
         "A literal union of exact allowed values turns a typo into an instant compile-time error instead of a silent, hard-to-trace data bug.",
       taskDescription:
@@ -818,7 +818,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Minhaj Reviews Your Render Function",
       narrative:
-        "Your first attempt at renderEventSummary reaches straight for a workshop-only field like instructor before checking what kind of event it actually is, and TypeScript rightly refuses to compile it. Minhaj explains: you have to narrow the union first, with a runtime check the compiler can follow, before it will let you touch a field that doesn't exist on every branch. Add the missing check so each event kind is only accessed inside its own safe branch. Get the check right here and this exact category of crash becomes impossible for any future teammate to reintroduce by accident.",
+        'Your first attempt at renderEventSummary reaches straight for a workshop-only field like instructor before checking what kind of event it actually is. TypeScript rightly refuses to compile it.\n\nMinhaj explains the problem.\n\n"You have to narrow the union first," he says. "Use a runtime check the compiler can follow. Only then will it let you access a field that doesn\'t exist on every branch."\n\nHe wants you to add the missing check so each event kind is only accessed inside its own safe branch. Get the check right here, and this exact category of crash becomes impossible for any teammate to reintroduce by accident.',
       realWorldContext:
         "Type narrowing lets TypeScript follow a runtime check into a conditional branch, safely exposing only the fields that actually exist there.",
       taskDescription:
@@ -854,7 +854,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Tasnim Formalizes the Pattern",
       narrative:
-        "Tasnim likes the kind check you added, but points out the three event interfaces don't actually share a common literal field yet, so the narrowing only works by accident in some cases. She wants each interface to declare kind as its own exact literal, concert, workshop, or meetup, so TypeScript can exhaustively verify every branch of a switch statement is handled, catching a forgotten case before it ships. Once every variant shares this literal field, a forgotten case in any future switch statement gets caught by the compiler itself.",
+        'Tasnim likes the kind check you added, but she points out a problem.\n\n"The three event interfaces don\'t actually share a common literal field yet," she says. "Because of that, the narrowing only works by accident in some cases."\n\nShe wants each interface to declare kind as its own exact literal: concert, workshop, or meetup. That way, TypeScript can exhaustively verify that every branch of a switch statement is handled, catching a forgotten case before it ships.\n\nOnce every variant shares this literal field, a forgotten case in any future switch statement will get caught by the compiler itself.',
       realWorldContext:
         "A discriminated union adds a shared literal-typed field so TypeScript can safely and exhaustively narrow between every possible variant.",
       taskDescription:
@@ -890,7 +890,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Evans's Trusted Legacy Payload",
       narrative:
-        "Evans hands you a payload from a legacy admin tool that's always shaped like an Event, but arrives typed as unknown because the old system predates any of this typing work. Minhaj is cautious here: an assertion tells the compiler to trust you, it doesn't actually check anything at runtime, so use it only when you have real evidence, like a schema Evans already validated upstream, not as a shortcut to silence an error you don't understand. Minhaj is clear this is the exception, not the rule, and wants you to feel exactly why before Stage 4 begins.",
+        'Evans hands you a payload from a legacy admin tool. It is always shaped like an Event, but it arrives typed as unknown because the old system predates any of this typing work.\n\nMinhaj is cautious here.\n\n"An assertion tells the compiler to trust you," he explains. "It doesn\'t actually check anything at runtime. Use it only when you have real evidence, like a schema Evans already validated upstream. Do not use it as a shortcut to silence an error you don\'t understand."\n\nMinhaj is clear that this is the exception, not the rule. He wants you to feel exactly why before Stage 4 begins.',
       realWorldContext:
         "A type assertion overrides the compiler's own inference and performs zero runtime checking, so it should be reserved for cases backed by real, external evidence.",
       taskDescription:
@@ -926,7 +926,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Jordan Finds the Assertion's Blind Spot",
       narrative:
-        "Jordan discovers that Evans's legacy-payload assertion from last sprint doesn't actually protect anything: a malformed speaker object with a missing talkTitle field sailed straight through, because as Speaker only tells the compiler to trust you, it never actually checks anything at runtime. Minhaj wants a different tool for this exact situation, one where you can genuinely verify the shape before trusting it. They want a real, reusable isSpeaker function that checks every field Speaker actually requires and returns a proper type predicate, so getSpeakerName can safely narrow instead of blindly asserting.",
+        "Jordan discovers that Evans's legacy-payload assertion from last sprint doesn't actually protect anything. A malformed speaker object with a missing talkTitle field sailed straight through.\n\n\"That is because 'as Speaker' only tells the compiler to trust you,\" Minhaj explains. \"It never actually checks anything at runtime.\"\n\nMinhaj wants a different tool for this exact situation, one where you can genuinely verify the shape before trusting it.\n\nHe wants a real, reusable isSpeaker function. It should check every field Speaker actually requires and return a proper type predicate. That way, getSpeakerName can safely narrow the type instead of blindly asserting it.",
       realWorldContext:
         "A custom type predicate performs a real runtime check and narrows accordingly, unlike a type assertion, which changes nothing about what actually happens when the code runs.",
       taskDescription:
@@ -964,7 +964,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Minhaj Counts Four Copy-Pasted Functions",
       narrative:
-        "Minhaj pulls up findEventById, findUserById, findTicketById, side by side, structurally identical except for one type each time. Someone's about to write a fifth for Organizer, Minhaj says, and that's our sign. They want one generic findById function that works for any entity with an id, so the next new entity type doesn't need its own copy-pasted lookup function at all. One single generic function, Minhaj says, and the next brand-new entity type never needs its own hand-written lookup function again.",
+        'Minhaj pulls up findEventById, findUserById, and findTicketById side by side. They are structurally identical except for a single type.\n\n"Someone is about to write a fifth one for Organizer," Minhaj says. "That is our sign."\n\nHe wants one generic findById function that works for any entity with an id. That way, the next new entity type won\'t need its own copy-pasted lookup function at all.\n\n"With one single generic function," Minhaj says, "the next brand-new entity type never needs its own hand-written lookup function again."',
       realWorldContext:
         "A generic function eliminates duplicated logic that's identical across types, replacing four near-copies with one reusable, type-safe function.",
       taskDescription:
@@ -1000,7 +1000,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Jordan Breaks findById on Purpose",
       narrative:
-        "Jordan, always testing edge cases, calls findById on a plain array of strings just to see what happens. Without a constraint, it would compile fine and then crash the moment the function tries to read .id off a plain string. Minhaj wants you to confirm the constraint you added last level is doing its job: this exact misuse should fail to compile, not fail at runtime in front of a user. Confirm the guard holds here too, Minhaj says, before this pattern gets used across the rest of the utility library.",
+        'Jordan, always testing edge cases, calls findById on a plain array of strings just to see what happens. Without a constraint, it compiles fine. But it will crash the moment the function tries to read .id off a plain string.\n\nMinhaj wants you to confirm that the constraint you added in the last level is doing its job.\n\n"This exact misuse should fail to compile," Minhaj says. "It shouldn\'t fail at runtime in front of a user."\n\nHe wants you to confirm that the guard holds here too, before this pattern gets used across the rest of the utility library.',
       realWorldContext:
         "A generic constraint turns an unsafe runtime crash into a caught-at-compile-time error, exactly the difference Jordan's test is meant to surface.",
       taskDescription:
@@ -1033,7 +1033,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Salman Needs a Lightweight List View",
       narrative:
-        "Salman's new event list view only shows the title and date, but your first attempt hand-wrote a brand new interface with just those two fields, and it already drifted out of sync when capacity was renamed last week. Tasnim wants EventSummary derived directly from Event using Pick, so it automatically updates whenever the real Event interface changes, instead of living as its own disconnected copy. Get this derived correctly and Salman's list view updates automatically forever, with zero risk of drifting out of sync again.",
+        "Salman's new event list view only shows the title and date. But your first attempt hand-wrote a brand new interface with just those two fields. It already drifted out of sync when capacity was renamed last week.\n\nTasnim wants EventSummary derived directly from Event using Pick. That way, it automatically updates whenever the real Event interface changes, instead of living as its own disconnected copy.\n\nGet this derived correctly, and Salman's list view will update automatically forever — with zero risk of drifting out of sync again.",
       realWorldContext:
         "Deriving a smaller type with Pick keeps it automatically in sync with its source interface, instead of duplicating fields by hand.",
       taskDescription:
@@ -1068,7 +1068,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Apurba's Launch-Day Checklist",
       narrative:
-        "Apurba is nervous about launch day: the event creation form currently lets someone submit with fields still missing, since the in-progress editing state is naturally Partial. Tasnim wants a hard gate right before saving: the submit handler should only accept a fully Required version of the form input, so an incomplete Event can never reach the database, no matter what the UI allows mid-edit. Get this gate right, Tasnim says, and an incomplete Event simply cannot reach the database no matter what happens in the UI.",
+        'Apurba is nervous about launch day. The event creation form currently lets someone submit with fields still missing, since the in-progress editing state is naturally Partial.\n\nTasnim wants a hard gate right before saving.\n\nShe wants the submit handler to only accept a fully Required version of the form input. That way, an incomplete Event can never reach the database, no matter what the UI allows mid-edit.\n\n"Get this gate right," Tasnim says, "and an incomplete Event simply cannot reach the database, no matter what happens in the UI."',
       realWorldContext:
         "Required<T> turns an in-progress, partially-filled editing state into a hard, compiler-enforced gate at the exact moment of submission.",
       taskDescription:
@@ -1104,7 +1104,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Tasnim Weighs Enum vs Union for User Roles",
       narrative:
-        "The team needs a UserRole field: admin, organizer, or attendee. Someone on the team defaults to an enum out of habit, but Tasnim wants you to compare it against a plain literal union first. An enum leaves behind a real object in the compiled JavaScript, she explains, while a literal union disappears completely at compile time. For a role check used constantly across the frontend bundle, she wants the leaner option. It's a small change, Tasnim admits, but at this scale the bundle-size savings add up across every role check in the app.",
+        'The team needs a UserRole field: admin, organizer, or attendee. Someone on the team defaults to an enum out of habit, but Tasnim wants you to compare it against a plain literal union first.\n\n"An enum leaves behind a real object in the compiled JavaScript," she explains, "while a literal union disappears completely at compile time."\n\nFor a role check used constantly across the frontend bundle, she wants the leaner option.\n\nIt\'s a small change, Tasnim admits. But at this scale, the bundle-size savings add up across every role check in the app.',
       realWorldContext:
         "Comparing an enum against a literal union for the same field surfaces a genuine runtime cost trade-off, not just a stylistic preference.",
       taskDescription:
@@ -1139,7 +1139,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Salman's Configurable Table Fails Silently",
       narrative:
-        "Salman's new admin table lets an operator pick which Event field to display in each column, but the getField helper behind it accepts any string as a field name, so a single typo like 'titel' just quietly renders undefined instead of failing anywhere obvious. Nobody notices until a real event's title column is blank in front of a customer. Tasnim wants getField's key parameter constrained to the actual keys of the object it's reading from, so a typo'd field name becomes a compile error the moment it's written, not a silent blank cell in production.",
+        "Salman's new admin table lets an operator pick which Event field to display in each column. But the getField helper behind it accepts any string as a field name. A single typo like 'titel' just quietly renders undefined instead of failing anywhere obvious.\n\nNobody notices until a real event's title column is blank in front of a customer.\n\nTasnim wants getField's key parameter constrained to the actual keys of the object it's reading from. That way, a typo'd field name becomes a compile error the moment it's written, not a silent blank cell in production.",
       realWorldContext:
         "Constraining a generic key parameter with keyof T guarantees the key genuinely exists on T, turning a silent runtime typo into an immediate compile-time error.",
       taskDescription:
@@ -1175,7 +1175,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Salman Is Tired of Three Nearly Identical Cards",
       narrative:
-        "Salman's design system has EventCard, TicketCard, and UserCard, visually identical frames around different data. Minhaj wants one generic DataCard<T> component instead, so the layout logic lives in exactly one place and any future entity type gets the same card for free. This is the first time all your type-level work gets applied directly to a real React component, Minhaj says, so keep it strictly typed, no any anywhere. Get this component right, Minhaj says, and every future entity type gets the exact same reusable, type-safe card for free.",
+        'Salman\'s design system has EventCard, TicketCard, and UserCard. These are visually identical frames built around different data.\n\nMinhaj wants one generic DataCard<T> component instead. That way, the layout logic lives in exactly one place, and any future entity type can use the same card for free.\n\n"This is the first time all your type-level work is applied directly to a real React component," Minhaj says. "So keep it strictly typed, with no \'any\' anywhere."\n\nGet this component right, and every future entity type gets the exact same reusable, type-safe card for free.',
       realWorldContext:
         "A generic React component eliminates duplicated card layouts across entity types while keeping every prop fully type-checked.",
       taskDescription:
@@ -1214,7 +1214,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Evans's API Can Now Fail Gracefully",
       narrative:
-        "Evans upgraded the events API to return a proper error shape instead of just throwing, but the EventList component still assumes every fetch succeeds, and it crashed the moment Evans tested the new error path. Evans wants a generic ApiResponse<T> type representing both outcomes, so every component consuming this API is forced to handle failure instead of assuming happy-path only. Get this shape right, Evans says, and every component that fetches from this endpoint is forced to handle both outcomes honestly.",
+        'Evans upgraded the events API to return a proper error shape instead of just throwing. However, the EventList component still assumes every fetch succeeds. It crashed the moment Evans tested the new error path.\n\nEvans wants a generic ApiResponse<T> type representing both outcomes. That way, every component using this API is forced to handle failure instead of assuming everything always works.\n\n"Get this shape right," Evans says, "and every component that fetches from this endpoint is forced to handle both outcomes honestly."',
       realWorldContext:
         "A generic success/error response wrapper forces every consumer of an API call to handle failure, not just assume the happy path.",
       taskDescription:
@@ -1252,7 +1252,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Jordan Finds One Last Hole Before Launch",
       narrative:
-        "Jordan tests the booking form by submitting it half-filled on purpose, and to everyone's surprise it goes through anyway. The in-progress editing state is correctly typed as Partial<BookingInput> while the user is still filling things in, but nothing currently stops that same incomplete Partial state from reaching the submit handler directly. Minhaj wants the submit function's parameter type narrowed all the way to Required<BookingInput>, so an incomplete booking becomes an immediate compile error for the developer, not a confusing support ticket after launch.",
+        "Jordan tests the booking form by submitting it half-filled on purpose. To everyone's surprise, it goes through anyway.\n\nThe in-progress editing state is correctly typed as Partial<BookingInput> while the user is still filling things in. However, nothing currently stops that same incomplete Partial state from reaching the submit handler directly.\n\nMinhaj wants the submit function's parameter type narrowed all the way to Required<BookingInput>. That way, an incomplete booking becomes an immediate compile error for the developer, instead of a confusing support ticket after launch.",
       realWorldContext:
         "Gating a form's submit handler behind Required<T>, while editing state stays Partial<T>, blocks incomplete submissions at compile time rather than at runtime.",
       taskDescription:
@@ -1288,7 +1288,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Evans Hands Off the Real Route",
       narrative:
-        "Evans's ready to wire the actual Next.js API route into the app, but wants it returning exactly the ApiResponse<Event[]> shape the frontend already expects, nothing looser. This is the moment the backend and frontend typing finally meet in one place, Evans says. Get the route handler's return type explicit, so the client-side ApiResponse narrowing you already wrote works against the real endpoint, not just a mock. Get the route's return type right here, Evans says, and the client and server finally agree on exactly one shared shape.",
+        'Evans is ready to wire the actual Next.js API route into the app. He wants it to return exactly the ApiResponse<Event[]> shape that the frontend already expects — nothing looser.\n\n"This is the moment where the backend and frontend typing finally meet in one place," Evans says.\n\nHe wants you to make the route handler\'s return type explicit. That way, the client-side ApiResponse narrowing you already wrote will work against the real endpoint, not just a mock.\n\n"Get the route\'s return type right here," Evans says, "and the client and server will finally agree on exactly one shared shape."',
       realWorldContext:
         "Explicitly typing a Next.js route handler's return value as ApiResponse<Event[]> is what makes the client's typed narrowing logic actually trustworthy in production.",
       taskDescription:
@@ -1324,7 +1324,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "The Whole Team Watches the Deploy",
       narrative:
-        "Minhaj, Tasnim, Jordan, Apurba, Salman, and Evans are all watching the same terminal. Every piece is in place: the domain model, the generic DataCard, the typed API response, the gated booking form. Tasnim has one last request before you ship: wire the EventList page to fetch through ApiResponse<Event[]>, narrow the result, and render successful data through DataCard, with zero any anywhere in the final file. This is the whole course, together, one last time. Every teammate who taught you something along the way is represented somewhere in this final file, Tasnim says, watching the build finish.",
+        'Minhaj, Tasnim, Jordan, Apurba, Salman, and Evans are all watching the same terminal.\n\nEvery piece is in place: the domain model, the generic DataCard, the typed API response, and the gated booking form.\n\nTasnim has one last request before you ship. She wants you to wire the EventList page to fetch through ApiResponse<Event[]>, narrow the result, and render successful data through DataCard. There must be zero \'any\' anywhere in the final file.\n\n"This is the whole course, together, one last time," Tasnim says, watching the build finish. "Every teammate who taught you something along the way is represented somewhere in this final file."',
       realWorldContext:
         "This final integration proves that a domain model, a generic component, and a typed API response can compose into one real, production-style feature.",
       taskDescription:
@@ -1360,7 +1360,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "The Admin Dashboard Outgrows useState",
       narrative:
-        "The Kingdom is live and the admin dashboard is growing fast: filters, sorting, and a selected event all need to update together, and a handful of scattered useState calls have turned into a tangle Minhaj doesn't trust anymore. Someone dispatches an action typed as a loose string, mistypes SELCT_EVENT, and the dashboard silently does nothing. Minhaj wants the dashboard's actions modeled as a real discriminated union, the exact same pattern from Stage 3, now wired directly into a useReducer hook, so a mistyped action fails to compile instead of failing silently in front of an admin.",
+        "The Kingdom is live and the admin dashboard is growing fast. Filters, sorting, and a selected event all need to update together. A handful of scattered useState calls have turned into a tangle that Minhaj doesn't trust anymore.\n\nSomeone dispatches an action typed as a loose string, mistypes SELCT_EVENT, and the dashboard silently does nothing.\n\nMinhaj wants the dashboard's actions modeled as a real discriminated union. This is the exact same pattern from Stage 3, now wired directly into a useReducer hook. That way, a mistyped action fails to compile — instead of failing silently in front of an admin.",
       realWorldContext:
         "Typing a useReducer's actions as a discriminated union brings the same compile-time safety from Stage 3's KingdomEvent modeling directly into React's state management.",
       taskDescription:
@@ -1397,7 +1397,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Minhaj's Autocomplete is Too Broad",
       narrative:
-        '"I want to make sure our Router configuration object conforms to a general RouteConfig structure," Salman explains, "but the moment I annotate it as Record<string, RouteConfig>, TypeScript forgets the specific literal string keys! I lose autocomplete and narrow types when referencing specific routes downstream." Minhaj points you to the satisfies operator (introduced in TS 4.9). Satisfies lets you assert that a value matches a broad type contract without widening the value\'s actual narrow literal type.',
+        '"I want to make sure our Router configuration object conforms to a general RouteConfig structure," Salman explains. "But the moment I annotate it as Record<string, RouteConfig>, TypeScript forgets the specific literal string keys! I lose autocomplete and narrow types when referencing specific routes downstream."\n\nMinhaj points you to the satisfies operator, which was introduced in TypeScript 4.9.\n\nSatisfies lets you check that a value matches a broad type contract without changing or widening the value\'s actual narrow literal type.',
       realWorldContext:
         "The satisfies operator lets you validate that an object literal matches a generic interface or record type while preserving the most specific possible literal types of its properties for downstream autocomplete.",
       taskDescription:
@@ -1436,7 +1436,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Evans's Loose API Payloads",
       narrative:
-        "The Kingdom has integrated an external webhook system. Depending on the action triggering the webhook, we receive either a full KingdomEvent payload or just a simple string containing the deleted event's ID. Evans's initial pass returned any, causing unhandled runtime crashes when processing DELETED events. Minhaj wants you to construct a conditional type ResolvePayload that inspects the WebhookAction and returns either KingdomEvent or string, guaranteeing complete type safety at the compile-time gateway.",
+        "The Kingdom has integrated an external webhook system. Depending on the action triggering the webhook, we receive either a full KingdomEvent payload or a simple string containing the deleted event's ID.\n\nEvans's initial pass returned 'any'. This caused unhandled runtime crashes when processing DELETED events.\n\nMinhaj wants you to construct a conditional type, ResolvePayload, that inspects the WebhookAction and returns either KingdomEvent or string. This will guarantee complete type safety at the compile-time gateway.",
       realWorldContext:
         "Conditional types act like if/else statements for types, resolving to different types dynamically based on generic constraints.",
       taskDescription:
@@ -1477,7 +1477,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Salman's Dynamic Event Handlers",
       narrative:
-        "Salman is building a highly flexible UI event bridge for the Kingdom portal. Event names are dynamically generated by prefixing standard actions with 'on_'. For example, click becomes onclick, and hover becomes onhover. Because the keys are built at runtime, Salman typed the handlers as loose strings, but typos like 'on_clck' are passing through silently. Tasnim demands you use template literal types to enforce exact event patterns.",
+        "Salman is building a highly flexible UI event bridge for the Kingdom portal.\n\nEvent names are dynamically generated by prefixing standard actions with 'on_'. For example, click becomes onclick, and hover becomes onhover.\n\nBecause the keys are built at runtime, Salman typed the handlers as loose strings. As a result, typos like 'on_clck' are passing through silently.\n\nTasnim demands you use template literal types to enforce exact event patterns.",
       realWorldContext:
         "Template literal types let you construct exact string schemas by combining literal values with generic variables, similar to ES6 template strings.",
       taskDescription:
@@ -1512,7 +1512,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Apurba's Nested Database Unpacking",
       narrative:
-        "Apurba wants to fetch database rows wrapped inside a generic DbResponse envelope. Right now, our database helpers have to manually declare what the nested data type looks like. Minhaj suggests using the infer keyword inside a conditional type to automatically extract the inner type. Additionally, Tasnim asks for a mapped type that guarantees every field on the returned response is strictly readonly.",
+        "Apurba wants to fetch database rows wrapped inside a generic DbResponse envelope. Right now, our database helpers have to manually declare what the nested data type looks like.\n\nMinhaj suggests using the 'infer' keyword inside a conditional type to automatically extract the inner type.\n\nAdditionally, Tasnim asks for a mapped type that guarantees every field on the returned response is strictly readonly.",
       realWorldContext:
         "Mapped types iterate over keys of an existing type to construct a modified type, and infer allows unpacking generic parameters inside conditionals.",
       taskDescription:
@@ -1549,7 +1549,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Evans's Missing Library Types",
       narrative:
-        '"We are wrapping a legacy SDK reservation function," Evans complains, "but the SDK authors forgot to export the types for its parameters and return value. We don\'t want to redefine these manually and risk falling out of sync with future SDK updates." Tasnim smiles. TypeScript provides built-in utilities specifically for this, she says: use Parameters<typeof fn> to dynamically extract parameters as a tuple, and ReturnType<typeof fn> to unpack its return type. Let\'s write an interception middleware that extracts and proxies these types.',
+        '"We are wrapping a legacy SDK reservation function," Evans complains. "But the SDK authors forgot to export the types for its parameters and return value. We don\'t want to redefine these manually and risk falling out of sync with future SDK updates."\n\nTasnim smiles.\n\n"TypeScript provides built-in utilities specifically for this," she says. "Use Parameters<typeof fn> to dynamically extract parameters as a tuple, and ReturnType<typeof fn> to unpack its return type. Let\'s write an interception middleware that extracts and proxies these types."',
       realWorldContext:
         "Using ReturnType<T> and Parameters<T> allows developers to dynamically capture function signatures from libraries, keeping downstream custom wrappers automatically in sync with third-party code.",
       taskDescription:
@@ -1589,7 +1589,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Tasnim's Third-Party Analytics CDN",
       narrative:
-        "Tasnim loaded a third-party analytics script via a global CDN. Because the script runs globally outside of npm modules, TypeScript doesn't know the global window.KingdomAnalytics object exists. It flags window.KingdomAnalytics with a compiler red squiggle. Minhaj asks you to write an ambient global declaration extending the Window interface so that we can invoke trackregistration cleanly.",
+        "Tasnim loaded a third-party analytics script using a global CDN.\n\nBecause the script runs globally outside of npm modules, TypeScript does not know that the global window.KingdomAnalytics object exists. It flags window.KingdomAnalytics with a compiler error.\n\nMinhaj asks you to write an ambient global declaration extending the Window interface. This will let you invoke trackRegistration cleanly without any compiler red squiggles.",
       realWorldContext:
         "Ambient declaration files (.d.ts) tell the compiler about types that exist at runtime in the global scope but lack standard module headers.",
       taskDescription:
@@ -1630,7 +1630,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Apurba's Performance Audits",
       narrative:
-        "Apurba wants to trace and audit performance across the ticket reservation classes. Rather than adding logging lines to dozens of class methods, Evans suggests writing a reusable Method Decorator named logMethod. Decorators let us intercept method invocations, execute telemetry, and print status cleanly before calling the original method.",
+        'Apurba wants to trace and audit performance across the ticket reservation classes.\n\nInstead of adding logging lines to dozens of class methods by hand, Evans suggests writing a reusable Method Decorator named logMethod.\n\n"Decorators are perfect for this," Evans says. "They let us intercept method calls, run telemetry, and print status cleanly before we invoke the original method."',
       realWorldContext:
         "Decorators are functions that can annotate and modify classes, methods, accessor properties, or parameters at runtime.",
       taskDescription:
@@ -1666,7 +1666,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Minhaj Refactors the Kingdom Workspace",
       narrative:
-        "The Kingdom repository is scaling rapidly. To prevent long build wait times, Minhaj decided to refactor our codebase into a Monorepo containing a shared utilities folder and a client application folder. To make the compiler compile each package independently and incrementally, Minhaj asks you to wire up TS Project References by linking the client's configuration directly to '../shared'.",
+        "The Kingdom repository is scaling rapidly.\n\nTo prevent long build wait times, Minhaj decided to refactor our codebase into a Monorepo. It will contain a shared utilities folder and a client application folder.\n\nTo make the compiler compile each package independently and incrementally, Minhaj asks you to wire up TypeScript Project References. You will do this by linking the client's configuration directly to '../shared'.",
       realWorldContext:
         "Project References allow TypeScript projects to depend on other TypeScript projects, enabling faster incremental compiles and clean boundaries.",
       taskDescription:
@@ -1701,7 +1701,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Evans Splits Off a Real Backend Service",
       narrative:
-        "With the monorepo wired up, Evans is finally splitting the Kingdom's API off the old Next.js route handlers and into a dedicated Express service, the same way most real production backends are structured. The very first route, fetching a single event by id, is still plain JavaScript underneath, and req.params.id currently has no type at all. Minhaj wants this fixed before a single other route gets written: type req as Express's own Request generic, so route params are checked, not just guessed at.",
+        'With the monorepo wired up, Evans is splitting the Kingdom\'s API off the old Next.js route handlers. He is moving it into a dedicated Express service, just like a real production backend.\n\nThe very first route, which fetches a single event by id, is still plain JavaScript underneath. Currently, req.params.id has no type at all.\n\nMinhaj wants this fixed before a single other route gets written.\n\n"Type req as Express\'s own Request generic," Minhaj says. "That way, route parameters are checked at compile time, not just guessed at."',
       realWorldContext:
         "Express's Request type accepts a generic describing the shape of route params, so a typo'd or missing param becomes a compile error instead of a runtime undefined.",
       taskDescription:
@@ -1737,7 +1737,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Jordan's Query Returns Nothing",
       narrative:
-        "The Kingdom's events now live in a real MongoDB collection instead of an in-memory array, queried with the native driver, no Mongoose in sight. Jordan reports that fetching an event by the id from the URL always returns null, even for ids that definitely exist. Tasnim spots it immediately: MongoDB stores _id as a real ObjectId, not a plain string, so a string id has to be converted before it can match anything. She wants EventDocument properly typed with an ObjectId _id, and eventsCollection typed as a real Collection<EventDocument>.",
+        'The Kingdom\'s events now live in a real MongoDB collection instead of an in-memory array. They are queried using the native driver, with no Mongoose in sight.\n\nJordan reports that fetching an event by the id from the URL always returns null — even for ids that definitely exist.\n\nTasnim spots the issue immediately.\n\n"MongoDB stores _id as a real ObjectId, not a plain string," she says. "Because of that, we must convert a string id before it can match anything in the database."\n\nShe wants EventDocument properly typed with an ObjectId _id, and eventsCollection typed as a real Collection<EventDocument>.',
       realWorldContext:
         "The native MongoDB driver types a collection as Collection<T>, and _id is a real ObjectId at rest, not a string, so incoming string ids must be explicitly converted before querying.",
       taskDescription:
@@ -1774,7 +1774,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Minhaj Recognizes the Pattern Immediately",
       narrative:
-        "Every protected route now expects requireAuth to have already attached the logged-in user onto req.user, but Express's own Request type has never heard of a user field, so every single handler that reads it fails to compile. Minhaj actually smiles at this one: this is the exact same ambient declaration trick from the analytics CDN level back in Stage 7, just aimed at Express's own namespace instead of window. Merge a user field into Express's Request type once, in one shared file, and every route in the service gets it for free.",
+        'Every protected route now expects requireAuth to have already attached the logged-in user to req.user. However, Express\'s own Request type has never heard of a user field. Because of this, every single handler that reads it fails to compile.\n\nMinhaj smiles when he sees the error.\n\n"This is the exact same ambient declaration trick we used for the analytics CDN back in Stage 7," he says. "But this time, we are targeting Express\'s own namespace instead of window."\n\nHe wants you to merge a user field into Express\'s Request type once. If you do this in one shared file, every route in the service gets it for free.',
       realWorldContext:
         "Declaration merging lets you add fields to a library's own types, exactly like Stage 7's global Window augmentation, applied here to Express's Request interface.",
       taskDescription:
@@ -1811,7 +1811,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Jordan Finds an Expired Token Sneaking Through",
       narrative:
-        "Evans wired Better Auth's JWT verification into the login flow, but the first pass just returns whatever verifyJWT hands back typed as any, and Jordan manages to get an expired token treated as a perfectly valid session. Tasnim wants this modeled the exact same way Stage 5 modeled a fetch response: a clean success-or-failure union, so nothing downstream can accidentally read a session that was never actually valid. Wrap Better Auth's verification so a thrown error becomes a typed failure result instead of an uncaught crash.",
+        "Evans wired Better Auth's JWT verification into the login flow. However, the first pass just returns whatever verifyJWT hands back typed as 'any'. Jordan even manages to get an expired token treated as a perfectly valid session!\n\nTasnim wants this modeled the exact same way we modeled a fetch response in Stage 5: a clean success-or-failure union.\n\n\"We need a clean union,\" she says. \"That way, nothing downstream can accidentally read a session that was never actually valid.\"\n\nShe wants you to wrap Better Auth's verification so a thrown error becomes a typed failure result instead of an uncaught crash.",
       realWorldContext:
         "Wrapping an untyped third-party verification call in a discriminated success/failure union is the exact same pattern as Stage 5's ApiResponse<T>, now applied to authentication instead of a fetch call.",
       taskDescription:
@@ -1852,7 +1852,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "A Booking Route Silently Hangs in Production",
       narrative:
-        "Minhaj traces down a support ticket where a booking request just hangs forever with no response and no error in the logs. The cause: Express doesn't automatically catch a rejected promise inside an async route handler, so one unhandled rejection just swallows the whole request. Minhaj wants a reusable asyncHandler wrapper that every route goes through from now on, one that stays generic enough to work with any route's specific request shape while guaranteeing a thrown or rejected error always reaches Express's own error handling.",
+        'Minhaj traces down a support ticket where a booking request hangs forever with no response and no error in the logs.\n\nThe cause: Express does not automatically catch a rejected promise inside an async route handler. When a promise is rejected, it silently swallows the whole request.\n\nMinhaj wants a reusable asyncHandler wrapper that every route will use from now on.\n\n"It needs to be generic enough to work with any route\'s specific request shape," Minhaj says. "But it must guarantee that any thrown or rejected error always reaches Express\'s own error handling."',
       realWorldContext:
         "A generic asyncHandler wrapper, typed against Express's own RequestHandler type, guarantees any async route's rejected promise reaches error handling instead of hanging silently.",
       taskDescription:
@@ -1889,7 +1889,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Tasnim's Pre-Launch Backend Review",
       narrative:
-        "Before the real booking feature ships, Tasnim wants one route reviewed end to end: a typed request body, a MongoDB lookup converted to a real ObjectId, a check that req.user actually exists, and a consistent success-or-error response shape. No new syntax this time, Tasnim says, just proof that Express routing, MongoDB documents, request augmentation, JWT sessions, and the async wrapper all genuinely fit together in one real feature. Get this route airtight, she adds, and the rest of the booking flow can be built on top of it with real confidence instead of crossed fingers.",
+        'Before the real booking feature ships, Tasnim wants one route reviewed end to end.\n\nShe wants to see a typed request body, a MongoDB lookup converted to a real ObjectId, a check that req.user actually exists, and a consistent success-or-error response shape.\n\n"No new syntax this time," Tasnim says. "Just proof that Express routing, MongoDB documents, request augmentation, JWT sessions, and the async wrapper all genuinely fit together in one real feature."\n\nShe wants you to get this route airtight. That way, the rest of the booking flow can be built with real confidence instead of crossed fingers.',
       realWorldContext:
         "A checkpoint level with no new syntax, forcing typed Express routes, MongoDB documents, request augmentation, and async error handling to combine in one realistic production route.",
       taskDescription:
@@ -1932,7 +1932,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Evans's Untrusted Route Payloads",
       narrative:
-        '"Typing req.body as a static interface is convenient," Tasnim says, "but at runtime, anyone can POST anything they want. A static cast like \'as BookingRequestBody\' is just a polite request; the compiler can\'t actually check incoming JSON payloads at runtime." Minhaj wants you to replace unsafe casting with zod runtime assertions. Write a zod schema, validate the payload using safeParse, and use z.infer to derive the TypeScript static type automatically so we get both absolute runtime verification and full type inference without writing the schema twice.',
+        '"Typing req.body as a static interface is convenient," Tasnim says. "But at runtime, anyone can POST anything they want. A static cast like \'as BookingRequestBody\' is just a polite request. The compiler cannot actually check incoming JSON payloads at runtime."\n\nMinhaj wants you to replace unsafe casting with Zod runtime assertions.\n\nHe wants you to write a Zod schema, validate the payload using safeParse, and use z.infer to derive the TypeScript static type automatically. That way, we get both absolute runtime verification and full type inference without writing the schema twice.',
       realWorldContext:
         "Using a validation library like Zod with safeParse allows you to validate untrusted dynamic data at the API boundary, generating perfect static TypeScript types directly from runtime schemas.",
       taskDescription:
@@ -1970,7 +1970,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Jordan Passes the Wrong Id, and It Compiles Anyway",
       narrative:
-        "Jordan hands Minhaj a genuinely strange bug: somewhere, a UserId got passed into getEventById, and TypeScript never complained, because both ids are just plain strings underneath. Structurally, a UserId and an EventId look identical, so the compiler sees no difference at all. Tasnim wants a fix that goes further than a comment or a naming convention: brand each id type with a marker that only exists at the type level, so a UserId can never be passed where an EventId is expected again, no matter how careful or careless anyone is.",
+        "Jordan hands Minhaj a genuinely strange bug. Somewhere in the code, a UserId got passed into getEventById. TypeScript never complained because both ids are just plain strings underneath.\n\nStructurally, a UserId and an EventId look identical. The compiler sees no difference at all.\n\nTasnim wants a fix that goes further than a comment or a naming convention.\n\nShe wants you to brand each id type with a marker that only exists at the type level. That way, a UserId can never be passed where an EventId is expected again — no matter how careful or careless anyone is.",
       realWorldContext:
         "TypeScript is structurally typed, so two different string-based ids are considered identical unless you brand them with a unique marker field that only the type system ever sees.",
       taskDescription:
@@ -2007,7 +2007,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Salman's Published Page Shows a Stale Address",
       narrative:
-        "Salman's published event page is showing the wrong venue address, even though the event object was typed as Readonly<Event> before being handed to the rendering code. Tasnim finds the actual hole: Readonly<T> only locks the top level of an object, so nothing stopped someone from reaching into event.venue.address and mutating it directly. She wants a real DeepReadonly<T> this time, one that recurses into every nested object, not just the fields sitting directly on top. Get this right, she says, and no amount of nested mutation can ever touch a published event again.",
+        'Salman\'s published event page is showing the wrong venue address. This is happening even though the event object was typed as Readonly<Event> before being handed to the rendering code.\n\nTasnim finds the actual hole.\n\n"Readonly<T> only locks the top level of an object," she explains. "Because of that, nothing stopped someone from reaching into event.venue.address and mutating it directly."\n\nShe wants a real DeepReadonly<T> this time. It should recurse into every nested object, not just the fields sitting directly on top.\n\n"Get this right," she says, "and no amount of nested mutation can ever touch a published event again."',
       realWorldContext:
         "The built-in Readonly<T> only locks an object's top-level fields; a recursive DeepReadonly<T> mapped type is required to actually protect nested objects like venue from mutation.",
       taskDescription:
@@ -2047,7 +2047,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Jordan Confirms an Already-Cancelled Booking",
       narrative:
-        "Jordan's last bug of the review cycle is the strangest yet: an already-cancelled booking got confirmed again, payment id and all, because Booking modeled status as a loose string sitting next to a pile of always-optional fields that made no promises about which fields belonged to which state. Minhaj wants Booking modeled as a true state machine: one union variant per real status, each carrying only the fields that status should ever legitimately have, and confirmBooking constrained so it can only ever be called on a booking that's actually still pending.",
+        "Jordan's last bug of the review cycle is the strangest yet. An already-cancelled booking got confirmed again, payment id and all!\n\nThis happened because Booking modeled status as a loose string sitting next to a pile of always-optional fields. Those fields made no promises about which fields belonged to which state.\n\nMinhaj wants Booking modeled as a true state machine.\n\nHe wants one union variant per real status, each carrying only the fields that status should ever legitimately have. Finally, confirmBooking should be constrained so it can only ever be called on a booking that is actually still pending.",
       realWorldContext:
         "Modeling each state as its own discriminated union variant, then constraining a transition function to only accept one specific variant, makes illegal state transitions fail to compile instead of silently corrupting data.",
       taskDescription:

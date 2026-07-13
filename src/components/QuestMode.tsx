@@ -90,6 +90,22 @@ function playChime(type: "success" | "error" | "click") {
   }
 }
 
+// Helper to bold any speaker names (characters) inside a segment of text
+const formatSegmentText = (text: string): React.ReactNode[] => {
+  const speakerRegex = /\b(Minhaj|Tasnim|Jordan|Apurba|Salman|Evans|Imran)\b/g;
+  const parts = text.split(speakerRegex);
+  return parts.map((part, idx) => {
+    if (idx % 2 === 1) {
+      return (
+        <strong key={idx} className="font-bold text-on-surface">
+          {part}
+        </strong>
+      );
+    }
+    return part;
+  });
+};
+
 export default function QuestMode({
   onXpAwarded,
   onBadgeUnlocked,
@@ -1047,9 +1063,48 @@ export default function QuestMode({
                     <span className="font-bold text-primary">Imran</span>, the
                     Senior Weaver.
                   </p>
-                  <p className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed font-normal bg-surface-container-low/50 border-l-2 border-primary/40 pl-3 py-1">
-                    "{selectedLevel.story.narrative}"
-                  </p>
+                  <div className="space-y-4 bg-surface-container-low/60 border-l-2 border-primary/40 pl-4 py-3 pr-3 rounded-r-lg shadow-sm">
+                    {selectedLevel.story.narrative
+                      .split("\n\n")
+                      .map((chunk) => chunk.trim())
+                      .filter((chunk) => chunk.length > 0)
+                      .map((chunk, chunkIdx) => {
+                        // Split the chunk into dialogue quote segments and non-dialogue narration segments
+                        const segments = chunk
+                          .split(/([“"”].*?[“"”])/g)
+                          .map((s) => s.trim())
+                          .filter((s) => s.length > 0);
+                        return (
+                          <div
+                            key={chunkIdx}
+                            className="mb-4 last:mb-0 space-y-2"
+                          >
+                            {segments.map((segment, segIdx) => {
+                              const isDialogue = /^[“"”].*[“"”]$/.test(segment);
+                              if (isDialogue) {
+                                return (
+                                  <p
+                                    key={segIdx}
+                                    className="font-sans text-xs md:text-sm text-on-surface-variant/95 leading-relaxed font-normal italic pl-4 border-l border-primary/20"
+                                  >
+                                    {formatSegmentText(segment)}
+                                  </p>
+                                );
+                              } else {
+                                return (
+                                  <p
+                                    key={segIdx}
+                                    className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed font-normal"
+                                  >
+                                    {formatSegmentText(segment)}
+                                  </p>
+                                );
+                              }
+                            })}
+                          </div>
+                        );
+                      })}
+                  </div>
                   <div className="flex items-center gap-2.5 font-sans text-xs md:text-sm text-on-surface flex-wrap">
                     <span>
                       The first thing you need to formulate is safe rules in
