@@ -929,7 +929,7 @@ export default function QuestMode({
 
   return (
     <div
-      className="flex-1 bg-background text-on-background flex flex-col min-h-[calc(100vh-130px)] md:min-h-[calc(100vh-84px)] overflow-x-hidden font-sans"
+      className="flex-1 bg-background text-on-background flex flex-col h-[calc(100vh-64px)] md:h-[calc(100vh-64px)] overflow-hidden font-sans"
       id="quest-mode-root"
     >
       {/* 1. TIMELINE / LANDING VIEW */}
@@ -1145,12 +1145,12 @@ export default function QuestMode({
       {/* 3. MAIN WORKSPACE / PLAYGROUND VIEW */}
       {selectedLevel && !showConceptModal && (
         <div
-          className="flex-1 flex flex-col lg:grid lg:grid-cols-12 gap-0 overflow-y-auto lg:overflow-hidden relative min-h-[calc(100vh-130px)] lg:h-[calc(100vh-84px)] bg-background"
+          className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-0 overflow-y-auto md:overflow-hidden relative h-full bg-background"
           id="coding-workspace"
         >
           {/* LEFT COLUMN: EDITOR & CONSOLE PORTAL (7 Columns) */}
           <div
-            className="lg:col-span-7 flex flex-col min-h-[500px] lg:h-full border-r border-outline-variant/20 bg-surface-container-lowest"
+            className="md:col-span-7 flex flex-col h-[500px] md:h-full border-r border-outline-variant/20 bg-surface-container-lowest"
             id="editor-column"
           >
             {/* Header / macOS style title bar */}
@@ -1251,7 +1251,7 @@ export default function QuestMode({
 
           {/* RIGHT COLUMN: WORKSPACE DASHBOARD (5 Columns) */}
           <div
-            className="lg:col-span-5 flex flex-col bg-surface-container overflow-y-auto lg:h-full scrollbar-thin p-6 gap-6"
+            className="md:col-span-5 flex flex-col bg-surface-container overflow-y-auto md:h-full scrollbar-thin p-6 gap-6"
             id="dashboard-column"
           >
             {/* Header controls */}

@@ -20,7 +20,7 @@ import {
   ArrowRightLeft,
   BookOpenCheck,
   BadgeAlert,
-  HelpCircle
+  HelpCircle,
 } from "lucide-react";
 import { REFERENCE_LIBRARY } from "../curriculum";
 import { GRIMOIRE_ILLUSTRATIONS } from "../data/illustrations";
@@ -30,157 +30,183 @@ const CAPSTONE_PROJECTS = [
     id: "capstone-todo",
     title: "Todo Application",
     difficulty: "easy",
-    description: "A typed todo list with categories, due dates, and completion state.",
+    description:
+      "A typed todo list with categories, due dates, and completion state.",
     requiredConcepts: [
       "interfaces",
       "optional-properties",
       "literal-types",
-      "array-transformations"
+      "array-transformations",
     ],
     suggestedFeatures: [
       "A Todo interface with an optional dueDate and a literal-typed priority field.",
       "Filtering and sorting using generic array utilities (unique, sortBy).",
-      "Persist state securely with a typed Record<string, Todo> lookup dictionary."
-    ]
+      "Persist state securely with a typed Record<string, Todo> lookup dictionary.",
+    ],
   },
   {
     id: "capstone-blog-dashboard",
     title: "Blog Dashboard",
     difficulty: "medium",
-    description: "An authoring dashboard for blog posts with drafts, published posts, and typed API calls.",
+    description:
+      "An authoring dashboard for blog posts with drafts, published posts, and typed API calls.",
     requiredConcepts: [
       "discriminated-unions",
       "typed-api-responses",
       "pick",
       "omit",
-      "partial"
+      "partial",
     ],
     suggestedFeatures: [
       "A Post union type discriminated by status: 'draft' | 'published'.",
       "An ApiResponse<Post[]> generic wrapper for fetching and posting blog records.",
-      "A Partial<Post> editing form that narrows strictly to Required<Post> on publish."
-    ]
+      "A Partial<Post> editing form that narrows strictly to Required<Post> on publish.",
+    ],
   },
   {
     id: "capstone-ecommerce-product-page",
     title: "E-commerce Product Page",
     difficulty: "medium",
-    description: "A product detail page with variants (size/color), pricing, and an add-to-cart flow.",
+    description:
+      "A product detail page with variants (size/color), pricing, and an add-to-cart flow.",
     requiredConcepts: [
       "intersection-types",
       "generics",
       "generic-react-components",
-      "function-types"
+      "function-types",
     ],
     suggestedFeatures: [
       "A generic <VariantPicker<T>> component accepting dynamic customization options.",
       "An intersection type combining a base Product description with local Inventory counts.",
-      "A typed onAddToCart callback ensuring no malformed items enter checkout."
-    ]
+      "A typed onAddToCart callback ensuring no malformed items enter checkout.",
+    ],
   },
   {
     id: "capstone-chat-interface",
     title: "Chat Interface",
     difficulty: "hard",
-    description: "A real-time-feeling chat UI with message types (text, image, system) and typed state updates.",
+    description:
+      "A real-time-feeling chat UI with message types (text, image, system) and typed state updates.",
     requiredConcepts: [
       "discriminated-unions",
       "generics",
       "typed-api-responses",
-      "enums"
+      "enums",
     ],
     suggestedFeatures: [
       "A Message union discriminated by kind: 'text' | 'image' | 'system'.",
       "A generic useTypedReducer<T> hook for clean, type-safe message state updates.",
-      "An enum or literal union representing the live WebSocket connection status."
-    ]
+      "An enum or literal union representing the live WebSocket connection status.",
+    ],
   },
   {
     id: "capstone-kanban-board",
     title: "Kanban Board",
     difficulty: "hard",
-    description: "A drag-and-drop task board with columns, typed drag events, and generic card rendering.",
+    description:
+      "A drag-and-drop task board with columns, typed drag events, and generic card rendering.",
     requiredConcepts: [
       "generic-react-components",
       "record",
       "generic-utilities",
-      "interface-extension"
+      "interface-extension",
     ],
     suggestedFeatures: [
       "A Record<ColumnId, Card[]> board state shape protecting columns from contamination.",
       "A generic, reusable <DataCard<T>> component designed for any draggable card item.",
-      "groupBy and sortBy generic utility functions powering drag-and-drop columns."
-    ]
-  }
+      "groupBy and sortBy generic utility functions powering drag-and-drop columns.",
+    ],
+  },
 ];
 
 // Map standard curriculum categories to beautifully flavored guild themes
-const CATEGORY_FLAVORS: Record<string, { label: string; icon: string; description: string; border: string; glow: string }> = {
-  "All": {
+const CATEGORY_FLAVORS: Record<
+  string,
+  {
+    label: string;
+    icon: string;
+    description: string;
+    border: string;
+    glow: string;
+  }
+> = {
+  All: {
     label: "All Realms",
     icon: "📜",
-    description: "Browse the entire collective wisdom of the TypeScript kingdom.",
+    description:
+      "Browse the entire collective wisdom of the TypeScript kingdom.",
     border: "border-slate-800",
-    glow: "shadow-slate-500/5"
+    glow: "shadow-slate-500/5",
   },
-  "Concepts": {
+  Concepts: {
     label: "Philosophical Decrees",
     icon: "🧙‍♂️",
-    description: "Core static vs dynamic laws governing compilation and runtime forces.",
+    description:
+      "Core static vs dynamic laws governing compilation and runtime forces.",
     border: "border-purple-500/30",
-    glow: "shadow-purple-500/5"
+    glow: "shadow-purple-500/5",
   },
-  "Tooling": {
+  Tooling: {
     label: "Forge Mechanics",
     icon: "⚙️",
-    description: "Master compiler rules and configure tsconfig circles for strict defense.",
+    description:
+      "Master compiler rules and configure tsconfig circles for strict defense.",
     border: "border-blue-500/30",
-    glow: "shadow-blue-500/5"
+    glow: "shadow-blue-500/5",
   },
-  "Basics": {
+  Basics: {
     label: "Initiate Primers",
     icon: "🌱",
-    description: "Base primitives, readonly wards, object constraints, and void patterns.",
+    description:
+      "Base primitives, readonly wards, object constraints, and void patterns.",
     border: "border-emerald-500/30",
-    glow: "shadow-emerald-500/5"
+    glow: "shadow-emerald-500/5",
   },
   "Structural Types": {
     label: "Structural Seals",
     icon: "🧬",
-    description: "Compose type lineages with interface extension, unions, and intersections.",
+    description:
+      "Compose type lineages with interface extension, unions, and intersections.",
     border: "border-cyan-500/30",
-    glow: "shadow-cyan-500/5"
+    glow: "shadow-cyan-500/5",
   },
   "Advanced Types": {
     label: "High Type Alchemy",
     icon: "🔥",
-    description: "Harness shape-shifting generics, bounds, and adaptive parameter moulds.",
+    description:
+      "Harness shape-shifting generics, bounds, and adaptive parameter moulds.",
     border: "border-amber-500/30",
-    glow: "shadow-amber-500/5"
+    glow: "shadow-amber-500/5",
   },
   "Utility Types": {
     label: "Utility Transmutations",
     icon: "⚡",
-    description: "Dynamically clone and alter blueprints using Pick, Omit, and Partial.",
+    description:
+      "Dynamically clone and alter blueprints using Pick, Omit, and Partial.",
     border: "border-pink-500/30",
-    glow: "shadow-pink-500/5"
+    glow: "shadow-pink-500/5",
   },
   "React & Next.js": {
     label: "Enchanted Frameworks",
     icon: "⚛️",
-    description: "Apply secure TypeScript properties directly to UI component trees and forms.",
+    description:
+      "Apply secure TypeScript properties directly to UI component trees and forms.",
     border: "border-indigo-500/30",
-    glow: "shadow-indigo-500/5"
-  }
+    glow: "shadow-indigo-500/5",
+  },
 };
 
 export default function ReferenceDocs() {
-  const [activeTab, setActiveTab] = useState<"library" | "capstones">("library");
+  const [activeTab, setActiveTab] = useState<"library" | "capstones">(
+    "library",
+  );
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  
+
   // Track which card's comparison is currently active (stacked view vs comparison slider)
-  const [revealedFaults, setRevealedFaults] = useState<Record<string, "both" | "buggy" | "safe">>({});
+  const [revealedFaults, setRevealedFaults] = useState<
+    Record<string, "both" | "buggy" | "safe">
+  >({});
 
   const categories = useMemo(() => {
     const list = new Set(REFERENCE_LIBRARY.map((entry) => entry.category));
@@ -200,9 +226,12 @@ export default function ReferenceDocs() {
   }, [search, selectedCategory]);
 
   return (
-    <div className="flex flex-col gap-8 p-6 min-h-[calc(100vh-130px)] md:min-h-[calc(100vh-84px)] bg-surface text-on-surface font-sans" id="docs-page">
+    <div
+      className="flex flex-col gap-8 p-6 h-[calc(100vh-64px)] md:h-[calc(100vh-64px)] overflow-y-auto bg-surface text-on-surface font-sans"
+      id="docs-page"
+    >
       {/* Scroll of Wisdom Header Banner */}
-      <div 
+      <div
         className="relative overflow-hidden rounded-2xl border border-outline-variant/30 bg-surface-container p-8 shadow-2xl shadow-primary/5"
         id="grimoire-intro-banner"
       >
@@ -227,27 +256,48 @@ export default function ReferenceDocs() {
                 Ancients' Spellcraft Documentation
               </h1>
               <p className="text-xs text-slate-400 mt-1 max-w-3xl leading-relaxed">
-                Welcome to the sacred grimoire. This archive documents each rule of compiler alchemy. Here, you can study real-world code formulas side-by-side: contrast a <span className="text-rose-400 font-bold">Fragile Spell (vulnerable, buggy patterns)</span> against a <span className="text-emerald-400 font-bold">Resilient Spell (reinforced, type-safe structures)</span> to secure your knowledge.
+                Welcome to the sacred grimoire. This archive documents each rule
+                of compiler alchemy. Here, you can study real-world code
+                formulas side-by-side: contrast a{" "}
+                <span className="text-rose-400 font-bold">
+                  Fragile Spell (vulnerable, buggy patterns)
+                </span>{" "}
+                against a{" "}
+                <span className="text-emerald-400 font-bold">
+                  Resilient Spell (reinforced, type-safe structures)
+                </span>{" "}
+                to secure your knowledge.
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4 bg-slate-950/80 border border-slate-850 p-4 rounded-xl shrink-0">
             <div className="text-center">
-              <span className="text-[9px] font-mono text-slate-500 block uppercase tracking-wider">SCROLLS BOUND</span>
-              <span className="text-sky-400 font-black text-lg">{REFERENCE_LIBRARY.length} Total</span>
+              <span className="text-[9px] font-mono text-slate-500 block uppercase tracking-wider">
+                SCROLLS BOUND
+              </span>
+              <span className="text-sky-400 font-black text-lg">
+                {REFERENCE_LIBRARY.length} Total
+              </span>
             </div>
             <div className="h-8 w-px bg-slate-800"></div>
             <div className="text-center">
-              <span className="text-[9px] font-mono text-slate-500 block uppercase tracking-wider">ALIGNMENT</span>
-              <span className="text-emerald-400 font-black text-lg">Strict-Mode</span>
+              <span className="text-[9px] font-mono text-slate-500 block uppercase tracking-wider">
+                ALIGNMENT
+              </span>
+              <span className="text-emerald-400 font-black text-lg">
+                Strict-Mode
+              </span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Navigation tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-2 gap-4" id="docs-tab-header">
+      <div
+        className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-2 gap-4"
+        id="docs-tab-header"
+      >
         <div className="flex gap-2">
           <button
             onClick={() => setActiveTab("library")}
@@ -276,26 +326,37 @@ export default function ReferenceDocs() {
         </div>
 
         <span className="font-mono text-[10px] text-slate-500 uppercase tracking-widest pl-1">
-          {activeTab === "library" ? "⚔️ Read to Avoid compilation fractures" : "🏅 Transfer mastery to sandbox codebases"}
+          {activeTab === "library"
+            ? "⚔️ Read to Avoid compilation fractures"
+            : "🏅 Transfer mastery to sandbox codebases"}
         </span>
       </div>
 
       {activeTab === "library" ? (
-        <div className="flex flex-col lg:flex-row gap-8" id="docs-library-section">
+        <div
+          className="flex flex-col lg:flex-row gap-8"
+          id="docs-library-section"
+        >
           {/* Scroll Category Sidebar */}
-          <aside className="w-full lg:w-72 flex flex-col gap-4 shrink-0" id="docs-sidebar">
+          <aside
+            className="w-full lg:w-72 flex flex-col gap-4 shrink-0"
+            id="docs-sidebar"
+          >
             <div className="p-5 bg-slate-900 border border-slate-800 rounded-xl flex flex-col gap-4">
               <div>
                 <h2 className="text-[11px] font-black text-sky-500 uppercase tracking-widest flex items-center gap-2">
                   <span className="w-3.5 h-0.5 bg-sky-500 rounded-full"></span>
                   Runic Chambers
                 </h2>
-                <p className="text-[10px] text-slate-500 font-sans mt-1">Select a category to filter the ancient archives.</p>
+                <p className="text-[10px] text-slate-500 font-sans mt-1">
+                  Select a category to filter the ancient archives.
+                </p>
               </div>
 
               <div className="flex flex-col gap-1.5" id="docs-category-list">
                 {categories.map((cat) => {
-                  const flavor = CATEGORY_FLAVORS[cat] || CATEGORY_FLAVORS["All"];
+                  const flavor =
+                    CATEGORY_FLAVORS[cat] || CATEGORY_FLAVORS["All"];
                   const isSelected = selectedCategory === cat;
                   return (
                     <button
@@ -309,10 +370,14 @@ export default function ReferenceDocs() {
                       id={`cat-${cat.toLowerCase().replace(/\s+/g, "-")}`}
                     >
                       <span className="flex items-center gap-2">
-                        <span className="text-base leading-none">{flavor.icon}</span>
+                        <span className="text-base leading-none">
+                          {flavor.icon}
+                        </span>
                         <span>{flavor.label}</span>
                       </span>
-                      {isSelected && <ChevronRight className="w-3.5 h-3.5 text-sky-400" />}
+                      {isSelected && (
+                        <ChevronRight className="w-3.5 h-3.5 text-sky-400" />
+                      )}
                     </button>
                   );
                 })}
@@ -320,7 +385,7 @@ export default function ReferenceDocs() {
             </div>
 
             {selectedCategory !== "All" && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className={`p-4 rounded-xl border bg-slate-900/50 text-xs text-slate-400 leading-relaxed font-sans ${CATEGORY_FLAVORS[selectedCategory]?.border}`}
@@ -329,7 +394,9 @@ export default function ReferenceDocs() {
                   <span>{CATEGORY_FLAVORS[selectedCategory]?.icon}</span>
                   <span>{CATEGORY_FLAVORS[selectedCategory]?.label}</span>
                 </div>
-                <p className="text-[11px] leading-relaxed italic">"{CATEGORY_FLAVORS[selectedCategory]?.description}"</p>
+                <p className="text-[11px] leading-relaxed italic">
+                  "{CATEGORY_FLAVORS[selectedCategory]?.description}"
+                </p>
               </motion.div>
             )}
           </aside>
@@ -391,8 +458,8 @@ export default function ReferenceDocs() {
                             {entry.category}
                           </span>
                           {entry.seeAlsoLevels.map((lvl) => (
-                            <span 
-                              key={lvl} 
+                            <span
+                              key={lvl}
                               className="text-[9px] font-mono font-bold text-slate-500 bg-slate-950 px-2 py-0.5 rounded border border-slate-850"
                               title="Taught inside this academy dungeon level"
                             >
@@ -410,10 +477,15 @@ export default function ReferenceDocs() {
                       {illustration && (
                         <div className="flex items-center bg-slate-950 p-1 rounded-lg border border-slate-850/80 shrink-0 self-start sm:self-auto">
                           <button
-                            onClick={() => setRevealedFaults(prev => ({ ...prev, [entry.id]: "both" }))}
+                            onClick={() =>
+                              setRevealedFaults((prev) => ({
+                                ...prev,
+                                [entry.id]: "both",
+                              }))
+                            }
                             className={`px-2.5 py-1 text-[9px] font-mono font-bold uppercase rounded cursor-pointer transition-all flex items-center gap-1 ${
-                              viewMode === "both" 
-                                ? "bg-sky-500/10 text-sky-400 border border-sky-500/20" 
+                              viewMode === "both"
+                                ? "bg-sky-500/10 text-sky-400 border border-sky-500/20"
                                 : "text-slate-500 hover:text-slate-300"
                             }`}
                             title="Show side-by-side comparison"
@@ -422,10 +494,15 @@ export default function ReferenceDocs() {
                             Compare Both
                           </button>
                           <button
-                            onClick={() => setRevealedFaults(prev => ({ ...prev, [entry.id]: "buggy" }))}
+                            onClick={() =>
+                              setRevealedFaults((prev) => ({
+                                ...prev,
+                                [entry.id]: "buggy",
+                              }))
+                            }
                             className={`px-2.5 py-1 text-[9px] font-mono font-bold uppercase rounded cursor-pointer transition-all flex items-center gap-1 ${
-                              viewMode === "buggy" 
-                                ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" 
+                              viewMode === "buggy"
+                                ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
                                 : "text-slate-500 hover:text-slate-300"
                             }`}
                             title="Only view flawed code example"
@@ -434,10 +511,15 @@ export default function ReferenceDocs() {
                             Fragile
                           </button>
                           <button
-                            onClick={() => setRevealedFaults(prev => ({ ...prev, [entry.id]: "safe" }))}
+                            onClick={() =>
+                              setRevealedFaults((prev) => ({
+                                ...prev,
+                                [entry.id]: "safe",
+                              }))
+                            }
                             className={`px-2.5 py-1 text-[9px] font-mono font-bold uppercase rounded cursor-pointer transition-all flex items-center gap-1 ${
-                              viewMode === "safe" 
-                                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
+                              viewMode === "safe"
+                                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                                 : "text-slate-500 hover:text-slate-300"
                             }`}
                             title="Only view type-safe code example"
@@ -461,7 +543,10 @@ export default function ReferenceDocs() {
 
                     {/* ILLUSTATIVE SIDE-BY-SIDE GRIMOIRE SECTION */}
                     {illustration ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6" id={`illustrations-${entry.id}`}>
+                      <div
+                        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                        id={`illustrations-${entry.id}`}
+                      >
                         {/* 1. FRAGILE / BUGGY FORMULA CARD */}
                         <AnimatePresence mode="popLayout">
                           {(viewMode === "both" || viewMode === "buggy") && (
@@ -491,7 +576,10 @@ export default function ReferenceDocs() {
                               <div className="flex gap-2 text-[11px] text-rose-400 font-sans leading-relaxed bg-rose-950/15 p-3 rounded-lg border border-rose-950/30">
                                 <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                                 <div>
-                                  <span className="font-bold">Alchemical Leak:</span> {illustration.buggyDesc}
+                                  <span className="font-bold">
+                                    Alchemical Leak:
+                                  </span>{" "}
+                                  {illustration.buggyDesc}
                                 </div>
                               </div>
                             </motion.div>
@@ -527,7 +615,10 @@ export default function ReferenceDocs() {
                               <div className="flex gap-2 text-[11px] text-emerald-400 font-sans leading-relaxed bg-emerald-950/15 p-3 rounded-lg border border-emerald-950/30">
                                 <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                                 <div>
-                                  <span className="font-bold">Compiler Guard:</span> {illustration.safeDesc}
+                                  <span className="font-bold">
+                                    Compiler Guard:
+                                  </span>{" "}
+                                  {illustration.safeDesc}
                                 </div>
                               </div>
                             </motion.div>
@@ -548,22 +639,30 @@ export default function ReferenceDocs() {
                     )}
 
                     {/* Common Pitfalls List */}
-                    {entry.commonPitfalls && entry.commonPitfalls.length > 0 && (
-                      <div className="flex flex-col gap-2.5 border-t border-slate-850 pt-4">
-                        <span className="text-slate-400 flex items-center gap-1.5 uppercase tracking-wider text-[9px] font-black">
-                          <Flame className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                          Sleeping Curses (Common Pitfalls)
-                        </span>
-                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-1">
-                          {entry.commonPitfalls.map((p, idx) => (
-                            <li key={idx} className="text-slate-400 flex items-start gap-2 text-xs">
-                              <span className="text-rose-500 font-bold shrink-0 mt-0.5">⚡</span>
-                              <span className="font-sans leading-relaxed">{p}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                    {entry.commonPitfalls &&
+                      entry.commonPitfalls.length > 0 && (
+                        <div className="flex flex-col gap-2.5 border-t border-slate-850 pt-4">
+                          <span className="text-slate-400 flex items-center gap-1.5 uppercase tracking-wider text-[9px] font-black">
+                            <Flame className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                            Sleeping Curses (Common Pitfalls)
+                          </span>
+                          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-1">
+                            {entry.commonPitfalls.map((p, idx) => (
+                              <li
+                                key={idx}
+                                className="text-slate-400 flex items-start gap-2 text-xs"
+                              >
+                                <span className="text-rose-500 font-bold shrink-0 mt-0.5">
+                                  ⚡
+                                </span>
+                                <span className="font-sans leading-relaxed">
+                                  {p}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
 
                     {/* Related terms footer */}
                     <div className="pt-4 border-t border-slate-850 flex flex-wrap gap-2 items-center text-[9px] uppercase tracking-wider text-slate-500">
@@ -576,7 +675,11 @@ export default function ReferenceDocs() {
                           key={term}
                           className="font-mono bg-slate-950 hover:text-sky-300 hover:border-sky-500/20 cursor-pointer transition-colors text-slate-400 px-2 py-0.5 rounded border border-slate-850"
                           onClick={() => {
-                            const found = REFERENCE_LIBRARY.find(t => t.id === `ref-${term}` || t.term.toLowerCase() === term.toLowerCase());
+                            const found = REFERENCE_LIBRARY.find(
+                              (t) =>
+                                t.id === `ref-${term}` ||
+                                t.term.toLowerCase() === term.toLowerCase(),
+                            );
                             if (found) {
                               setSearch(found.term);
                             } else {
@@ -593,11 +696,17 @@ export default function ReferenceDocs() {
               })}
 
               {filteredEntries.length === 0 && (
-                <div className="col-span-full py-16 flex flex-col items-center justify-center text-center p-6 bg-slate-900 border border-slate-800 rounded-xl" id="docs-empty-state">
+                <div
+                  className="col-span-full py-16 flex flex-col items-center justify-center text-center p-6 bg-slate-900 border border-slate-800 rounded-xl"
+                  id="docs-empty-state"
+                >
                   <RefreshCw className="w-7 h-7 text-sky-400 animate-spin mb-4" />
-                  <h3 className="text-sm font-semibold text-slate-200 font-mono">No matching scrolls found</h3>
+                  <h3 className="text-sm font-semibold text-slate-200 font-mono">
+                    No matching scrolls found
+                  </h3>
                   <p className="text-xs text-slate-400 mt-2 max-w-sm font-sans leading-relaxed">
-                    The search query did not trigger any archives in this runic chamber. Try typing another term or select "All Realms".
+                    The search query did not trigger any archives in this runic
+                    chamber. Try typing another term or select "All Realms".
                   </p>
                 </div>
               )}
@@ -617,24 +726,34 @@ export default function ReferenceDocs() {
                   Capstone Transfer Arenas
                 </h2>
                 <p className="text-xs text-slate-400 mt-1 leading-relaxed max-w-2xl font-sans">
-                  The ultimate test of a wizard. These five optional capstone tasks are set outside the Event Management Kingdom. Rebuild these applications independently to prove you can transfer your TypeScript prowess to any codebase.
+                  The ultimate test of a wizard. These five optional capstone
+                  tasks are set outside the Event Management Kingdom. Rebuild
+                  these applications independently to prove you can transfer
+                  your TypeScript prowess to any codebase.
                 </p>
               </div>
             </div>
 
             <div className="bg-slate-950/80 border border-slate-850 px-4 py-2.5 rounded-xl text-center shrink-0">
-              <span className="text-[9px] font-mono text-slate-500 block">ARENAS AVAILABLE</span>
-              <span className="text-amber-400 font-black text-sm">5 Active Projects</span>
+              <span className="text-[9px] font-mono text-slate-500 block">
+                ARENAS AVAILABLE
+              </span>
+              <span className="text-amber-400 font-black text-sm">
+                5 Active Projects
+              </span>
             </div>
           </div>
 
           {/* Capstones Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" id="capstones-grid">
+          <div
+            className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+            id="capstones-grid"
+          >
             {CAPSTONE_PROJECTS.map((project) => {
               const diffColors = {
                 easy: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
                 medium: "text-amber-400 bg-amber-500/10 border-amber-500/20",
-                hard: "text-rose-400 bg-rose-500/10 border-rose-500/20"
+                hard: "text-rose-400 bg-rose-500/10 border-rose-500/20",
               }[project.difficulty as "easy" | "medium" | "hard"];
 
               return (
@@ -647,7 +766,9 @@ export default function ReferenceDocs() {
                     <h3 className="text-sm font-black text-slate-100 font-sans uppercase tracking-tight group-hover:text-amber-400 transition-colors">
                       {project.title}
                     </h3>
-                    <span className={`text-[9px] font-mono font-black uppercase px-2 py-0.5 rounded border ${diffColors}`}>
+                    <span
+                      className={`text-[9px] font-mono font-black uppercase px-2 py-0.5 rounded border ${diffColors}`}
+                    >
                       {project.difficulty}
                     </span>
                   </div>
@@ -682,9 +803,14 @@ export default function ReferenceDocs() {
                     </span>
                     <ul className="space-y-2 text-xs">
                       {project.suggestedFeatures.map((feat, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-slate-400">
+                        <li
+                          key={idx}
+                          className="flex items-start gap-2 text-slate-400"
+                        >
                           <ChevronRight className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-                          <span className="font-sans leading-relaxed">{feat}</span>
+                          <span className="font-sans leading-relaxed">
+                            {feat}
+                          </span>
                         </li>
                       ))}
                     </ul>

@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import QuestMode from "./components/QuestMode";
 import Playground from "./components/Playground";
 import ReferenceDocs from "./components/ReferenceDocs";
+import NotFound from "./components/NotFound";
 import { Sparkles, Award, Star, X } from "lucide-react";
 
 // Firebase imports
@@ -12,10 +13,12 @@ import { auth, getWizardProgress, saveWizardProgress } from "./lib/firebase";
 import WizardSanctum from "./components/WizardSanctum";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<"home" | "quest" | "playground" | "docs">("home");
+  const [activeTab, setActiveTab] = useState<string>("home");
   const [xp, setXp] = useState(0);
   const [unlockedBadges, setUnlockedBadges] = useState<string[]>([]);
-  const [unlockedLevelIds, setUnlockedLevelIds] = useState<string[]>(["level-0-1-bootstrap"]);
+  const [unlockedLevelIds, setUnlockedLevelIds] = useState<string[]>([
+    "level-0-1-bootstrap",
+  ]);
   const [showCelebration, setShowCelebration] = useState<string | null>(null);
   const [selectedLevelId, setSelectedLevelId] = useState<string | null>(null);
 
@@ -23,6 +26,53 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [wizardTitle, setWizardTitle] = useState("Primitive Initiate");
   const [isSanctumOpen, setIsSanctumOpen] = useState(false);
+
+  // Dynamic Metadata Handler
+  useEffect(() => {
+    let title = "TypeScript Adventure | Academy";
+    let description =
+      "Embark on an epic alchemical training campaign. Rebuild the Event Management Kingdom with Type-Safe Spells.";
+
+    switch (activeTab) {
+      case "home":
+        title = "TypeScript Adventure | Academy Home";
+        description =
+          "Warp to the Academy Sanctuary. Pick your dungeon tier, upgrade alchemical spell lines, and view your sorcerer rank progress.";
+        break;
+      case "quest":
+        title = "TypeScript Adventure | Spellcraft Quests";
+        description =
+          "Formulate high-order type constructs and repair broken compiler portals side-by-side inside the Event Management Kingdom.";
+        break;
+      case "playground":
+        title = "TypeScript Adventure | Sandbox Forge";
+        description =
+          "Access the sandbox workshop. Write real-time TS, invoke standard compilers, and debug console leyline logs immediately.";
+        break;
+      case "docs":
+        title = "TypeScript Adventure | Grimoire Scroll Library";
+        description =
+          "Browse the sacred grimoire of standard alchemical schemas. Examine buggy versus safe side-by-side code illustrations.";
+        break;
+      default:
+        title = "TypeScript Adventure | Disrupted Sector";
+        description =
+          "The coordinates do not align with any known leylines. Path fracture detected.";
+        break;
+    }
+
+    // Set document title
+    document.title = title;
+
+    // Set or create meta description tag dynamically
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.setAttribute("name", "description");
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute("content", description);
+  }, [activeTab]);
 
   // Load user data on mount
   useEffect(() => {
@@ -53,7 +103,7 @@ export default function App() {
           unlockedBadges,
           unlockedLevels: unlockedLevelIds,
           levelCodes: getLocalCodes(),
-          wizardTitle
+          wizardTitle,
         }).catch((err) => console.warn("Background sync failed:", err));
       }, 1000); // Debounced save
 
@@ -72,25 +122,35 @@ export default function App() {
         localStorage.setItem("wizard_xp", String(finalXp));
 
         const localBadgesStr = localStorage.getItem("wizard_badges");
-        const localBadges: string[] = localBadgesStr ? JSON.parse(localBadgesStr) : [];
-        const mergedBadges = Array.from(new Set([...localBadges, ...cloudProgress.unlockedBadges]));
+        const localBadges: string[] = localBadgesStr
+          ? JSON.parse(localBadgesStr)
+          : [];
+        const mergedBadges = Array.from(
+          new Set([...localBadges, ...cloudProgress.unlockedBadges]),
+        );
         setUnlockedBadges(mergedBadges);
         localStorage.setItem("wizard_badges", JSON.stringify(mergedBadges));
 
         const localLevelsStr = localStorage.getItem("unlocked_levels");
-        const localLevels: string[] = localLevelsStr ? JSON.parse(localLevelsStr) : ["level-0-1-bootstrap"];
-        const mergedLevels = Array.from(new Set([...localLevels, ...cloudProgress.unlockedLevels]));
+        const localLevels: string[] = localLevelsStr
+          ? JSON.parse(localLevelsStr)
+          : ["level-0-1-bootstrap"];
+        const mergedLevels = Array.from(
+          new Set([...localLevels, ...cloudProgress.unlockedLevels]),
+        );
         setUnlockedLevelIds(mergedLevels);
         localStorage.setItem("unlocked_levels", JSON.stringify(mergedLevels));
 
         // Sync local level codes from cloud
         if (cloudProgress.levelCodes) {
-          Object.entries(cloudProgress.levelCodes).forEach(([levelId, cloudCode]) => {
-            const localCode = localStorage.getItem(`code_${levelId}`);
-            if (!localCode || localCode !== cloudCode) {
-              localStorage.setItem(`code_${levelId}`, cloudCode);
-            }
-          });
+          Object.entries(cloudProgress.levelCodes).forEach(
+            ([levelId, cloudCode]) => {
+              const localCode = localStorage.getItem(`code_${levelId}`);
+              if (!localCode || localCode !== cloudCode) {
+                localStorage.setItem(`code_${levelId}`, cloudCode);
+              }
+            },
+          );
         }
 
         if (cloudProgress.wizardTitle) {
@@ -104,9 +164,9 @@ export default function App() {
           unlockedLevels: mergedLevels,
           levelCodes: {
             ...cloudProgress.levelCodes,
-            ...getLocalCodes()
+            ...getLocalCodes(),
           },
-          wizardTitle: cloudProgress.wizardTitle || wizardTitle
+          wizardTitle: cloudProgress.wizardTitle || wizardTitle,
         });
       } else {
         // Create new cloud progress document
@@ -115,7 +175,7 @@ export default function App() {
           unlockedBadges,
           unlockedLevels: unlockedLevelIds,
           levelCodes: getLocalCodes(),
-          wizardTitle
+          wizardTitle,
         });
       }
     } catch (err) {
@@ -161,10 +221,16 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-on-background flex flex-col font-sans" id="app-root">
+    <div
+      className="min-h-screen bg-background text-on-background flex flex-col font-sans"
+      id="app-root"
+    >
       {/* Celebration overlay */}
       {showCelebration && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md" id="celebration-overlay">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md"
+          id="celebration-overlay"
+        >
           <div className="p-8 bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full flex flex-col items-center text-center gap-4 relative shadow-2xl shadow-sky-500/10">
             <button
               onClick={() => setShowCelebration(null)}
@@ -183,7 +249,8 @@ export default function App() {
                 {showCelebration}
               </p>
               <p className="text-xs text-slate-400 mt-2 leading-relaxed font-serif italic">
-                Your mastery over TypeScript has reached a new milestone. Rebuilding the Event Kingdom draws ever closer!
+                Your mastery over TypeScript has reached a new milestone.
+                Rebuilding the Event Kingdom draws ever closer!
               </p>
             </div>
             <button
@@ -230,6 +297,15 @@ export default function App() {
         )}
         {activeTab === "playground" && <Playground />}
         {activeTab === "docs" && <ReferenceDocs />}
+
+        {/* Fallback Not Found Route */}
+        {!["home", "quest", "playground", "docs"].includes(activeTab) && (
+          <NotFound
+            onGoHome={() => setActiveTab("home")}
+            onGoLibrary={() => setActiveTab("docs")}
+            invalidTabName={activeTab}
+          />
+        )}
       </div>
 
       {/* Wizard Sanctum Portal Modal */}
