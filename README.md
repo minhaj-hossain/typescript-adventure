@@ -1,8 +1,14 @@
 # 🔮 TypeScript Adventure: Type-Weaving Quest
 
-Welcome, apprentice! **TypeScript Adventure** is a highly polished, interactive gamified learning platform designed to teach developers the art of safe type-weaving—scaling from absolute entry-level concepts to professional-grade enterprise type declarations.
+[![React v18](https://img.shields.io/badge/React-18.x-61dafb?logo=react&logoColor=black&style=flat-square)](#)
+[![Vite](https://img.shields.io/badge/Vite-Ready-646cff?logo=vite&style=flat-square)](#)
+[![TypeScript v5.x](https://img.shields.io/badge/TypeScript-5.x-3178c6?logo=typescript&logoColor=white&style=flat-square)](#)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38bdf8?logo=tailwind-css&logoColor=white&style=flat-square)](#)
+[![Firebase Support](https://img.shields.io/badge/Firebase-Firestore%20%26%20Auth-ffca28?logo=firebase&logoColor=black&style=flat-square)](#)
 
-Designed under a premium, dark-mode cosmic aesthetic, this application bypasses dry textbook learning by placing you directly into the shoes of an apprentice wizard under the guidance of **Alaric, the Senior Weaver**. Your mission is to fix broken configurations, prevent type corruptions, and formulate airtight compiler rules inside a real-time, in-browser Monaco Editor backed by live compiler diagnostics.
+Welcome, apprentice! **TypeScript Adventure** is a highly polished, gamified interactive learning platform designed to teach developers the art of safe type-weaving—scaling from absolute entry-level concepts to professional-grade, enterprise-ready type declarations.
+
+Designed with a premium, dark-mode cosmic aesthetic, this application bypasses dry textbook learning by placing you directly into the shoes of an apprentice wizard under the guidance of **Alaric, the Senior Weaver**. Your mission is to fix broken configurations, prevent type corruptions, and formulate airtight compiler rules inside a real-time, in-browser Monaco Editor backed by live compiler diagnostics.
 
 ---
 
@@ -60,21 +66,56 @@ The platform features 6 progressive stages mapped dynamically inside an interact
 
 ---
 
+## 🏗️ Technical Architecture & Modern Stack
+
+The application is structured around a highly responsive, single-page application framework with full type safety:
+
+- **Frontend Core**: **React 18** paired with **TypeScript 5.x** and **Vite** for blazing fast, hot-reload development and optimized chunk builds.
+- **Styling & Theme**: Modern **Tailwind CSS** layout primitives utilizing customized high-contrast slate colors, neon border highlights, and elegant font sizes.
+- **Animations**: **motion/react** (Framer Motion) powering smooth page fades, interactive accordion reveals, level unlocking effects, and badge popups.
+- **Code Editor**: A customized instance of **Monaco Editor** with preloaded files, fully customized dark color palettes, strict compiler feedback, and custom formatting.
+- **Persistence & Syncing**: Fully integrated with **Firebase Firestore** and **Firebase Authentication** for immediate, reliable cloud synchronization of progress, levels, titles, and XP.
+
+---
+
+## 🛡️ High-Integrity Engineering Systems
+
+In addition to core modules, the application has been engineered to withstand runtime issues, navigation anomalies, and SEO constraints:
+
+### 1. ⚡ The Leyline Barrier (ErrorBoundary)
+A global React `ErrorBoundary` wraps the component tree. If an unexpected runtime anomaly escapes, instead of a blank white screen, the app activates the Leyline Barrier:
+* **Pre-emptive Isolation**: Captures the stack trace of the component fracture and displays it in a clean, scrollable dark box.
+* **Safe State Recovery**: Provides three immediate actions—**Reload Spell** (immediate refresh), **Return to Realm** (re-routes to home and resets active level states safely), and **Reset Progress** (wipes corrupted state cache and rebuilds from scratch).
+* **Guaranteed Resilience**: Fully styled with custom CSS to keep the layout immersive.
+
+### 2. 🌌 The 404 Void Continuum (NotFound Route)
+When navigation variables do not align with any valid active screens (e.g., direct route fractures or invalid state restoration):
+* Renders a highly detailed 404 Void Continuum viewport.
+* Features an animated spin compass indicator representing a wandering compass.
+* Incorporates direct, high-contrast actions to warp back to safety (**Warp to Sanctum** or **Open Wisdom Grimoire**).
+
+### 3. 🗺️ Dynamic Cosmic Metadata
+The application manages dynamic metadata dynamically during tab changes:
+* **Contextual Document Titles**: Updates your browser tab title in real-time depending on whether you are editing in the **Sandbox Forge**, studying in the **Grimoire Scroll Library**, or embarking on **Spellcraft Quests**.
+* **Adaptive Search Meta**: Modifies `meta[name="description"]` dynamically to maximize organic crawlability and professional representation.
+
+---
+
 ## 🔮 Core Features
 
-* **Real-time Monaco Compiler Engine**: Write real TypeScript code inside a fully configured VS-Code-like browser editor. The compiler automatically analyzes your code on the fly, showing real squiggly underlines when rules are violated.
+* **Real-time Monaco Compiler Engine**: Write real TypeScript code inside a fully configured browser editor. The compiler automatically analyzes your code on the fly, showing real squiggly underlines when rules are violated.
 * **Cleansed Compiler Diagnostics**: Dynamic error boxes parse and render raw TypeScript compiler messages into clean, beginner-friendly explanations.
 * **Interactive Timeline Path**: Progress is tracked sequentially. Completing levels unlocks higher stages and awards you XP!
-* **Sorcerer Profile Dropdown**: Monitor your progress bar and track your earned badges elegantly inside a consolidated navbar pill.
-* **Soul Sanctum Cloud Syncing**: Securely save your progress, XP, and completed levels to the cloud via Firebase Firestore and Google Auth.
-* **Built-in Cheat Sheet Library**: Explore an interactive, code-complete reference book indexing essential syntax, code examples, and best practices.
+* **Sorcerer Profile Dropdown**: Monitor your progress bar and track your earned badges elegantly inside a consolidated, ultra-compact navbar pill.
+* **Soul Sanctum Cloud Syncing**: Securely save your progress, XP, and completed levels to the cloud via Firestore.
+* **Built-in Cheat Sheet Library**: Explore an interactive, code-complete reference book indexing essential syntax, code examples, and buggy vs safe alchemical comparisons.
 * **Interactive Code Sandbox**: A dedicated playground tab to write, format, copy, and execute experimental code in a simulated environment.
 
 ---
 
 ## 🚀 How to Get the Most Out of the Game
 
-1. **Read the Narratives (Stories)**:
+1. **Read the Narratives**:
    Every level begins with a real-world scenario from Senior Weaver Alaric. Understanding the *context* teaches you *why* a particular TypeScript construct is necessary, not just *how* to write it.
 2. **Utilize Live Compiler Feedback**:
    Before jumping straight to solutions, hover over red-underlined errors in the code editor or inspect the **Compiler Diagnostics** console to build muscle memory for debugging errors.
