@@ -929,7 +929,7 @@ export default function QuestMode({
 
   return (
     <div
-      className="flex-1 bg-background text-on-background flex flex-col min-h-[calc(100vh-130px)] md:min-h-[calc(100vh-84px)] overflow-x-hidden font-sans select-none"
+      className="flex-1 bg-background text-on-background flex flex-col min-h-[calc(100vh-130px)] md:min-h-[calc(100vh-84px)] overflow-x-hidden font-sans"
       id="quest-mode-root"
     >
       {/* 1. TIMELINE / LANDING VIEW */}
@@ -1012,30 +1012,18 @@ export default function QuestMode({
             </button>
 
             {/* Modal Header */}
-            <div className="px-8 pt-8 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 flex items-center justify-center bg-primary/10 rounded-lg text-primary shrink-0">
-                  <span
-                    className="material-icons-out"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
-                  >
-                    menu_book
-                  </span>
-                </div>
-                <h1 className="font-sans text-xl md:text-2xl font-extrabold text-on-surface line-clamp-1">
-                  {selectedLevel.title}
-                </h1>
-              </div>
-
-              {/* Advanced Mode Toggle proxy for interactive wizard level */}
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary-container/20 border border-secondary-container/40 rounded-full shrink-0">
-                <span className="material-icons-out text-[18px] text-secondary">
-                  code
-                </span>
-                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-secondary">
-                  Wizard Mode (On)
+            <div className="px-8 pt-8 flex items-center gap-4">
+              <div className="w-10 h-10 flex items-center justify-center bg-primary/10 rounded-lg text-primary shrink-0">
+                <span
+                  className="material-icons-out"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                >
+                  menu_book
                 </span>
               </div>
+              <h1 className="font-sans text-xl md:text-2xl font-extrabold text-on-surface line-clamp-1">
+                {selectedLevel.title}
+              </h1>
             </div>
 
             {/* Modal Content Scrollable Area */}

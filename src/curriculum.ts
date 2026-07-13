@@ -348,15 +348,15 @@ export const LEVELS: Level[] = [
     difficulty: "easy",
     xpAwarded: 100,
     story: {
-      title: "Morgan Needs an Attendee Roster",
+      title: "Apurba Needs an Attendee Roster",
       narrative:
-        "Morgan, the Product Manager, wants a simple attendee roster feature by Friday: a list of attendee names for check-in. A teammate's earlier attempt let a stray number sneak into the array, and check-in crashed at the venue. Morgan doesn't want a repeat. Minhaj asks you to type the roster array so it can only ever hold strings, and to write a helper that safely adds a new name to it without breaking that guarantee. Get this typed correctly and the roster feature ships clean; get it wrong and check-in breaks again at the next event.",
+        "Apurba, the Product Manager, wants a simple attendee roster feature by Friday: a list of attendee names for check-in. A teammate's earlier attempt let a stray number sneak into the array, and check-in crashed at the venue. Apurba doesn't want a repeat. Minhaj asks you to type the roster array so it can only ever hold strings, and to write a helper that safely adds a new name to it without breaking that guarantee. Get this typed correctly and the roster feature ships clean; get it wrong and check-in breaks again at the next event.",
       realWorldContext:
         "Typed arrays prevent an accidental wrong-shaped value from ever entering a collection that every downstream feature assumes is uniform.",
       taskDescription:
         "Type attendeeRoster as an array of strings and fix the function that adds a new attendee.",
       previousOutcome:
-        "The ledger file is clean and merged. Now Morgan needs a working attendee roster before Friday's event.",
+        "The ledger file is clean and merged. Now Apurba needs a working attendee roster before Friday's event.",
     },
     playground: {
       starterCode:
@@ -569,15 +569,15 @@ export const LEVELS: Level[] = [
     difficulty: "medium",
     xpAwarded: 125,
     story: {
-      title: "Morgan's New Filter Feature",
+      title: "Apurba's New Filter Feature",
       narrative:
-        "Morgan wants a status filter dropdown on the events dashboard, but the underlying status value doesn't have a clean shape to reference anywhere yet. Tasnim suggests a type alias instead of an interface here, since a status is really a value, not an object with fields. This is your first time reaching for type instead of interface, and Tasnim wants you to understand why: an alias can name any type, not just an object shape. It's a small distinction today, but Tasnim wants you comfortable with it before Stage 3 introduces unions that only type aliases can express.",
+        "Apurba wants a status filter dropdown on the events dashboard, but the underlying status value doesn't have a clean shape to reference anywhere yet. Tasnim suggests a type alias instead of an interface here, since a status is really a value, not an object with fields. This is your first time reaching for type instead of interface, and Tasnim wants you to understand why: an alias can name any type, not just an object shape. It's a small distinction today, but Tasnim wants you comfortable with it before Stage 3 introduces unions that only type aliases can express.",
       realWorldContext:
         "Type aliases can name a value's shape, not just object shapes, making them the right tool once you need to describe a union later.",
       taskDescription:
         "Create a type alias EventStatus for a string, and use it to type the status field.",
       previousOutcome:
-        "The Event interface replaced every duplicated inline shape. Now Morgan's filter feature needs a named status type to build against.",
+        "The Event interface replaced every duplicated inline shape. Now Apurba's filter feature needs a named status type to build against.",
     },
     playground: {
       starterCode: 'let status: string = "draft";',
@@ -637,15 +637,15 @@ export const LEVELS: Level[] = [
     difficulty: "medium",
     xpAwarded: 150,
     story: {
-      title: "Morgan Adds a New Event Category",
+      title: "Apurba Adds a New Event Category",
       narrative:
-        "Morgan wants to launch Workshop events: everything a regular Event has, plus an instructor name and a max seat count. Your first instinct is to copy the whole Event interface into a new one, but Tasnim stops you. That's exactly the duplication problem we fixed two levels ago, she says. She wants WorkshopEvent to extend Event, so it automatically gets every base field for free, plus the two new ones. Get the inheritance right here, and every future specialized Event category gets the same free reuse of the base shape.",
+        "Apurba wants to launch Workshop events: everything a regular Event has, plus an instructor name and a max seat count. Your first instinct is to copy the whole Event interface into a new one, but Tasnim stops you. That's exactly the duplication problem we fixed two levels ago, she says. She wants WorkshopEvent to extend Event, so it automatically gets every base field for free, plus the two new ones. Get the inheritance right here, and every future specialized Event category gets the same free reuse of the base shape.",
       realWorldContext:
         "Interface extension lets a specialized entity reuse a base shape's fields instead of duplicating them, avoiding drift when the base shape changes.",
       taskDescription:
         "Declare WorkshopEvent extending Event with instructor and maxSeats fields.",
       previousOutcome:
-        "The optional and readonly fields fixed both bugs. Now Morgan needs a specialized Workshop variant of the Event interface.",
+        "The optional and readonly fields fixed both bugs. Now Apurba needs a specialized Workshop variant of the Event interface.",
     },
     playground: {
       starterCode:
@@ -711,15 +711,15 @@ export const LEVELS: Level[] = [
     difficulty: "medium",
     xpAwarded: 150,
     story: {
-      title: "Morgan's Dashboard Breaks the Moment a Third Event Launches",
+      title: "Apurba's Dashboard Breaks the Moment a Third Event Launches",
       narrative:
-        "Morgan wants a live status dashboard showing state for every currently active event, but your first pass hardcodes two literal event ids as placeholder keys, since those were the only two events that existed when you wrote it. The moment a third event launches the same day, the dashboard doesn't even know the key exists and quietly shows nothing for it. Tasnim explains the real problem: event ids are created dynamically all day long, so the type needs to accept any string key up front, not a fixed guessed-at list decided when the file was written.",
+        "Apurba wants a live status dashboard showing state for every currently active event, but your first pass hardcodes two literal event ids as placeholder keys, since those were the only two events that existed when you wrote it. The moment a third event launches the same day, the dashboard doesn't even know the key exists and quietly shows nothing for it. Tasnim explains the real problem: event ids are created dynamically all day long, so the type needs to accept any string key up front, not a fixed guessed-at list decided when the file was written.",
       realWorldContext:
         "An index signature models an open-ended dictionary whose exact keys aren't known in advance, which is exactly the shape a live, ever-growing dashboard needs.",
       taskDescription:
         "Replace the hardcoded literal keys in EventStateMap with a dynamic index signature.",
       previousOutcome:
-        "The Ticket model passed Tasnim's review. Now Morgan's live dashboard needs to handle however many events happen to be active at once.",
+        "The Ticket model passed Tasnim's review. Now Apurba's live dashboard needs to handle however many events happen to be active at once.",
     },
     playground: {
       starterCode:
@@ -1066,15 +1066,15 @@ export const LEVELS: Level[] = [
     difficulty: "hard",
     xpAwarded: 200,
     story: {
-      title: "Morgan's Launch-Day Checklist",
+      title: "Apurba's Launch-Day Checklist",
       narrative:
-        "Morgan is nervous about launch day: the event creation form currently lets someone submit with fields still missing, since the in-progress editing state is naturally Partial. Tasnim wants a hard gate right before saving: the submit handler should only accept a fully Required version of the form input, so an incomplete Event can never reach the database, no matter what the UI allows mid-edit. Get this gate right, Tasnim says, and an incomplete Event simply cannot reach the database no matter what happens in the UI.",
+        "Apurba is nervous about launch day: the event creation form currently lets someone submit with fields still missing, since the in-progress editing state is naturally Partial. Tasnim wants a hard gate right before saving: the submit handler should only accept a fully Required version of the form input, so an incomplete Event can never reach the database, no matter what the UI allows mid-edit. Get this gate right, Tasnim says, and an incomplete Event simply cannot reach the database no matter what happens in the UI.",
       realWorldContext:
         "Required<T> turns an in-progress, partially-filled editing state into a hard, compiler-enforced gate at the exact moment of submission.",
       taskDescription:
         "Type the submitEvent function's parameter as Required<EventFormInput>.",
       previousOutcome:
-        "EventSummary now derives cleanly from Event. With launch day approaching, Morgan needs the final submission gate made airtight.",
+        "EventSummary now derives cleanly from Event. With launch day approaching, Apurba needs the final submission gate made airtight.",
     },
     playground: {
       starterCode:
@@ -1324,7 +1324,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "The Whole Team Watches the Deploy",
       narrative:
-        "Minhaj, Tasnim, Jordan, Morgan, Salman, and Evans are all watching the same terminal. Every piece is in place: the domain model, the generic DataCard, the typed API response, the gated booking form. Tasnim has one last request before you ship: wire the EventList page to fetch through ApiResponse<Event[]>, narrow the result, and render successful data through DataCard, with zero any anywhere in the final file. This is the whole course, together, one last time. Every teammate who taught you something along the way is represented somewhere in this final file, Tasnim says, watching the build finish.",
+        "Minhaj, Tasnim, Jordan, Apurba, Salman, and Evans are all watching the same terminal. Every piece is in place: the domain model, the generic DataCard, the typed API response, the gated booking form. Tasnim has one last request before you ship: wire the EventList page to fetch through ApiResponse<Event[]>, narrow the result, and render successful data through DataCard, with zero any anywhere in the final file. This is the whole course, together, one last time. Every teammate who taught you something along the way is represented somewhere in this final file, Tasnim says, watching the build finish.",
       realWorldContext:
         "This final integration proves that a domain model, a generic component, and a typed API response can compose into one real, production-style feature.",
       taskDescription:
@@ -1510,15 +1510,15 @@ export const LEVELS: Level[] = [
     difficulty: "hard",
     xpAwarded: 225,
     story: {
-      title: "Morgan's Nested Database Unpacking",
+      title: "Apurba's Nested Database Unpacking",
       narrative:
-        "Morgan wants to fetch database rows wrapped inside a generic DbResponse envelope. Right now, our database helpers have to manually declare what the nested data type looks like. Minhaj suggests using the infer keyword inside a conditional type to automatically extract the inner type. Additionally, Tasnim asks for a mapped type that guarantees every field on the returned response is strictly readonly.",
+        "Apurba wants to fetch database rows wrapped inside a generic DbResponse envelope. Right now, our database helpers have to manually declare what the nested data type looks like. Minhaj suggests using the infer keyword inside a conditional type to automatically extract the inner type. Additionally, Tasnim asks for a mapped type that guarantees every field on the returned response is strictly readonly.",
       realWorldContext:
         "Mapped types iterate over keys of an existing type to construct a modified type, and infer allows unpacking generic parameters inside conditionals.",
       taskDescription:
         "Declare UnpackResponse using infer, and design a custom Mapped Type to make properties readonly.",
       previousOutcome:
-        "Custom event prefixes are safely restricted. Now Morgan is ready to unlock advanced database transformers.",
+        "Custom event prefixes are safely restricted. Now Apurba is ready to unlock advanced database transformers.",
     },
     playground: {
       starterCode:
@@ -1628,9 +1628,9 @@ export const LEVELS: Level[] = [
     difficulty: "hard",
     xpAwarded: 225,
     story: {
-      title: "Morgan's Performance Audits",
+      title: "Apurba's Performance Audits",
       narrative:
-        "Morgan wants to trace and audit performance across the ticket reservation classes. Rather than adding logging lines to dozens of class methods, Evans suggests writing a reusable Method Decorator named logMethod. Decorators let us intercept method invocations, execute telemetry, and print status cleanly before calling the original method.",
+        "Apurba wants to trace and audit performance across the ticket reservation classes. Rather than adding logging lines to dozens of class methods, Evans suggests writing a reusable Method Decorator named logMethod. Decorators let us intercept method invocations, execute telemetry, and print status cleanly before calling the original method.",
       realWorldContext:
         "Decorators are functions that can annotate and modify classes, methods, accessor properties, or parameters at runtime.",
       taskDescription:

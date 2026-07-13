@@ -61,6 +61,10 @@
     color: #e3e0f7;
     font-family: var(--font-sans);
   }
+  ::selection {
+    background-color: rgba(164, 201, 255, 0.3);
+    color: #ffffff;
+  }
 }
 
 .vibrant-gradient {
