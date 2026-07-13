@@ -106,6 +106,297 @@ const formatSegmentText = (text: string): React.ReactNode[] => {
   });
 };
 
+interface Mentor {
+  name: string;
+  role: string;
+  initial: string;
+  color: string;
+  icon: string;
+  greeting: string;
+  avatarUrl?: string;
+}
+
+const getLevelMentor = (level: Level): Mentor => {
+  const narrative = level.story.narrative || "";
+  const id = level.id || "";
+
+  if (
+    narrative.includes("Tasnim") ||
+    id.includes("tsconfig") ||
+    id.includes("inference")
+  ) {
+    return {
+      name: "Tasnim",
+      role: "Tech Lead",
+      initial: "T",
+      color: "from-pink-500 to-rose-500",
+      icon: "star",
+      greeting:
+        "Greetings, apprentice! I'm Tasnim, the Tech Lead. Let's make sure our type standards are solid.",
+    };
+  }
+
+  if (narrative.includes("Jordan") || id.includes("reading-errors")) {
+    return {
+      name: "Jordan",
+      role: "QA Lead",
+      initial: "J",
+      color: "from-emerald-500 to-teal-500",
+      icon: "bug_report",
+      greeting:
+        "Hey there! I'm Jordan, the QA Lead. Let's inspect this compiler failure before it reaches customers.",
+    };
+  }
+
+  if (narrative.includes("Apurba") || id.includes("arrays")) {
+    return {
+      name: "Apurba",
+      role: "Product Manager",
+      initial: "A",
+      color: "from-amber-500 to-orange-500",
+      icon: "assignment",
+      greeting:
+        "Hello, builder! I'm Apurba, the Product Manager. I've compiled some core business requirements for you.",
+    };
+  }
+
+  if (narrative.includes("Salman") || id.includes("objects")) {
+    return {
+      name: "Salman",
+      role: "UI/UX Designer",
+      initial: "S",
+      color: "from-cyan-500 to-blue-500",
+      icon: "palette",
+      greeting:
+        "Hi! I'm Salman, the Designer. Let's shape these interfaces to match our vector layout spec.",
+    };
+  }
+
+  if (
+    narrative.includes("Evans") ||
+    id.includes("devops") ||
+    id.includes("monorepos")
+  ) {
+    return {
+      name: "Evans",
+      role: "DevOps Engineer",
+      initial: "E",
+      color: "from-violet-500 to-fuchsia-500",
+      icon: "cloud",
+      greeting:
+        "Salutations! I'm Evans, the DevOps Engineer. We need to fortify our deployment pipeline configs.",
+    };
+  }
+
+  if (
+    narrative.includes("Minhaj") ||
+    id.includes("bootstrap") ||
+    id.includes("primitives") ||
+    id.includes("watch-mode")
+  ) {
+    return {
+      name: "Minhaj",
+      role: "Senior Engineer",
+      initial: "M",
+      color: "from-indigo-500 to-purple-500",
+      icon: "terminal",
+      greeting:
+        "Greetings, apprentice! I'm Minhaj, the Senior Engineer. Let's examine our system code layer.",
+    };
+  }
+
+  // Fallback to Imran
+  return {
+    name: "Imran",
+    role: "Senior Weaver",
+    initial: "I",
+    color: "from-blue-600 to-indigo-600",
+    icon: "auto_awesome",
+    greeting:
+      "Greetings, apprentice! I'm Imran, the Senior Weaver. Welcome to the code crafting sanctum.",
+    avatarUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAsDFWtPqrXIuK0FmATpEgGeMD-XyAY9pL1_O_EGDGHkzBynJC64zYm2W8pSVbw3ZB6BugbwibaEyuwT74aXHVCD5H20soEqe3pINUf98UuoED_pYWb2n9hmjtmlUah3nmHZCxbU3Ui1B69tU9EuehHnKSbtS_lZpb2-5MphoMFm3FizJ--8w6PdnKfgvsutKoBOMYqmnRcmcWQz6trQ3JeRWIARBlzHH1vTeoDgzhGiH8t2GeHQIpZWg",
+  };
+};
+
+const detectSpeaker = (text: string) => {
+  const speakers = [
+    {
+      name: "Minhaj",
+      role: "Senior Engineer",
+      initial: "M",
+      color: "border-indigo-500/40",
+      icon: "terminal",
+    },
+    {
+      name: "Tasnim",
+      role: "Tech Lead",
+      initial: "T",
+      color: "border-pink-500/40",
+      icon: "star",
+    },
+    {
+      name: "Jordan",
+      role: "QA Lead",
+      initial: "J",
+      color: "border-emerald-500/40",
+      icon: "bug_report",
+    },
+    {
+      name: "Apurba",
+      role: "Product Manager",
+      initial: "A",
+      color: "border-amber-500/40",
+      icon: "assignment",
+    },
+    {
+      name: "Salman",
+      role: "UI/UX Designer",
+      initial: "S",
+      color: "border-cyan-500/40",
+      icon: "palette",
+    },
+    {
+      name: "Evans",
+      role: "DevOps Engineer",
+      initial: "E",
+      color: "border-violet-500/40",
+      icon: "cloud",
+    },
+    {
+      name: "Imran",
+      role: "Senior Weaver",
+      initial: "I",
+      color: "border-blue-600/40",
+      icon: "auto_awesome",
+    },
+  ];
+
+  for (const s of speakers) {
+    if (text.includes(s.name)) {
+      return s;
+    }
+  }
+  return null;
+};
+
+// Helper to render narrative strings beautifully by dynamically dividing them into paragraphs if they lack explicit formatting
+const renderNarrative = (narrative: string): React.ReactNode => {
+  const cleanNarrative = narrative.replace(/[“”]/g, '"');
+  const paragraphs = cleanNarrative
+    .split(/\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  const totalParagraphs = paragraphs.length;
+
+  return (
+    <div className="space-y-4">
+      {paragraphs.map((paragraph, index) => {
+        const isLast = index === totalParagraphs - 1;
+        const speaker = detectSpeaker(paragraph);
+        const hasQuote = paragraph.includes('"');
+        const subParts = paragraph
+          .split(/("[^"]*")/g)
+          .map((p) => p.trim())
+          .filter(Boolean);
+
+        if (speaker && hasQuote) {
+          return (
+            <div
+              key={index}
+              className={`pl-4 border-l-4 ${speaker.color} my-3 py-1.5 bg-surface-container-low/40 rounded-r-lg shadow-sm animate-slide-down space-y-1.5`}
+            >
+              <div className="flex items-center gap-1.5 font-mono text-[9px] font-black uppercase tracking-wider text-secondary">
+                <span
+                  className="material-icons-out text-[11px]"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                >
+                  {speaker.icon}
+                </span>
+                <span>
+                  {speaker.name} • {speaker.role}
+                </span>
+              </div>
+              <p className="font-sans text-xs md:text-sm text-on-surface-variant/90 leading-relaxed font-normal">
+                {subParts.map((part, pIdx) => {
+                  if (part.startsWith('"') && part.endsWith('"')) {
+                    return (
+                      <span
+                        key={pIdx}
+                        className="text-on-surface font-semibold italic bg-secondary/5 px-1 py-0.5 rounded border border-secondary/10 mx-0.5 select-all"
+                      >
+                        {part}
+                      </span>
+                    );
+                  }
+                  return <span key={pIdx}>{formatSegmentText(part)}</span>;
+                })}
+              </p>
+            </div>
+          );
+        }
+
+        if (isLast) {
+          return (
+            <div
+              key={index}
+              className="mt-4 p-4 rounded-xl bg-secondary-container/10 border-l-4 border-secondary text-on-surface font-sans text-xs md:text-sm leading-relaxed shadow-sm animate-scale-up space-y-2"
+            >
+              <div className="flex items-center gap-2">
+                <span
+                  className="material-icons-out text-secondary text-sm animate-pulse"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                >
+                  auto_awesome
+                </span>
+                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-secondary">
+                  Quest Directive
+                </span>
+              </div>
+              <p className="font-sans text-xs md:text-sm leading-relaxed text-on-surface/90">
+                {subParts.map((part, pIdx) => {
+                  if (part.startsWith('"') && part.endsWith('"')) {
+                    return (
+                      <span
+                        key={pIdx}
+                        className="text-on-surface font-semibold italic bg-secondary/10 px-1 py-0.5 rounded border border-secondary/20 mx-0.5 select-all"
+                      >
+                        {part}
+                      </span>
+                    );
+                  }
+                  return <span key={pIdx}>{formatSegmentText(part)}</span>;
+                })}
+              </p>
+            </div>
+          );
+        }
+
+        return (
+          <p
+            key={index}
+            className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed font-normal"
+          >
+            {subParts.map((part, pIdx) => {
+              if (part.startsWith('"') && part.endsWith('"')) {
+                return (
+                  <span
+                    key={pIdx}
+                    className="text-on-surface font-semibold italic bg-secondary/5 px-1 py-0.5 rounded border border-secondary/10 mx-0.5 select-all"
+                  >
+                    {part}
+                  </span>
+                );
+              }
+              return <span key={pIdx}>{formatSegmentText(part)}</span>;
+            })}
+          </p>
+        );
+      })}
+    </div>
+  );
+};
+
 export default function QuestMode({
   onXpAwarded,
   onBadgeUnlocked,
@@ -1037,84 +1328,86 @@ export default function QuestMode({
                   menu_book
                 </span>
               </div>
-              <h1 className="font-sans text-xl md:text-2xl font-extrabold text-on-surface line-clamp-1">
-                {selectedLevel.title}
-              </h1>
+              <div className="flex flex-col">
+                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-primary leading-none mb-1 block">
+                  {selectedLevel.moduleName || "TypeScript Academy"}
+                </span>
+                <h1 className="font-sans text-xl md:text-2xl font-extrabold text-on-surface line-clamp-1">
+                  {selectedLevel.title}
+                </h1>
+              </div>
             </div>
 
             {/* Modal Content Scrollable Area */}
             <div className="p-8 space-y-6 overflow-y-auto flex-1 scrollbar-thin">
-              {/* Narrative Scribe block with Minhaj/Imran avatar */}
-              <div className="flex gap-6 items-start">
-                <div className="flex-shrink-0">
-                  <div className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-secondary p-0.5">
-                    <img
-                      className="w-full h-full object-cover rounded-md"
-                      referrerPolicy="no-referrer"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsDFWtPqrXIuK0FmATpEgGeMD-XyAY9pL1_O_EGDGHkzBynJC64zYm2W8pSVbw3ZB6BugbwibaEyuwT74aXHVCD5H20soEqe3pINUf98UuoED_pYWb2n9hmjtmlUah3nmHZCxbU3Ui1B69tU9EuehHnKSbtS_lZpb2-5MphoMFm3FizJ--8w6PdnKfgvsutKoBOMYqmnRcmcWQz6trQ3JeRWIARBlzHH1vTeoDgzhGiH8t2GeHQIpZWg"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-surface-container/60 to-transparent"></div>
-                  </div>
-                </div>
-
-                <div className="space-y-4 flex-1">
-                  <p className="font-sans text-sm md:text-base text-on-surface">
-                    Greetings, apprentice! I'm{" "}
-                    <span className="font-bold text-secondary">Imran</span>, the
-                    Senior Weaver.
-                  </p>
-                  <div className="space-y-4 bg-surface-container-low/60 border-l-2 border-primary/40 pl-4 py-3 pr-3 rounded-r-lg shadow-sm">
-                    {selectedLevel.story.narrative
-                      .split("\n\n")
-                      .map((chunk) => chunk.trim())
-                      .filter((chunk) => chunk.length > 0)
-                      .map((chunk, chunkIdx) => {
-                        // Split the chunk into dialogue quote segments and non-dialogue narration segments
-                        const segments = chunk
-                          .split(/([“"”].*?[“"”])/g)
-                          .map((s) => s.trim())
-                          .filter((s) => s.length > 0);
-                        return (
-                          <div
-                            key={chunkIdx}
-                            className="mb-4 last:mb-0 space-y-2"
-                          >
-                            {segments.map((segment, segIdx) => {
-                              const isDialogue = /^[“"”].*[“"”]$/.test(segment);
-                              if (isDialogue) {
-                                return (
-                                  <p
-                                    key={segIdx}
-                                    className="font-sans text-xs md:text-sm text-on-surface-variant/95 leading-relaxed font-normal italic pl-4 border-l border-primary/20"
-                                  >
-                                    {formatSegmentText(segment)}
-                                  </p>
-                                );
-                              } else {
-                                return (
-                                  <p
-                                    key={segIdx}
-                                    className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed font-normal"
-                                  >
-                                    {formatSegmentText(segment)}
-                                  </p>
-                                );
-                              }
-                            })}
-                          </div>
-                        );
-                      })}
-                  </div>
-                  <div className="flex items-center gap-2.5 font-sans text-xs md:text-sm text-on-surface flex-wrap">
-                    <span>
-                      The first thing you need to formulate is safe rules in
-                    </span>
-                    <code className="px-2 py-0.5 bg-surface-container-highest text-secondary font-mono text-xs rounded border border-outline-variant/50">
-                      {selectedLevel.playground.filesToEdit[0]}
-                    </code>
-                  </div>
-                </div>
+              {/* Story Title Header */}
+              <div className="border-b border-outline-variant/20 pb-4 mb-2">
+                <span className="font-mono text-[9px] font-black uppercase tracking-widest text-secondary block mb-1">
+                  Chapter Scenario Trial
+                </span>
+                <h2 className="font-sans text-lg md:text-xl font-extrabold text-on-surface">
+                  {selectedLevel.story.title}
+                </h2>
               </div>
+
+              {/* Narrative Scribe block with Dynamic Mentor avatar */}
+              {(() => {
+                const mentor = getLevelMentor(selectedLevel);
+                return (
+                  <div className="flex gap-6 items-start">
+                    <div className="flex-shrink-0">
+                      <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-outline-variant/30 shadow-lg p-0.5">
+                        {mentor.avatarUrl ? (
+                          <img
+                            className="w-full h-full object-cover rounded-lg"
+                            referrerPolicy="no-referrer"
+                            src={mentor.avatarUrl}
+                          />
+                        ) : (
+                          <div
+                            className={`w-full h-full rounded-lg bg-gradient-to-tr ${mentor.color} flex items-center justify-center text-white font-sans text-xl font-black shadow-inner relative`}
+                          >
+                            {mentor.initial}
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-surface-container border border-outline-variant flex items-center justify-center text-[10px] shadow-md">
+                              <span
+                                className="material-icons-out text-[11px]"
+                                style={{ fontVariationSettings: "'FILL' 1" }}
+                              >
+                                {mentor.icon}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 flex-1">
+                      <div className="space-y-1">
+                        <span className="font-mono text-[9px] font-bold text-secondary uppercase tracking-widest block leading-none">
+                          Your Active Mentor
+                        </span>
+                        <p className="font-sans text-sm md:text-base font-bold text-on-surface">
+                          {mentor.name}{" "}
+                          <span className="font-medium text-xs text-on-surface-variant font-mono">
+                            ({mentor.role})
+                          </span>
+                        </p>
+                      </div>
+                      <div className="space-y-4 bg-surface-container-low/60 border-l-2 border-primary/40 pl-4 py-3 pr-3 rounded-r-lg shadow-sm">
+                        {renderNarrative(selectedLevel.story.narrative)}
+                      </div>
+                      <div className="flex items-center gap-2.5 font-sans text-xs md:text-sm text-on-surface flex-wrap">
+                        <span>
+                          The first thing you need to formulate is safe rules in
+                        </span>
+                        <code className="px-2 py-0.5 bg-surface-container-highest text-secondary font-mono text-xs rounded border border-outline-variant/50">
+                          {selectedLevel.playground.filesToEdit[0]}
+                        </code>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Info Boxes Layout */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1660,9 +1953,9 @@ export default function QuestMode({
                 Level Mastery Secured!
               </h3>
               <p className="text-xs text-slate-400 mt-2.5 leading-relaxed font-serif italic">
-                "Excellent work! Tasnim nods in silent approval. The code is
-                structured, compile constraints pass, and the Event System holds
-                sturdy."
+                "Excellent work! {getLevelMentor(selectedLevel).name} nods in
+                silent approval. The code is structured, compile constraints
+                pass, and the Event System holds sturdy."
               </p>
             </div>
 
