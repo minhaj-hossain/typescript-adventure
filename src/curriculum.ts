@@ -156,7 +156,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Your First Day on the Team",
       narrative:
-        "Minhaj, the Senior Engineer, waves you over to a bare terminal. Welcome aboard. We're rebuilding the Event Management System in TypeScript, and every new hire starts the same way: get Node installed, initialize the project, and add TypeScript as a dev dependency. Nothing fancy yet, just a clean package.json we can build on. Minhaj taps the screen. Half our onboarding tickets are people stuck right here, so let's get this right the first time. It's a small step, Minhaj admits, but every future lesson in this course builds directly on top of this one file.",
+        'Minhaj, the Senior Engineer, waves you over to a bare terminal.\n\n"Welcome aboard," he says. "We\'re rebuilding the Event Management System in TypeScript. Every new hire starts the same way."\n\nHe counts on his fingers. "Install Node. Initialize the project. Add TypeScript as a dev dependency."\n\nNothing fancy yet. Just a clean package.json you can build on.\n\nMinhaj taps the screen. "Half our onboarding tickets are people stuck right here. Let\'s get this right the first time."\n\n"It\'s a small step," he admits. "But every future lesson in this course builds on top of this one file."',
       realWorldContext:
         "Every real TypeScript project starts with a working Node/npm toolchain and a package.json declaring TypeScript as a dependency.",
       taskDescription:
@@ -191,7 +191,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "The Rulebook Every Spell Must Obey",
       narrative:
-        "With TypeScript installed, Tasnim the Tech Lead drops a bare tsconfig.json on your desk. This is the file that decides how strict we are, she says. Last quarter a teammate's editor caught bugs mine didn't, all because our configs disagreed. Tasnim wants strict mode on from day one so the whole team catches the same class of bugs, instead of everyone discovering them separately in production. She points at the empty file: get strict mode enabled before you touch a single line of Event code.",
+        'With TypeScript installed, Tasnim the Tech Lead drops a bare tsconfig.json on your desk.\n\n"This is the file that decides how strict we are," she says.\n\n"Last quarter, a teammate\'s editor caught bugs that mine didn\'t. Our configs disagreed."\n\nTasnim wants strict mode on from day one. That way, the whole team catches the same bugs — instead of everyone finding them separately, later, in production.\n\nShe points at the empty file. "Enable strict mode. Do it before you touch a single line of Event code."',
       realWorldContext:
         "A shared, strict tsconfig.json ensures every teammate's compiler catches the same bugs, instead of relying on individual discipline.",
       taskDescription: "Enable strict mode in tsconfig.json.",
@@ -220,7 +220,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Stop Re-Running the Compiler by Hand",
       narrative:
-        "Minhaj notices you re-running npx tsc after every single edit. You're going to wear out that Enter key, they laugh. There's a watch flag that recompiles automatically the moment you save. Every engineer on this team runs it in a side terminal all day. Minhaj wants you to add a package.json script called dev that runs tsc in watch mode, so the whole team can just type npm run dev instead of memorizing compiler flags. Small habit, huge time savings once you're touching real Event code.",
+        'Minhaj notices you re-running npx tsc after every single edit.\n\n"You\'re going to wear out that Enter key," he laughs.\n\n"There\'s a watch flag. It recompiles automatically the moment you save. Every engineer on this team runs it in a side terminal, all day long."\n\nMinhaj wants you to add a script to package.json. Call it dev. It should run tsc in watch mode.\n\n"Then the whole team can just type npm run dev," he says. "No one needs to memorize compiler flags."\n\nIt\'s a small habit. But once you\'re touching real Event code, it saves a lot of time.',
       realWorldContext:
         "A shared npm script for watch mode standardizes the dev workflow across the whole team, not just your own muscle memory.",
       taskDescription:
@@ -252,7 +252,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "The Compiler Isn't Yelling At You, It's Warning You",
       narrative:
-        "Jordan, QA, forwards you your first real compiler error: Type 'string' is not assignable to type 'number'. You stare at it for ten minutes before Minhaj walks by. Read it out loud, they say. It's telling you exactly what it expected and exactly what it got. Minhaj has you fix a tiny broken file with one deliberate type mismatch, just to prove the error message is a map, not a wall. Once this clicks, every future error in this course gets easier to read.",
+        "Jordan, from QA, forwards you your first real compiler error:\n\nType 'string' is not assignable to type 'number'.\n\nYou stare at it for ten minutes. Then Minhaj walks by.\n\n\"Read it out loud,\" he says. \"It's telling you exactly what it expected — and exactly what it got.\"\n\nMinhaj gives you a tiny broken file with one deliberate mistake. He wants you to fix it. Not because the fix is hard, but to prove something: the error message is a map, not a wall.\n\nOnce this clicks, every future error in this course gets easier to read.",
       realWorldContext:
         "Reading a TypeScript error's exact wording, rather than reacting to red text, is the single most useful debugging habit in the whole course.",
       taskDescription:
@@ -287,7 +287,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Welcome to the Royal Accounting Guild",
       narrative:
-        "You've just been rotated onto the billing module. Minhaj hands you a ledger file with a live bug: our team keeps recording ticket prices as text strings like '50', causing '5050' instead of 100 whenever two prices are added. Finance is furious. Minhaj wants a strict primitive guard on ticketPrice so this exact bug becomes impossible to reintroduce, no matter who touches this file next. This is the first Event Management System file you'll actually own. This is the very first file you'll own end to end, so Minhaj wants it airtight before you move on to anything bigger.",
+        'You\'ve just been rotated onto the billing module.\n\nMinhaj hands you a ledger file. There\'s a live bug in it: the team keeps recording ticket prices as text strings, like "50". So when two prices get added, you get "5050" instead of 100.\n\nFinance is furious.\n\nMinhaj wants a strict primitive guard on ticketPrice. That way, this exact bug becomes impossible to bring back — no matter who touches this file next.\n\nThis is the first Event Management System file you\'ll actually own, end to end. So Minhaj wants it airtight before you move on to anything bigger.',
       realWorldContext:
         "TypeScript prevents accidental mixing of text and numbers, which is exactly the bug class silently corrupting the billing totals.",
       taskDescription:
@@ -315,7 +315,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Tasnim's Code Review Comment",
       narrative:
-        "Tasnim leaves a comment on your pull request: you don't need to annotate every single variable, the compiler already knows this one is a number. She points out three lines where you wrote out ': number' and ': string' on values that are obviously typed from their initializer. Tasnim isn't asking you to remove all types, just the redundant ones, so the real annotations stand out where they actually matter. Clean up the ledger helper so only the necessary annotations remain.",
+        "Tasnim leaves a comment on your pull request.\n\n\"You don't need to annotate every single variable,\" she writes. \"The compiler already knows this one is a number.\"\n\nShe points out three lines. Each one has a ': number' or ': string' on a value that's already obvious from its initializer.\n\nTasnim isn't asking you to remove all your types. Just the redundant ones. That way, the real annotations stand out where they actually matter.\n\nClean up the ledger helper. Keep only the annotations you actually need.",
       realWorldContext:
         "Over-annotating obvious values adds noise; letting inference work keeps the codebase readable and highlights annotations that genuinely add information.",
       taskDescription:
@@ -350,7 +350,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Apurba Needs an Attendee Roster",
       narrative:
-        "Apurba, the Product Manager, wants a simple attendee roster feature by Friday: a list of attendee names for check-in. A teammate's earlier attempt let a stray number sneak into the array, and check-in crashed at the venue. Apurba doesn't want a repeat. Minhaj asks you to type the roster array so it can only ever hold strings, and to write a helper that safely adds a new name to it without breaking that guarantee. Get this typed correctly and the roster feature ships clean; get it wrong and check-in breaks again at the next event.",
+        "Apurba, the Product Manager, wants a simple attendee roster feature by Friday: a list of attendee names for check-in.\n\nThere's a reason for the rush. A teammate's earlier attempt let a stray number sneak into the array. Check-in crashed at the venue.\n\nApurba doesn't want a repeat.\n\nMinhaj asks you to type the roster array so it can only ever hold strings. He also wants a helper function that safely adds a new name to it, without breaking that guarantee.\n\nGet this typed correctly, and the roster feature ships clean. Get it wrong, and check-in breaks again at the next event.",
       realWorldContext:
         "Typed arrays prevent an accidental wrong-shaped value from ever entering a collection that every downstream feature assumes is uniform.",
       taskDescription:
@@ -386,7 +386,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Salman's First Event Card Mockup",
       narrative:
-        "Salman, the Designer, sends over a mockup of the first Event card: a title, a date, and a capacity number, all shown together. Minhaj wants the underlying data typed to match exactly what Salman designed, before any component gets built. This is the very first time in the codebase we describe a whole Event as one typed shape instead of loose separate variables, Minhaj explains. Get this object type right, since Salman's whole card design depends on these exact three fields existing.",
+        'Salman, the Designer, sends over a mockup of the first Event card. It shows a title, a date, and a capacity number, all together.\n\nMinhaj wants the underlying data typed to match exactly what Salman designed — before anyone builds the actual component.\n\n"This is the first time in the codebase we describe a whole Event as one typed shape," Minhaj explains, "instead of loose, separate variables."\n\nGet this object type right. Salman\'s entire card design depends on these three fields existing, exactly as planned.',
       realWorldContext:
         "An object type describing an Event's shape is the foundation every later component and API response will build on.",
       taskDescription:
@@ -422,7 +422,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Evans's Pricing Bug",
       narrative:
-        "Evans, the Backend Engineer, pings you: someone called calculateTotal with a discount as a string and it silently returned garbage. Evans is tired of guessing what every function expects just by reading its body. They want every parameter and return type on this function explicitly typed, so the function itself documents its own contract and the compiler enforces it at every call site, not just this one. Evans doesn't want to guess anymore what a function expects just by reading its body line by line every single time.",
+        'Evans, the Backend Engineer, pings you. Someone called calculateTotal with a discount as a string, and it silently returned garbage.\n\nEvans is tired of guessing what a function expects just by reading its body.\n\n"I want every parameter and every return type on this function explicitly typed," Evans says. "That way, the function documents its own contract. The compiler enforces it at every call site — not just this one."\n\nNo more guessing what a function expects, line by line, every single time.',
       realWorldContext:
         "Explicitly typed function signatures turn a function into a self-documenting, compiler-enforced contract instead of a guessing game for every caller.",
       taskDescription: "Type calculateTotal's parameters and return type.",
@@ -457,7 +457,7 @@ export const LEVELS: Level[] = [
     story: {
       title: "Jordan Finds a Silent Sorting Bug",
       narrative:
-        "Jordan reports that the event list sometimes sorts backwards, only when a specific teammate touches the sort logic. Digging in, Minhaj finds the sortEvents function accepts a comparator callback with no type at all, so nothing stops someone from passing one with swapped arguments. Minhaj wants a proper function type for the comparator parameter, so the compiler catches a wrong-shaped callback before it ever ships, instead of QA catching it after the fact. Once the comparator itself is properly typed, this exact class of silent sorting bug becomes structurally impossible to reintroduce later.",
+        "Jordan reports a strange bug: the event list sometimes sorts backwards. It only happens when one specific teammate touches the sort logic.\n\nMinhaj digs in. He finds the problem: the sortEvents function accepts a comparator callback with no type at all. Nothing stops someone from passing one with the arguments swapped.\n\nMinhaj wants a proper function type for the comparator parameter. That way, the compiler catches a wrong-shaped callback before it ever ships — instead of QA catching it after the fact.\n\nOnce the comparator is properly typed, this exact kind of silent sorting bug can never come back.",
       realWorldContext:
         "Typing a callback parameter's exact signature is what lets the compiler catch a wrong-shaped function argument at the call site.",
       taskDescription:
