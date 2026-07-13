@@ -97,7 +97,7 @@ const formatSegmentText = (text: string): React.ReactNode[] => {
   return parts.map((part, idx) => {
     if (idx % 2 === 1) {
       return (
-        <strong key={idx} className="font-bold text-on-surface">
+        <strong key={idx} className="font-bold text-secondary">
           {part}
         </strong>
       );
@@ -1060,7 +1060,7 @@ export default function QuestMode({
                 <div className="space-y-4 flex-1">
                   <p className="font-sans text-sm md:text-base text-on-surface">
                     Greetings, apprentice! I'm{" "}
-                    <span className="font-bold text-primary">Imran</span>, the
+                    <span className="font-bold text-secondary">Imran</span>, the
                     Senior Weaver.
                   </p>
                   <div className="space-y-4 bg-surface-container-low/60 border-l-2 border-primary/40 pl-4 py-3 pr-3 rounded-r-lg shadow-sm">
@@ -1179,13 +1179,13 @@ export default function QuestMode({
                   playChime("click");
                   setShowConceptModal(false);
                 }}
-                className="lift-button flex items-center gap-3 px-8 py-3.5 bg-secondary-container text-on-primary-container rounded-lg font-bold group cursor-pointer"
+                className="lift-button flex items-center gap-3 px-8 py-3.5 bg-gradient-to-r from-primary via-secondary to-tertiary text-neutral-950 rounded-xl font-extrabold group cursor-pointer shadow-lg hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(164,201,255,0.25)] active:scale-95 transition-all duration-150"
                 id="start-coding-btn"
               >
                 <span className="font-sans text-xs md:text-sm">
                   Start Coding
                 </span>
-                <span className="px-2 py-0.5 bg-secondary/20 rounded text-[10px] font-mono text-on-secondary-container/80 tracking-tighter">
+                <span className="px-2 py-0.5 bg-neutral-950/10 rounded text-[10px] font-mono text-neutral-950/80 tracking-tighter">
                   (Ctrl+Enter)
                 </span>
                 <span className="material-icons-out group-hover:translate-x-1 transition-transform">
