@@ -50,29 +50,50 @@ export default function Home({
 
   // Dynamically expand the active stage containing the current level on load
   useEffect(() => {
-    if (unlockedLevelIds.length === 0) return;
+    const lastClicked = sessionStorage.getItem("last_clicked_level_id");
+    let targetLevelId = lastClicked;
 
-    // Find the first unlocked level that is not completed yet (active level)
-    const activeLevel = LEVELS.find(
-      (lvl) =>
-        unlockedLevelIds.includes(lvl.id) &&
-        !completedLevelIds.includes(lvl.id),
-    );
+    if (!targetLevelId && unlockedLevelIds.length > 0) {
+      // Find the first unlocked level that is not completed yet (active level)
+      const activeLevel = LEVELS.find(
+        (lvl) =>
+          unlockedLevelIds.includes(lvl.id) &&
+          !completedLevelIds.includes(lvl.id),
+      );
 
-    // Fallback to the highest unlocked level if all unlocked levels are completed
-    const targetLevelId = activeLevel
-      ? activeLevel.id
-      : unlockedLevelIds[unlockedLevelIds.length - 1] || "level-0-1-bootstrap";
+      // Fallback to the highest unlocked level if all unlocked levels are completed
+      targetLevelId = activeLevel
+        ? activeLevel.id
+        : unlockedLevelIds[unlockedLevelIds.length - 1] ||
+          "level-0-1-bootstrap";
+    }
 
-    // Find the stage that contains this target level
-    const targetStage = STAGES.find((stage) =>
-      stage.levelIds.includes(targetLevelId),
-    );
+    if (targetLevelId) {
+      // Find the stage that contains this target level
+      const targetStage = STAGES.find((stage) =>
+        stage.levelIds.includes(targetLevelId),
+      );
 
-    if (targetStage) {
-      setExpandedStageId(targetStage.id);
+      if (targetStage) {
+        setExpandedStageId(targetStage.id);
+      }
     }
   }, [unlockedLevelIds, completedLevelIds]);
+
+  // Scroll to the last clicked level if returning to Home
+  useEffect(() => {
+    const lastClicked = sessionStorage.getItem("last_clicked_level_id");
+    if (lastClicked && expandedStageId) {
+      // Wait for stage to render and then scroll the element into view
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`level-card-${lastClicked}`);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [expandedStageId]);
 
   // Determine user level from XP
   const calculatedLevel = Math.max(1, Math.floor(xp / 100) + 1);
@@ -88,6 +109,7 @@ export default function Home({
   };
 
   const handleLevelClick = (lvlId: string) => {
+    sessionStorage.setItem("last_clicked_level_id", lvlId);
     onSelectLevel(lvlId);
     onTabChange("quest");
   };
@@ -111,6 +133,9 @@ export default function Home({
       }
     }
 
+    if (targetLevelId) {
+      sessionStorage.setItem("last_clicked_level_id", targetLevelId);
+    }
     onSelectLevel(targetLevelId);
     onTabChange("quest");
   };
@@ -352,6 +377,7 @@ export default function Home({
                             return (
                               <button
                                 key={lvl.id}
+                                id={`level-card-${lvl.id}`}
                                 disabled={!isLvlUnlocked}
                                 onClick={() => handleLevelClick(lvl.id)}
                                 className={`flex flex-col text-left p-4 rounded-xl border transition-all duration-200 ${
@@ -412,6 +438,10 @@ export default function Home({
                                 firstActive || fallback || stageLevels[0];
 
                               if (targetLvl) {
+                                sessionStorage.setItem(
+                                  "last_clicked_level_id",
+                                  targetLvl.id,
+                                );
                                 onSelectLevel(targetLvl.id);
                               }
                               onTabChange("quest");

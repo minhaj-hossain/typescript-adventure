@@ -14,7 +14,7 @@ export interface Level {
   xpAwarded: number;
   story: {
     title: string;
-    narrative: string;
+    narrative: { type: "narration" | "dialogue"; text: string }[];
     realWorldContext: string;
     taskDescription: string;
     previousOutcome: string;
@@ -109,7 +109,14 @@ export interface Level {
 export interface ReferenceEntry {
   id: string;
   term: string;
-  category: "Concepts" | "Tooling" | "Basics" | "Structural Types" | "Advanced Types" | "Utility Types" | "React & Next.js";
+  category:
+    | "Concepts"
+    | "Tooling"
+    | "Basics"
+    | "Structural Types"
+    | "Advanced Types"
+    | "Utility Types"
+    | "React & Next.js";
   shortExplanation: string;
   syntax: string;
   commonPitfalls: string[];

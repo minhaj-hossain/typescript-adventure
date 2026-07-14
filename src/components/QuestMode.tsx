@@ -117,11 +117,13 @@ interface Mentor {
 }
 
 const getLevelMentor = (level: Level): Mentor => {
-  const narrative = level.story.narrative || "";
+  const narrativeText = (level.story.narrative || [])
+    .map((s) => s.text)
+    .join(" ");
   const id = level.id || "";
 
   if (
-    narrative.includes("Tasnim") ||
+    narrativeText.includes("Tasnim") ||
     id.includes("tsconfig") ||
     id.includes("inference")
   ) {
@@ -136,7 +138,7 @@ const getLevelMentor = (level: Level): Mentor => {
     };
   }
 
-  if (narrative.includes("Jordan") || id.includes("reading-errors")) {
+  if (narrativeText.includes("Jordan") || id.includes("reading-errors")) {
     return {
       name: "Jordan",
       role: "QA Lead",
@@ -148,7 +150,7 @@ const getLevelMentor = (level: Level): Mentor => {
     };
   }
 
-  if (narrative.includes("Apurba") || id.includes("arrays")) {
+  if (narrativeText.includes("Apurba") || id.includes("arrays")) {
     return {
       name: "Apurba",
       role: "Product Manager",
@@ -160,7 +162,7 @@ const getLevelMentor = (level: Level): Mentor => {
     };
   }
 
-  if (narrative.includes("Salman") || id.includes("objects")) {
+  if (narrativeText.includes("Salman") || id.includes("objects")) {
     return {
       name: "Salman",
       role: "UI/UX Designer",
@@ -173,7 +175,7 @@ const getLevelMentor = (level: Level): Mentor => {
   }
 
   if (
-    narrative.includes("Evans") ||
+    narrativeText.includes("Evans") ||
     id.includes("devops") ||
     id.includes("monorepos")
   ) {
@@ -189,7 +191,7 @@ const getLevelMentor = (level: Level): Mentor => {
   }
 
   if (
-    narrative.includes("Minhaj") ||
+    narrativeText.includes("Minhaj") ||
     id.includes("bootstrap") ||
     id.includes("primitives") ||
     id.includes("watch-mode")
@@ -281,26 +283,20 @@ const detectSpeaker = (text: string) => {
 };
 
 // Helper to render narrative strings beautifully by dynamically dividing them into paragraphs if they lack explicit formatting
-const renderNarrative = (narrative: string): React.ReactNode => {
-  const cleanNarrative = narrative.replace(/[“”]/g, '"');
-  const paragraphs = cleanNarrative
-    .split(/\n+/)
-    .map((p) => p.trim())
-    .filter(Boolean);
-  const totalParagraphs = paragraphs.length;
-
+const renderNarrative = (
+  narrative: { type: "narration" | "dialogue"; text: string }[],
+  activeMentor: Mentor,
+): React.ReactNode => {
   return (
     <div className="space-y-4">
-      {paragraphs.map((paragraph, index) => {
-        const isLast = index === totalParagraphs - 1;
-        const speaker = detectSpeaker(paragraph);
-        const hasQuote = paragraph.includes('"');
-        const subParts = paragraph
+      {narrative.map((seg, index) => {
+        const subParts = seg.text
           .split(/("[^"]*")/g)
           .map((p) => p.trim())
           .filter(Boolean);
 
-        if (speaker && hasQuote) {
+        if (seg.type === "dialogue") {
+          const speaker = detectSpeaker(seg.text) || activeMentor;
           return (
             <div
               key={index}
@@ -317,49 +313,13 @@ const renderNarrative = (narrative: string): React.ReactNode => {
                   {speaker.name} • {speaker.role}
                 </span>
               </div>
-              <p className="font-sans text-xs md:text-sm text-on-surface-variant/90 leading-relaxed font-normal">
+              <p className="font-sans text-xs md:text-sm text-on-surface-variant/90 leading-relaxed font-normal italic">
                 {subParts.map((part, pIdx) => {
                   if (part.startsWith('"') && part.endsWith('"')) {
                     return (
                       <span
                         key={pIdx}
                         className="text-on-surface font-semibold italic bg-secondary/5 px-1 py-0.5 rounded border border-secondary/10 mx-0.5 select-all"
-                      >
-                        {part}
-                      </span>
-                    );
-                  }
-                  return <span key={pIdx}>{formatSegmentText(part)}</span>;
-                })}
-              </p>
-            </div>
-          );
-        }
-
-        if (isLast) {
-          return (
-            <div
-              key={index}
-              className="mt-4 p-4 rounded-xl bg-secondary-container/10 border-l-4 border-secondary text-on-surface font-sans text-xs md:text-sm leading-relaxed shadow-sm animate-scale-up space-y-2"
-            >
-              <div className="flex items-center gap-2">
-                <span
-                  className="material-icons-out text-secondary text-sm animate-pulse"
-                  style={{ fontVariationSettings: "'FILL' 1" }}
-                >
-                  auto_awesome
-                </span>
-                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-secondary">
-                  Quest Directive
-                </span>
-              </div>
-              <p className="font-sans text-xs md:text-sm leading-relaxed text-on-surface/90">
-                {subParts.map((part, pIdx) => {
-                  if (part.startsWith('"') && part.endsWith('"')) {
-                    return (
-                      <span
-                        key={pIdx}
-                        className="text-on-surface font-semibold italic bg-secondary/10 px-1 py-0.5 rounded border border-secondary/20 mx-0.5 select-all"
                       >
                         {part}
                       </span>
@@ -472,23 +432,6 @@ export default function QuestMode({
       setCompletedLevelIds(JSON.parse(savedCompleted));
     }
   }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        selectedLevel &&
-        showConceptModal &&
-        (e.ctrlKey || e.metaKey) &&
-        e.key === "Enter"
-      ) {
-        e.preventDefault();
-        playChime("click");
-        setShowConceptModal(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedLevel, showConceptModal]);
 
   // Set initial code & reset state when level changes
   useEffect(() => {
@@ -1191,6 +1134,25 @@ export default function QuestMode({
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        if (selectedLevel) {
+          if (showConceptModal) {
+            e.preventDefault();
+            playChime("click");
+            setShowConceptModal(false);
+          } else {
+            e.preventDefault();
+            handleVerifyCode();
+          }
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown, true);
+    return () => window.removeEventListener("keydown", handleKeyDown, true);
+  }, [selectedLevel, showConceptModal, handleVerifyCode]);
+
   const handleResetCode = () => {
     if (
       selectedLevel &&
@@ -1309,10 +1271,13 @@ export default function QuestMode({
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md"
           id="concept-modal"
         >
-          <div className="relative w-full max-w-2xl bg-surface-container rounded-xl border border-outline-variant shadow-2xl overflow-hidden glow-primary flex flex-col max-h-[90vh]">
+          <div className="relative w-full max-w-4xl bg-surface-container rounded-xl border border-outline-variant shadow-2xl overflow-hidden glow-primary flex flex-col max-h-[90vh]">
             {/* Close Button */}
             <button
-              onClick={closeWorkspace}
+              onClick={() => {
+                playChime("click");
+                setShowConceptModal(false);
+              }}
               className="absolute top-4 right-4 p-2 text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer z-10"
             >
               <X className="w-5 h-5" />
@@ -1394,7 +1359,7 @@ export default function QuestMode({
                         </p>
                       </div>
                       <div className="space-y-4 bg-surface-container-low/60 border-l-2 border-primary/40 pl-4 py-3 pr-3 rounded-r-lg shadow-sm">
-                        {renderNarrative(selectedLevel.story.narrative)}
+                        {renderNarrative(selectedLevel.story.narrative, mentor)}
                       </div>
                       <div className="flex items-center gap-2.5 font-sans text-xs md:text-sm text-on-surface flex-wrap">
                         <span>
@@ -1461,7 +1426,10 @@ export default function QuestMode({
             {/* Modal Footer */}
             <div className="px-8 pb-8 pt-4 border-t border-outline-variant/20 flex justify-end items-center gap-4 bg-surface-container">
               <button
-                onClick={closeWorkspace}
+                onClick={() => {
+                  playChime("click");
+                  setShowConceptModal(false);
+                }}
                 className="px-6 py-3 font-sans text-xs md:text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
               >
                 Later
@@ -1905,6 +1873,9 @@ export default function QuestMode({
               >
                 <Play className="w-4 h-4 fill-current" /> Compile & Verify
                 Solution
+                <span className="ml-1.5 px-2 py-0.5 bg-neutral-950/10 rounded text-[10px] font-mono text-neutral-950/80 tracking-tighter normal-case">
+                  (Ctrl+Enter)
+                </span>
               </button>
 
               <div className="grid grid-cols-2 gap-3">
