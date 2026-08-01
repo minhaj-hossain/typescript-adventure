@@ -23,6 +23,7 @@ import { STAGES, LEVELS } from "../curriculum";
 import { Level } from "../types";
 import { auth, saveLevelCodeCloud } from "../lib/firebase";
 import { LEVEL_SOLUTIONS, SolutionDetails } from "../data/solutions";
+import { LevelModal } from "./quest/LevelModal";
 
 interface QuestModeProps {
   onXpAwarded: (points: number) => void;
@@ -31,7 +32,7 @@ interface QuestModeProps {
   setUnlockedLevelIds: React.Dispatch<React.SetStateAction<string[]>>;
   selectedLevelId?: string | null;
   setSelectedLevelId?: (id: string | null) => void;
-  onTabChange?: (tab: "home" | "quest" | "playground" | "docs") => void;
+  onTabChange?: (tab: "home" | "level" | "quest" | "playground" | "docs") => void;
 }
 
 // Interactive Web Audio Sound Synthesizer
@@ -1267,195 +1268,21 @@ export default function QuestMode({
 
       {/* 2. STORY / CONCEPT REVEAL OVERLAY MODAL */}
       {selectedLevel && showConceptModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md"
-          id="concept-modal"
-        >
-          <div className="relative w-full max-w-4xl bg-surface-container rounded-xl border border-outline-variant shadow-2xl overflow-hidden glow-primary flex flex-col max-h-[90vh]">
-            {/* Close Button */}
-            <button
-              onClick={() => {
-                playChime("click");
-                setShowConceptModal(false);
-              }}
-              className="absolute top-4 right-4 p-2 text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer z-10"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Modal Header */}
-            <div className="px-8 pt-8 flex items-center gap-4">
-              <div className="w-10 h-10 flex items-center justify-center bg-primary/10 rounded-lg text-primary shrink-0">
-                <span
-                  className="material-icons-out"
-                  style={{ fontVariationSettings: "'FILL' 1" }}
-                >
-                  menu_book
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-primary leading-none mb-1 block">
-                  {selectedLevel.moduleName || "TypeScript Academy"}
-                </span>
-                <h1 className="font-sans text-xl md:text-2xl font-extrabold text-on-surface line-clamp-1">
-                  {selectedLevel.title}
-                </h1>
-              </div>
-            </div>
-
-            {/* Modal Content Scrollable Area */}
-            <div className="p-8 space-y-6 overflow-y-auto flex-1 scrollbar-thin">
-              {/* Story Title Header */}
-              <div className="border-b border-outline-variant/20 pb-4 mb-2">
-                <span className="font-mono text-[9px] font-black uppercase tracking-widest text-secondary block mb-1">
-                  Chapter Scenario Trial
-                </span>
-                <h2 className="font-sans text-lg md:text-xl font-extrabold text-on-surface">
-                  {selectedLevel.story.title}
-                </h2>
-              </div>
-
-              {/* Narrative Scribe block with Dynamic Mentor avatar */}
-              {(() => {
-                const mentor = getLevelMentor(selectedLevel);
-                return (
-                  <div className="flex gap-6 items-start">
-                    <div className="flex-shrink-0">
-                      <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-outline-variant/30 shadow-lg p-0.5">
-                        {mentor.avatarUrl ? (
-                          <img
-                            className="w-full h-full object-cover rounded-lg"
-                            referrerPolicy="no-referrer"
-                            src={mentor.avatarUrl}
-                          />
-                        ) : (
-                          <div
-                            className={`w-full h-full rounded-lg bg-gradient-to-tr ${mentor.color} flex items-center justify-center text-white font-sans text-xl font-black shadow-inner relative`}
-                          >
-                            {mentor.initial}
-                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-surface-container border border-outline-variant flex items-center justify-center text-[10px] shadow-md">
-                              <span
-                                className="material-icons-out text-[11px]"
-                                style={{ fontVariationSettings: "'FILL' 1" }}
-                              >
-                                {mentor.icon}
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="space-y-4 flex-1">
-                      <div className="space-y-1">
-                        <span className="font-mono text-[9px] font-bold text-secondary uppercase tracking-widest block leading-none">
-                          Your Active Mentor
-                        </span>
-                        <p className="font-sans text-sm md:text-base font-bold text-on-surface">
-                          {mentor.name}{" "}
-                          <span className="font-medium text-xs text-on-surface-variant font-mono">
-                            ({mentor.role})
-                          </span>
-                        </p>
-                      </div>
-                      <div className="space-y-4 bg-surface-container-low/60 border-l-2 border-primary/40 pl-4 py-3 pr-3 rounded-r-lg shadow-sm">
-                        {renderNarrative(selectedLevel.story.narrative, mentor)}
-                      </div>
-                      <div className="flex items-center gap-2.5 font-sans text-xs md:text-sm text-on-surface flex-wrap">
-                        <span>
-                          The first thing you need to formulate is safe rules in
-                        </span>
-                        <code className="px-2 py-0.5 bg-surface-container-highest text-secondary font-mono text-xs rounded border border-outline-variant/50">
-                          {selectedLevel.playground.filesToEdit[0]}
-                        </code>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Info Boxes Layout */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Real-World Context */}
-                <div className="bg-surface-container-low border border-outline-variant/30 rounded-lg p-5 group hover:border-primary/30 transition-all">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="material-icons-out text-primary text-sm">
-                      info
-                    </span>
-                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-primary">
-                      Real-World Context
-                    </span>
-                  </div>
-                  <p className="font-sans text-xs text-on-surface-variant leading-relaxed">
-                    {selectedLevel.story.realWorldContext}
-                  </p>
-                </div>
-
-                {/* Dangerous Consequence */}
-                <div className="bg-surface-container-low border border-outline-variant/30 rounded-lg p-5 group hover:border-amber-400/30 transition-all">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="material-icons-out text-tertiary text-sm">
-                      warning
-                    </span>
-                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-tertiary">
-                      Dangerous Outcome
-                    </span>
-                  </div>
-                  <p className="font-sans text-xs text-on-surface-variant leading-relaxed">
-                    {selectedLevel.story.previousOutcome}
-                  </p>
-                </div>
-              </div>
-
-              {/* Your Task */}
-              <div className="bg-secondary-container/10 border border-secondary/20 rounded-lg p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="material-icons-out text-secondary text-sm">
-                    task_alt
-                  </span>
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-secondary">
-                    Your Task
-                  </span>
-                </div>
-                <p className="font-sans text-xs md:text-sm text-on-surface leading-relaxed">
-                  {selectedLevel.story.taskDescription}
-                </p>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="px-8 pb-8 pt-4 border-t border-outline-variant/20 flex justify-end items-center gap-4 bg-surface-container">
-              <button
-                onClick={() => {
-                  playChime("click");
-                  setShowConceptModal(false);
-                }}
-                className="px-6 py-3 font-sans text-xs md:text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
-              >
-                Later
-              </button>
-
-              <button
-                onClick={() => {
-                  playChime("click");
-                  setShowConceptModal(false);
-                }}
-                className="lift-button flex items-center gap-3 px-8 py-3.5 bg-gradient-to-r from-primary via-secondary to-tertiary text-neutral-950 rounded-xl font-extrabold group cursor-pointer shadow-lg hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(164,201,255,0.25)] active:scale-95 transition-all duration-150"
-                id="start-coding-btn"
-              >
-                <span className="font-sans text-xs md:text-sm">
-                  Start Coding
-                </span>
-                <span className="px-2 py-0.5 bg-neutral-950/10 rounded text-[10px] font-mono text-neutral-950/80 tracking-tighter">
-                  (Ctrl+Enter)
-                </span>
-                <span className="material-icons-out group-hover:translate-x-1 transition-transform">
-                  arrow_forward
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <LevelModal
+          level={selectedLevel}
+          stage={STAGES.find((s) => s.levelIds.includes(selectedLevel.id))}
+          isUnlocked={unlockedLevelIds.includes(selectedLevel.id)}
+          isCompleted={completedLevelIds.includes(selectedLevel.id)}
+          onClose={() => {
+            playChime("click");
+            setShowConceptModal(false);
+          }}
+          onStartPlayground={(lId) => {
+            playChime("click");
+            setShowConceptModal(false);
+            if (setSelectedLevelId) setSelectedLevelId(lId);
+          }}
+        />
       )}
 
       {/* 3. MAIN WORKSPACE / PLAYGROUND VIEW */}

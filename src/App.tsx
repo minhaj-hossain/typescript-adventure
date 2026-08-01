@@ -5,6 +5,7 @@ import QuestMode from "./components/QuestMode";
 import Playground from "./components/Playground";
 import ReferenceDocs from "./components/ReferenceDocs";
 import NotFound from "./components/NotFound";
+import { LevelDetailsPage } from "./components/LevelDetailsPage";
 import { Sparkles, Award, Star, X } from "lucide-react";
 
 // Firebase imports
@@ -263,15 +264,17 @@ export default function App() {
         </div>
       )}
 
-      {/* Navigation */}
-      <Navigation
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        xp={xp}
-        badgesCount={unlockedBadges.length}
-        user={user}
-        onOpenSanctum={() => setIsSanctumOpen(true)}
-      />
+      {/* Navigation (Hidden when inside dedicated Level Details Page) */}
+      {activeTab !== "level" && (
+        <Navigation
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          xp={xp}
+          badgesCount={unlockedBadges.length}
+          user={user}
+          onOpenSanctum={() => setIsSanctumOpen(true)}
+        />
+      )}
 
       {/* Router Tabs */}
       <div className="flex-1 flex flex-col min-h-0">
@@ -282,6 +285,17 @@ export default function App() {
             onTabChange={setActiveTab}
             onSelectLevel={setSelectedLevelId}
             wizardTitle={wizardTitle}
+          />
+        )}
+        {activeTab === "level" && (
+          <LevelDetailsPage
+            levelId={selectedLevelId || "level-0-1-bootstrap"}
+            onSelectLevelId={(id) => setSelectedLevelId(id)}
+            unlockedLevelIds={unlockedLevelIds}
+            setUnlockedLevelIds={setUnlockedLevelIds}
+            onXpAwarded={handleXpAwarded}
+            onBadgeUnlocked={handleBadgeUnlocked}
+            onBackToHome={() => setActiveTab("home")}
           />
         )}
         {activeTab === "quest" && (
@@ -299,7 +313,7 @@ export default function App() {
         {activeTab === "docs" && <ReferenceDocs />}
 
         {/* Fallback Not Found Route */}
-        {!["home", "quest", "playground", "docs"].includes(activeTab) && (
+        {!["home", "level", "quest", "playground", "docs"].includes(activeTab) && (
           <NotFound
             onGoHome={() => setActiveTab("home")}
             onGoLibrary={() => setActiveTab("docs")}

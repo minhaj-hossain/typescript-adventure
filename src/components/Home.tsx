@@ -20,7 +20,7 @@ import {
 interface HomeProps {
   xp: number;
   unlockedLevelIds: string[];
-  onTabChange: (tab: "home" | "quest" | "playground" | "docs") => void;
+  onTabChange: (tab: "home" | "level" | "quest" | "playground" | "docs") => void;
   onSelectLevel: (levelId: string) => void;
   wizardTitle: string;
 }
@@ -80,18 +80,21 @@ export default function Home({
     }
   }, [unlockedLevelIds, completedLevelIds]);
 
-  // Scroll to the last clicked level if returning to Home
+  // Scroll to the last clicked level immediately if returning to Home
   useEffect(() => {
     const lastClicked = sessionStorage.getItem("last_clicked_level_id");
     if (lastClicked && expandedStageId) {
-      // Wait for stage to render and then scroll the element into view
-      const timer = setTimeout(() => {
+      const scrollTarget = () => {
         const element = document.getElementById(`level-card-${lastClicked}`);
         if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          element.scrollIntoView({ behavior: "auto", block: "center" });
         }
-      }, 300);
-      return () => clearTimeout(timer);
+      };
+
+      // Execute immediately and on requestAnimationFrame to prevent scroll jump from top
+      scrollTarget();
+      const raf = requestAnimationFrame(scrollTarget);
+      return () => cancelAnimationFrame(raf);
     }
   }, [expandedStageId]);
 
@@ -111,7 +114,7 @@ export default function Home({
   const handleLevelClick = (lvlId: string) => {
     sessionStorage.setItem("last_clicked_level_id", lvlId);
     onSelectLevel(lvlId);
-    onTabChange("quest");
+    onTabChange("level" as any);
   };
 
   const handleStartLearning = () => {
@@ -137,7 +140,7 @@ export default function Home({
       sessionStorage.setItem("last_clicked_level_id", targetLevelId);
     }
     onSelectLevel(targetLevelId);
-    onTabChange("quest");
+    onTabChange("level" as any);
   };
 
   return (
