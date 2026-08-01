@@ -1,10 +1,10 @@
 # 🔮 TypeScript Adventure: Type-Weaving Quest
 
-[![React v18](https://img.shields.io/badge/React-18.x-61dafb?logo=react&logoColor=black&style=flat-square)](#)
-[![Vite](https://img.shields.io/badge/Vite-Ready-646cff?logo=vite&style=flat-square)](#)
-[![TypeScript v5.x](https://img.shields.io/badge/TypeScript-5.x-3178c6?logo=typescript&logoColor=white&style=flat-square)](#)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38bdf8?logo=tailwind-css&logoColor=white&style=flat-square)](#)
-[![Firebase Support](https://img.shields.io/badge/Firebase-Firestore%20%26%20Auth-ffca28?logo=firebase&logoColor=black&style=flat-square)](#)
+[![React v19](https://img.shields.io/badge/React-19.x-61dafb?logo=react&logoColor=black&style=flat-square)](#)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16.x-000000?logo=next.js&style=flat-square)](#)
+[![TypeScript v5.x](https://img.shields.io/badge/TypeScript-5.x_(strict)-3178c6?logo=typescript&logoColor=white&style=flat-square)](#)
+[![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-4.x-38bdf8?logo=tailwind-css&logoColor=white&style=flat-square)](#)
+[![Vitest](https://img.shields.io/badge/Tests-Vitest-6e9f18?logo=vitest&style=flat-square)](#)
 
 Welcome, apprentice! **TypeScript Adventure** is an immersive, gamified, and highly polished interactive learning platform. It is designed to teach developers the art of safe type-weaving—scaling from absolute entry-level parameters to professional-grade, enterprise-ready type declarations and backend schema synthesis.
 
@@ -125,11 +125,12 @@ _Close the last remaining loopholes in your enterprise codebase._
 
 The application is structured around a highly responsive, single-page application framework with full type safety:
 
-- **Frontend Core**: **React 18** paired with **TypeScript 5.x** and **Vite** for blazing fast development and optimized chunk builds.
-- **Styling & Theme**: Modern **Tailwind CSS** layout primitives utilizing customized high-contrast slate colors, neon border highlights, and elegant typography.
+- **Frontend Core**: **React 19** paired with **TypeScript 5.x (strict mode)** and **Next.js 16** (App Router) for blazing fast development and optimized chunk builds.
+- **Styling & Theme**: Modern **Tailwind CSS v4** layout primitives utilizing customized high-contrast slate colors, neon border highlights, and elegant typography.
 - **Animations**: **motion/react** (Framer Motion) powering smooth page fades, interactive accordion reveals, level unlocking effects, and badge popups.
 - **Code Editor**: A customized instance of **Monaco Editor** with preloaded files, fully customized dark color palettes, strict compiler feedback, and formatting.
-- **Persistence & Syncing**: Fully integrated with **Firebase Firestore** and **Firebase Authentication** for immediate, reliable cloud synchronization of progress, levels, titles, and XP.
+- **Progress Persistence**: All progress (XP, badges, unlocked levels, code) is stored locally in the browser via `localStorage`. No login or account required.
+- **AI Features**: Optional Gemini-powered error explanations and Oracle chat via Next.js API routes.
 
 ---
 
@@ -193,14 +194,32 @@ The application manages metadata dynamically during tab changes:
     ```bash
     npm install
     ```
-3.  **Configure Environment Secrets**:
-    Copy or create a `.env` file at the root and add your optional Firebase configurations (if cloud syncing is desired).
+3.  **Configure Environment (Optional)**:
+    Copy `.env.example` to `.env` and add your `GEMINI_API_KEY` if you want AI-powered error explanations and Oracle chat.
 4.  **Boot Development Server**:
     ```bash
     npm run dev
     ```
 5.  **Open Browser**:
     Open [http://localhost:3000](http://localhost:3000) to start your adventure!
+
+---
+
+## 🧪 Testing & Code Quality
+
+```bash
+# Run the curriculum integrity test suite
+npm test
+
+# Type-check the entire project
+npm run typecheck
+
+# Lint the codebase
+npm run lint
+
+# Format code with Prettier
+npm run format
+```
 
 ---
 
@@ -217,16 +236,54 @@ npm run build
 1. Connect the repository to [Vercel](https://vercel.com) — framework preset: **Next.js**.
 2. Build command: `npm run build` (also set in `vercel.json`).
 3. No custom output directory is required.
-
-### Firebase Auth on Vercel
-
-If you use cloud sync (Wizard Sanctum), add your Vercel deployment URL to Firebase:
-
-1. Open [Firebase Console](https://console.firebase.google.com) → your project → **Authentication** → **Settings** → **Authorized domains**.
-2. Add your Vercel domain (e.g. `your-app.vercel.app` and any custom domain).
-
-Client Firebase config lives in `firebase-applet-config.json`. For multi-environment deploys, consider moving keys to `NEXT_PUBLIC_FIREBASE_*` environment variables in Vercel project settings.
+4. Add `GEMINI_API_KEY` to Vercel environment variables if you want AI features.
 
 ---
 
-_“May your compilers always run green, and your models stay strictly defined!”_ 🔮✨
+## 📁 Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes (Gemini AI)
+│   ├── level/[id]/        # Dynamic level pages
+│   ├── layout.tsx         # Root layout
+│   ├── page.tsx           # Home page
+│   └── providers.tsx      # Context providers
+├── components/            # React components
+│   ├── CodeEditor.tsx     # Monaco editor wrapper
+│   ├── CompletionModal.tsx
+│   ├── ConceptDiagram.tsx
+│   ├── ErrorBoundary.tsx  # Global error boundary
+│   ├── GrimoirePanel.tsx  # Reference library panel
+│   ├── Home.tsx           # Landing page with stage timeline
+│   ├── KingdomIntro.tsx   # Onboarding intro slides
+│   ├── LevelDetailsPage.tsx # Main level workspace
+│   ├── Navigation.tsx     # Top nav bar
+│   ├── StageCinematicModal.tsx
+│   ├── StoryModal.tsx     # Story narrative modal
+│   └── WizardSanctum.tsx  # Progress & achievements modal
+├── context/
+│   └── GameContext.tsx    # Global game state (XP, badges, levels)
+├── data/
+│   ├── characters.ts      # NPC character definitions
+│   ├── illustrations.ts  # Buggy vs safe code examples
+│   ├── levels.ts          # All level definitions
+│   ├── referenceLibrary.ts # Grimoire reference entries
+│   ├── solutions.ts       # Solution explanations per level
+│   ├── stageMeta.ts       # Stage metadata & badges
+│   └── stages.ts          # Stage definitions
+├── lib/
+│   ├── monacoTypes.ts     # TypeScript types for Monaco editor
+│   ├── narrativeFeedback.ts # Error formatting & prediction questions
+│   ├── storyActs.ts       # Story act structure
+│   └── tsValidation.ts    # Monaco marker validation
+├── curriculum.ts          # Re-exports stages, levels, reference library
+├── curriculum.test.ts     # Vitest curriculum integrity tests
+├── index.css             # Global styles & Tailwind theme
+└── types.ts              # TypeScript type definitions
+```
+
+---
+
+_"May your compilers always run green, and your models stay strictly defined!"_ 🔮✨

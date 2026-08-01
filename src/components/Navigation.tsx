@@ -1,13 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, Home, Award } from "lucide-react";
-import { User } from "firebase/auth";
+import { Sparkles, Home, Award, Compass } from "lucide-react";
 
 interface NavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   xp: number;
   badgesCount: number;
-  user: User | null;
   onOpenSanctum: () => void;
 }
 
@@ -16,7 +14,6 @@ export default function Navigation({
   onTabChange,
   xp,
   badgesCount,
-  user,
   onOpenSanctum,
 }: NavigationProps) {
   const progressPercent = Math.min(100, Math.max(10, (xp / 1500) * 100));
@@ -83,7 +80,7 @@ export default function Navigation({
           >
             <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse shadow-[0_0_8px_rgba(164,201,255,0.5)]"></div>
             <span className="max-w-[70px] md:max-w-[120px] truncate">
-              {user ? user.displayName || "My Soul" : "My Sanctum"}
+              Guest Scholar
             </span>
             <span className="text-outline text-[9px] md:text-[10px] select-none opacity-65">
               ▼
@@ -98,9 +95,7 @@ export default function Navigation({
                   Sorcerer Status
                 </span>
                 <span className="text-sm font-bold text-on-surface truncate">
-                  {user
-                    ? user.displayName || "Apprentice Mage"
-                    : "Guest Scholar"}
+                  Guest Scholar
                 </span>
               </div>
 
@@ -139,8 +134,8 @@ export default function Navigation({
                 }}
                 className="w-full py-2.5 bg-primary/10 hover:bg-primary/15 text-primary rounded-lg border border-primary/20 hover:border-primary/40 transition-colors text-xs font-bold cursor-pointer flex items-center justify-center gap-2"
               >
-                <span>🔮</span>
-                <span>{user ? "Open Soul Sanctum" : "Sync Soul & Save"}</span>
+                <Compass className="w-4 h-4" />
+                <span>Open Soul Sanctum</span>
               </button>
             </div>
           )}

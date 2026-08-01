@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { CHARACTERS } from "../data/characters";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const INTRO_SLIDES = [
   {

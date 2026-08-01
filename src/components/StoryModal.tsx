@@ -32,7 +32,8 @@ export default function StoryModal({
   const narrative = level.story.narrative;
   const totalBeats = narrative.length;
   const hasTaskPhase = true;
-  const maxStep = totalBeats + (hasTaskPhase ? 1 : 0);
+  // The task step IS the last step (no extra duplicate step after it)
+  const maxStep = totalBeats + (hasTaskPhase ? 1 : 0) - 1;
 
   const [step, setStep] = useState(0);
   const [advancedMode, setAdvancedMode] = useState(false);

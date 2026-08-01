@@ -9,3 +9,10 @@ coverage/
 !.env.example
 
 .vercel
+
+# TypeScript build artifacts
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Firebase config (contains API keys - use env vars)
+firebase-applet-config.json

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use } from "react";
+import { use } from "react";
 import { useRouter, notFound } from "next/navigation";
 import { LevelDetailsPage } from "../../../components/LevelDetailsPage";
 import Navigation from "../../../components/Navigation";
@@ -28,12 +28,10 @@ export default function LevelPage({
     unlockedLevelIds,
     setUnlockedLevelIds,
     unlockedBadges,
-    user,
     isSanctumOpen,
     setIsSanctumOpen,
     handleXpAwarded,
     handleBadgeUnlocked,
-    handleSignOut,
   } = useGame();
 
   const handleSelectLevelId = (nextId: string) => {
@@ -54,7 +52,6 @@ export default function LevelPage({
         }}
         xp={xp}
         badgesCount={unlockedBadges.length}
-        user={user}
         onOpenSanctum={() => setIsSanctumOpen(true)}
       />
 
@@ -74,8 +71,6 @@ export default function LevelPage({
         xp={xp}
         unlockedBadges={unlockedBadges}
         unlockedLevels={unlockedLevelIds}
-        onAuthSuccess={() => {}}
-        onSignOut={handleSignOut}
       />
     </>
   );

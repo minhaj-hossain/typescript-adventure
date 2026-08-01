@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useRouter } from "next/navigation";
 import Navigation from "../components/Navigation";
 import Home from "../components/Home";
@@ -13,11 +12,9 @@ export default function HomePage() {
     xp,
     unlockedLevelIds,
     unlockedBadges,
-    user,
     wizardTitle,
     isSanctumOpen,
     setIsSanctumOpen,
-    handleSignOut,
   } = useGame();
 
   const handleSelectLevel = (levelId: string) => {
@@ -32,7 +29,6 @@ export default function HomePage() {
         onTabChange={() => {}}
         xp={xp}
         badgesCount={unlockedBadges.length}
-        user={user}
         onOpenSanctum={() => setIsSanctumOpen(true)}
       />
 
@@ -52,8 +48,6 @@ export default function HomePage() {
         xp={xp}
         unlockedBadges={unlockedBadges}
         unlockedLevels={unlockedLevelIds}
-        onAuthSuccess={() => {}}
-        onSignOut={handleSignOut}
       />
     </>
   );

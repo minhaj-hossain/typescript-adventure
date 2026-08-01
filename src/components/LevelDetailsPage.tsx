@@ -10,9 +10,7 @@ import {
   Terminal as TermIcon,
   Zap,
   Check,
-  ArrowRight,
   FileText,
-  CheckCircle2,
   Trophy,
 } from "lucide-react";
 import { STAGES, LEVELS } from "../curriculum";
@@ -25,6 +23,7 @@ import { getStagePrimaryCharacter, CHECKPOINT_LEVEL_IDS } from "../data/characte
 import { formatValidationError } from "../lib/narrativeFeedback";
 import { CHECKPOINT_BADGES, getStageMeta } from "../data/stageMeta";
 import { getEditorErrors } from "../lib/tsValidation";
+import { MonacoEditorInstance, MonacoInstance } from "../lib/monacoTypes";
 import ConceptDiagram from "./ConceptDiagram";
 
 interface LevelDetailsPageProps {
@@ -37,10 +36,26 @@ interface LevelDetailsPageProps {
   onBackToHome: () => void;
 }
 
+let audioContext: AudioContext | null = null;
+
+function getAudioContext(): AudioContext | null {
+  if (typeof window === "undefined") return null;
+  if (!audioContext) {
+    try {
+      audioContext = new (window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext)();
+    } catch {
+      return null;
+    }
+  }
+  return audioContext;
+}
+
 function playChime(type: "success" | "error" | "click") {
-  if (typeof window === "undefined") return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
   try {
-    const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
     if (type === "success") {
       [261.63, 329.63, 392.0, 523.25].forEach((freq, index) => {
         const osc = ctx.createOscillator();
@@ -125,7 +140,8 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
   const nextLevel = currentIdx !== -1 && currentIdx + 1 < LEVELS.length ? LEVELS[currentIdx + 1] : null;
 
   const runValidationRef = useRef<() => void>(() => {});
-  const monacoRef = useRef<{ editor: { getModelMarkers: (filter: object) => { message: string; severity: number; startLineNumber: number }[] } } | null>(null);
+  const monacoRef = useRef<MonacoInstance | null>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setCompletedList(loadCompletedLevels());
@@ -133,6 +149,9 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // Save the current level as the last active level for "Continue" feature
+    localStorage.setItem("last_active_level_id", level.id);
 
     const savedCode = localStorage.getItem(`code_${level.id}`);
     setUserCode(savedCode || level.playground.starterCode);
@@ -263,7 +282,6 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
     stage,
     unlockedLevelIds,
     userCode,
-    activeFile,
   ]);
 
   useEffect(() => {
@@ -287,13 +305,8 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
   }, [showStoryModal, showCompletionModal]);
 
   const handleEditorDidMount = (
-    editor: { addCommand: (key: number, fn: () => void) => void },
-    monaco: {
-      editor: { getModelMarkers: (filter: object) => { message: string; severity: number; startLineNumber: number }[] };
-      languages: { typescript: { typescriptDefaults: { setDiagnosticsOptions: (o: object) => void }; javascriptDefaults: { setDiagnosticsOptions: (o: object) => void } } };
-      KeyMod: { CtrlCmd: number };
-      KeyCode: { Enter: number };
-    },
+    editor: MonacoEditorInstance,
+    monaco: MonacoInstance,
   ) => {
     monacoRef.current = monaco;
     const diagOpts = {
@@ -311,9 +324,15 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
   const handleCodeChange = (val: string | undefined) => {
     const newCode = val || "";
     setUserCode(newCode);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(`code_${level.id}`, newCode);
+    // Debounce localStorage writes to avoid excessive I/O on every keystroke
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
     }
+    saveTimerRef.current = setTimeout(() => {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(`code_${level.id}`, newCode);
+      }
+    }, 500);
   };
 
   const resetCodeToStarter = () => {
@@ -385,66 +404,69 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
 
   return (
     <div className="min-h-screen bg-surface text-on-surface flex flex-col font-sans">
-      <header className="bg-surface-container border-b border-outline-variant/30 shadow-md">
-        <div className="px-6 py-3 flex items-center justify-between gap-4">
+      <header className="bg-surface-container border-b border-outline-variant/30">
+        <div className="px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
+          {/* Left: Back button */}
           <button
             onClick={() => {
               playChime("click");
               onBackToHome();
             }}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-all border border-outline-variant/40 text-xs font-bold cursor-pointer active:scale-95 shrink-0"
+            className="flex items-center gap-1.5 text-on-surface-variant hover:text-on-surface transition-colors text-xs font-bold cursor-pointer shrink-0"
           >
             <ArrowLeft className="w-4 h-4 text-primary" />
-            <span>Academy</span>
+            <span className="hidden sm:inline">Academy</span>
           </button>
 
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl md:text-2xl font-extrabold tracking-tight vibrant-gradient font-sans">
-              TypeScript Learning Game
+          {/* Center: Level title + stage */}
+          <div className="flex-1 flex flex-col items-center text-center min-w-0">
+            <h1 className="text-sm sm:text-lg md:text-xl font-extrabold text-on-surface font-sans truncate w-full">
+              {level.title}
             </h1>
-            <span className="text-xs font-mono font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-lg border border-primary/20 hidden sm:inline">
-              {stage?.title}
-            </span>
+            <div className="flex items-center gap-2 mt-0.5">
+              {stage && (
+                <span className="text-[10px] font-mono font-bold text-primary/80 uppercase tracking-wider truncate">
+                  {stage.title.replace(/^Stage \d+ — /, "")}
+                </span>
+              )}
+              {CHECKPOINT_LEVEL_IDS.has(level.id) && (
+                <span className="text-[10px] text-amber-400 font-bold">★ Checkpoint</span>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center space-x-2 shrink-0">
+          {/* Right: Action buttons */}
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => {
                 playChime("click");
                 setShowStoryModal(true);
               }}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant text-xs font-bold border border-outline-variant/40 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant text-xs font-bold border border-outline-variant/40 transition-colors cursor-pointer"
             >
-              <BookOpen className="w-4 h-4 text-secondary" />
-              <span className="hidden sm:inline">Story & Task</span>
+              <BookOpen className="w-3.5 h-3.5 text-secondary" />
+              <span className="hidden sm:inline">Story</span>
             </button>
-            <div className="flex items-center space-x-1.5 bg-tertiary/10 border border-tertiary/30 px-3 py-1.5 rounded-xl text-tertiary font-bold text-xs">
-              <Zap className="w-3.5 h-3.5 fill-tertiary" />
-              <span>+{level.xpAwarded} XP</span>
+            <div className="flex items-center gap-1 bg-tertiary/10 border border-tertiary/30 px-2.5 py-1.5 rounded-lg text-tertiary font-bold text-xs">
+              <Zap className="w-3 h-3 fill-tertiary" />
+              <span>+{level.xpAwarded}</span>
             </div>
           </div>
         </div>
 
-        <div className="pb-3 px-6 flex flex-col items-center gap-1.5">
-          <div className="w-full max-w-[80%] flex items-center gap-3 text-xs font-mono text-on-surface-variant">
-            <div className="flex items-center gap-1.5 text-secondary font-bold shrink-0">
-              <Trophy className="w-3.5 h-3.5" />
-              <span>{completedCount}/{totalCount}</span>
-            </div>
-            <div className="flex-1 h-2 bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/30">
-              <div
-                className="h-full bg-gradient-to-r from-primary via-secondary to-tertiary transition-all duration-500 rounded-full"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-            <span className="shrink-0 text-on-surface-variant/70">{progressPercent}% complete</span>
+        {/* Subtle progress bar */}
+        <div className="px-3 sm:px-6 pb-2.5 flex items-center gap-2.5 text-[10px] font-mono text-on-surface-variant/60">
+          <div className="flex items-center gap-1 shrink-0">
+            <Trophy className="w-3 h-3 text-secondary/70" />
+            <span>{completedCount}/{totalCount}</span>
           </div>
-          <p className="text-[11px] text-on-surface-variant/60 font-sans">
-            Now playing: <strong className="text-on-surface/80">{level.title}</strong>
-            {CHECKPOINT_LEVEL_IDS.has(level.id) && (
-              <span className="ml-2 text-amber-400 font-bold">★ Checkpoint</span>
-            )}
-          </p>
+          <div className="flex-1 h-1 bg-surface-container-low rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-primary via-secondary to-tertiary transition-all duration-500 rounded-full"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+          <span className="shrink-0">{progressPercent}%</span>
         </div>
       </header>
 
@@ -468,7 +490,7 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
       )}
 
       <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 min-h-0 overflow-y-auto lg:overflow-hidden">
-        <aside className="lg:col-span-4 bg-surface-container-low border-b lg:border-b-0 lg:border-r border-outline-variant/30 p-4 md:p-6 overflow-y-auto space-y-5 md:space-y-6 flex flex-col">
+        <aside className="lg:col-span-4 bg-surface-container-low border-b lg:border-b-0 lg:border-r border-outline-variant/30 p-3 sm:p-4 md:p-6 overflow-y-auto space-y-4 sm:space-y-5 md:space-y-6 flex flex-col max-h-[50vh] lg:max-h-none">
           {level.playground.filesToEdit.length > 0 && (
             <div className="space-y-2">
               <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-primary">
@@ -607,20 +629,20 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
           </div>
         </aside>
 
-        <section className="lg:col-span-8 flex flex-col min-h-[450px] lg:min-h-0 bg-surface">
-          <div className="h-10 bg-surface-container-low border-b border-outline-variant/30 px-4 flex items-center justify-between text-xs">
-            <div className="flex items-center space-x-3">
-              <span className="font-mono text-primary font-bold flex items-center gap-2">
+        <section className="lg:col-span-8 flex flex-col min-h-[400px] sm:min-h-[450px] lg:min-h-0 bg-surface">
+          <div className="h-10 bg-surface-container-low border-b border-outline-variant/30 px-3 sm:px-4 flex items-center justify-between text-xs">
+            <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+              <span className="font-mono text-primary font-bold flex items-center gap-2 shrink-0">
                 <span className="w-2 h-2 rounded-full bg-primary" />
-                {activeFile}
+                <span className="truncate">{activeFile}</span>
               </span>
               {validationStatus === "success" && (
-                <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
+                <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30 shrink-0">
                   Verified Clean
                 </span>
               )}
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
               <button
                 onClick={resetCodeToStarter}
                 className="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors cursor-pointer"
@@ -629,16 +651,16 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
               </button>
               <button
                 onClick={runValidation}
-                className="lift-button flex items-center space-x-2 px-4 py-1.5 rounded-lg bg-gradient-to-r from-primary via-secondary to-tertiary text-neutral-950 font-extrabold text-xs cursor-pointer shadow-md hover:scale-[1.02] active:scale-95 transition-all"
+                className="lift-button flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-4 py-1.5 rounded-lg bg-gradient-to-r from-primary via-secondary to-tertiary text-neutral-950 font-extrabold text-xs cursor-pointer shadow-md hover:scale-[1.02] active:scale-95 transition-all"
               >
                 <Play className="w-3.5 h-3.5 fill-neutral-950" />
-                <span>Verify Code</span>
-                <span className="text-[9px] font-mono opacity-80">(Ctrl+Enter)</span>
+                <span>Verify</span>
+                <span className="text-[9px] font-mono opacity-80 hidden sm:inline">(Ctrl+Enter)</span>
               </button>
             </div>
           </div>
 
-          <div className="flex-1 min-h-[350px]">
+          <div className="flex-1 min-h-[300px] sm:min-h-[350px]">
             <CodeEditor
               height="100%"
               theme="vs-dark"
@@ -656,7 +678,7 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
             />
           </div>
 
-          <div className="h-44 bg-surface-container-lowest border-t border-outline-variant/30 p-4 font-mono text-xs overflow-y-auto space-y-1">
+          <div className="h-32 sm:h-44 bg-surface-container-lowest border-t border-outline-variant/30 p-3 sm:p-4 font-mono text-xs overflow-y-auto space-y-1">
             <div className="flex items-center space-x-2 text-on-surface-variant mb-2 pb-1 border-b border-outline-variant/20">
               <TermIcon className="w-3.5 h-3.5 text-primary" />
               <span className="font-bold uppercase tracking-wider text-[10px] text-primary">

@@ -1,15 +1,12 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { User } from "firebase/auth";
-import { auth, getWizardProgress, saveWizardProgress } from "../lib/firebase";
 
 interface GameContextType {
   xp: number;
   unlockedLevelIds: string[];
   setUnlockedLevelIds: React.Dispatch<React.SetStateAction<string[]>>;
   unlockedBadges: string[];
-  user: User | null;
   wizardTitle: string;
   isSanctumOpen: boolean;
   setIsSanctumOpen: (open: boolean) => void;
@@ -17,7 +14,6 @@ interface GameContextType {
   setShowCelebration: (badgeName: string | null) => void;
   handleXpAwarded: (points: number) => void;
   handleBadgeUnlocked: (badgeId: string, badgeName: string) => void;
-  handleSignOut: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -28,7 +24,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [unlockedLevelIds, setUnlockedLevelIds] = useState<string[]>([
     "level-0-1-bootstrap",
   ]);
-  const [user, setUser] = useState<User | null>(null);
   const [wizardTitle, setWizardTitle] = useState("Primitive Initiate");
   const [isSanctumOpen, setIsSanctumOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState<string | null>(null);
@@ -37,51 +32,12 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const savedXp = localStorage.getItem("wizard_xp");
     const savedBadges = localStorage.getItem("wizard_badges");
     const savedLevels = localStorage.getItem("unlocked_levels");
+    const savedTitle = localStorage.getItem("wizard_title");
     if (savedXp) setXp(Number(savedXp));
     if (savedBadges) setUnlockedBadges(JSON.parse(savedBadges));
     if (savedLevels) setUnlockedLevelIds(JSON.parse(savedLevels));
-
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        handleUserLogin(currentUser.uid);
-      }
-    });
-
-    return unsubscribe;
+    if (savedTitle) setWizardTitle(savedTitle);
   }, []);
-
-  const handleUserLogin = async (uid: string) => {
-    try {
-      const cloudProgress = await getWizardProgress(uid);
-      if (cloudProgress) {
-        const localXp = Number(localStorage.getItem("wizard_xp") || "0");
-        const finalXp = Math.max(localXp, cloudProgress.xp);
-        setXp(finalXp);
-        localStorage.setItem("wizard_xp", String(finalXp));
-
-        const localBadgesStr = localStorage.getItem("wizard_badges");
-        const localBadges: string[] = localBadgesStr ? JSON.parse(localBadgesStr) : [];
-        const mergedBadges = Array.from(new Set([...localBadges, ...cloudProgress.unlockedBadges]));
-        setUnlockedBadges(mergedBadges);
-        localStorage.setItem("wizard_badges", JSON.stringify(mergedBadges));
-
-        const localLevelsStr = localStorage.getItem("unlocked_levels");
-        const localLevels: string[] = localLevelsStr
-          ? JSON.parse(localLevelsStr)
-          : ["level-0-1-bootstrap"];
-        const mergedLevels = Array.from(new Set([...localLevels, ...cloudProgress.unlockedLevels]));
-        setUnlockedLevelIds(mergedLevels);
-        localStorage.setItem("unlocked_levels", JSON.stringify(mergedLevels));
-
-        if (cloudProgress.wizardTitle) {
-          setWizardTitle(cloudProgress.wizardTitle);
-        }
-      }
-    } catch (err) {
-      console.warn("Could not sync profile during login:", err);
-    }
-  };
 
   const handleXpAwarded = (points: number) => {
     setXp((prev) => {
@@ -100,11 +56,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const handleSignOut = () => {
-    setUser(null);
-    setWizardTitle("Primitive Initiate");
-  };
-
   return (
     <GameContext.Provider
       value={{
@@ -112,7 +63,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         unlockedLevelIds,
         setUnlockedLevelIds,
         unlockedBadges,
-        user,
         wizardTitle,
         isSanctumOpen,
         setIsSanctumOpen,
@@ -120,7 +70,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setShowCelebration,
         handleXpAwarded,
         handleBadgeUnlocked,
-        handleSignOut,
       }}
     >
       {children}

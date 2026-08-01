@@ -2,7 +2,7 @@
 
 import React from "react";
 import { GameProvider } from "../context/GameContext";
-import ErrorBoundary from "../components/ErrortBoundary";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
