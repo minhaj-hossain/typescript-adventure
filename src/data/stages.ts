@@ -24,6 +24,8 @@ export const STAGES: Stage[] = [
       "level-1-1-primitives",
       "level-1-2-inference",
       "level-1-3-arrays",
+      "level-1-8-arrays-of-objects",
+      "level-1-9-tuples",
       "level-1-4-objects",
       "level-1-5-functions",
       "level-1-6-function-types",
@@ -43,6 +45,10 @@ export const STAGES: Stage[] = [
       "level-2-4-extension",
       "level-2-5-checkpoint-domain",
       "level-2-6-index-signatures",
+      "level-2-7-object-methods",
+      "level-2-8-destructuring",
+      "level-2-9-rest-spread",
+      "level-2-10-classes",
     ],
   },
   {
@@ -58,6 +64,8 @@ export const STAGES: Stage[] = [
       "level-3-4-discriminated-unions",
       "level-3-5-assertions",
       "level-3-6-type-predicates",
+      "level-3-7-as-const",
+      "level-3-8-intersections",
     ],
   },
   {
@@ -73,6 +81,7 @@ export const STAGES: Stage[] = [
       "level-4-4-required-readonly-record",
       "level-4-5-enums-vs-unions",
       "level-4-6-keyof-operator",
+      "level-4-7-overloads",
     ],
   },
   {
@@ -89,6 +98,7 @@ export const STAGES: Stage[] = [
       "level-5-5-launch-day",
       "level-5-6-state-managers",
       "level-5-7-satisfies-operator",
+      "level-5-8-promises",
     ],
   },
   {

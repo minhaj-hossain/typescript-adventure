@@ -644,4 +644,120 @@ export const LEVEL_SOLUTIONS: Record<string, SolutionDetails> = {
     codeTip:
       "Using 'Extract' on union members is cleaner and more scalable than manually writing individual state parameters.",
   },
+  // ─── NEW LEVEL SOLUTIONS ───
+  "level-1-8-arrays-of-objects": {
+    explanation:
+      "When you have an array where every item is an object with the same shape, you type it by writing the object type followed by `[]`. This tells the compiler exactly what fields each item has.",
+    steps: [
+      "Write the object type: `{ title: string; date: string }`",
+      "Add `[]` after it to make it an array: `{ title: string; date: string }[]`",
+      "Place it after the variable name: `let events: { title: string; date: string }[]`",
+    ],
+    codeExample: `let events: { title: string; date: string }[] = [\n  { title: "Founders Summit", date: "2026-09-01" },\n  { title: "Workshop Day", date: "2026-10-15" }\n];`,
+    codeTip:
+      "Arrays of objects are THE most common data structure in real projects. API responses, database queries, and React state all use this pattern.",
+  },
+  "level-1-9-tuples": {
+    explanation:
+      "A tuple is a fixed-length array where each position has a specific type. Unlike `number[]` which allows any number of numbers, `[number, number]` requires exactly two numbers — no more, no less.",
+    steps: [
+      "Write the tuple type with types for each position: `[number, number]`",
+      "Place it after the variable name: `let coordinate: [number, number]`",
+    ],
+    codeExample: `let coordinate: [number, number] = [40.7128, -74.006];`,
+    codeTip:
+      "Tuples are used in React's `useState` (returns `[value, setter]`), CSV rows, coordinate pairs, and any fixed-structure array.",
+  },
+  "level-2-7-object-methods": {
+    explanation:
+      "Objects can contain functions (methods). To type them, you write the method signature inside the object type — just like a function, but without the `function` keyword.",
+    steps: [
+      "Define the Event interface with title and date fields",
+      "Type the object with method signatures: `getEvents(): Event[]` and `createEvent(event: Event): Event`",
+      "The implementation can stay untyped — the object type enforces the contract",
+    ],
+    codeExample: `const eventService: {\n  getEvents(): Event[];\n  createEvent(event: Event): Event;\n} = {\n  getEvents() { return []; },\n  createEvent(event) { return event; }\n};`,
+    codeTip:
+      "Service objects with typed methods are everywhere — API clients, data layers, utility libraries. This pattern is fundamental.",
+  },
+  "level-2-8-destructuring": {
+    explanation:
+      "Destructuring lets you unpack specific fields from an object into variables. Adding a type annotation after the destructuring pattern ensures the compiler knows the exact shape.",
+    steps: [
+      "Write the destructuring pattern: `const { title, date }`",
+      "Add the type annotation: `: Event`",
+      "Complete the assignment: `= getEvent()`",
+    ],
+    codeExample: `const { title, date }: Event = getEvent();`,
+    codeTip:
+      "Destructuring with types is used in virtually every React component (`const { title } = props`) and API handler.",
+  },
+  "level-2-9-rest-spread": {
+    explanation:
+      "Rest parameters (`...names`) collect all remaining arguments into a single array. Typing them is simple: just add `: Type[]` after the parameter name.",
+    steps: [
+      "Add the rest parameter type: `...names: string[]`",
+      "Add the return type: `): number`",
+    ],
+    codeExample: `function checkIn(...names: string[]): number {\n  return names.length;\n}`,
+    codeTip:
+      "Rest parameters are used in every utility library and in React component props. Spread (`...arr`) is the inverse — it expands an array into individual arguments.",
+  },
+  "level-2-10-classes": {
+    explanation:
+      "TypeScript classes support access modifiers: `private` (only accessible inside the class), `public` (accessible everywhere), and `readonly` (immutable after construction). These give you real encapsulation.",
+    steps: [
+      "Add `private` before the events field: `private events: Event[]`",
+      "Type the events array as `Event[]`",
+      "Type the add method: `add(event: Event): void`",
+      "Add `public` before the add method (optional but explicit)",
+    ],
+    codeExample: `class EventManager {\n  private events: Event[] = [];\n  public add(event: Event): void {\n    this.events.push(event);\n  }\n}`,
+    codeTip:
+      "Classes are fundamental in OOP projects — services, controllers, repositories, and data models all use classes with typed properties and methods.",
+  },
+  "level-3-7-as-const": {
+    explanation:
+      "`as const` makes every property of an object `readonly` and every value a literal type. Instead of `number`, the value `3` becomes the literal type `3`.",
+    steps: [
+      "Add `as const` after the closing brace of the object literal",
+    ],
+    codeExample: `const config = {\n  retries: 3,\n  environment: "production",\n  port: 3000\n} as const;`,
+    codeTip:
+      "`as const` is used for config objects, action types in Redux, and anywhere you need exact literal types from object literals.",
+  },
+  "level-3-8-intersections": {
+    explanation:
+      "Intersection types combine multiple types into one using the `&` operator. The result requires ALL properties from ALL combined types — it's an AND, not an OR.",
+    steps: [
+      "Use the `&` operator between Event and the audit fields type",
+      "Write: `Event & { createdAt: string; createdBy: string }`",
+    ],
+    codeExample: `type AuditedEvent = Event & { createdAt: string; createdBy: string };`,
+    codeTip:
+      "Intersections are used for mixins, adding metadata, combining utility types, and extending third-party types without modifying them.",
+  },
+  "level-4-7-overloads": {
+    explanation:
+      "Function overloads let you write multiple signatures for the same function. Each signature specifies exact parameter and return types. The implementation signature must be compatible with all overloads.",
+    steps: [
+      "Write the first overload: `function process(input: string): string;`",
+      "Write the second overload: `function process(input: number): number;`",
+      "Keep the implementation signature with the union type",
+    ],
+    codeExample: `function process(input: string): string;\nfunction process(input: number): number;\nfunction process(input: string | number): string | number {\n  return input;\n}`,
+    codeTip:
+      "Overloads are common in library APIs — `document.createElement('div')` returns `HTMLDivElement`, `createElement('canvas')` returns `HTMLCanvasElement`.",
+  },
+  "level-5-8-promises": {
+    explanation:
+      "Async functions always return a Promise. `Promise<T>` is a generic type where you specify what the async function resolves to — like `Promise<Event[]>`.",
+    steps: [
+      "Add the return type after the closing paren: `): Promise<Event[]>`",
+      "Keep the `async` keyword",
+    ],
+    codeExample: `async function fetchEvents(): Promise<Event[]> {\n  const response = await fetch("/api/events");\n  const data: Event[] = await response.json();\n  return data;\n}`,
+    codeTip:
+      "Promise types are essential for any async code — API calls, database queries, file reads. Without them, you lose all type safety in async functions.",
+  },
 };

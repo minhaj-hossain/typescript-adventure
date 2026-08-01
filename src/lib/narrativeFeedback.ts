@@ -167,6 +167,116 @@ export const PREDICTION_QUESTIONS: Record<string, PredictionQuestion> = {
     explanation:
       "Branded types use a phantom property to make structurally identical types distinct to the compiler, preventing dangerous mix-ups between same-shaped IDs.",
   },
+  "level-1-8-arrays-of-objects": {
+    question: "How do you type an array where every item is an object with `title` and `date`?",
+    options: [
+      "`{ title: string; date: string }`",
+      "`{ title: string; date: string }[]`",
+      "`Array<{ title; date }>`",
+    ],
+    correctAnswerIndex: 1,
+    explanation:
+      "The object type goes first, then `[]` makes it an array. This is THE most common pattern in real projects — API responses, database queries, and React state all use arrays of objects.",
+  },
+  "level-1-9-tuples": {
+    question: "What's the difference between `number[]` and `[number, number]`?",
+    options: [
+      "They are the same — both allow any number of numbers",
+      "`number[]` allows any length; `[number, number]` requires exactly two numbers",
+      "`[number, number]` is faster at runtime",
+    ],
+    correctAnswerIndex: 1,
+    explanation:
+      "A tuple is a fixed-length array where each position has a specific type. `number[]` allows any number of elements; `[number, number]` requires exactly two.",
+  },
+  "level-2-7-object-methods": {
+    question: "How do you type an object method that returns `Event[]`?",
+    options: [
+      "`getEvents: () => Event[]`",
+      "`getEvents(): Event[]`",
+      "`getEvents -> Event[]`",
+    ],
+    correctAnswerIndex: 1,
+    explanation:
+      "Object method types use the same syntax as function signatures: `methodName(params): returnType`. No `function` keyword needed inside an object type.",
+  },
+  "level-2-8-destructuring": {
+    question: "Where does the type annotation go in destructuring?",
+    options: [
+      "After the variable name: `const { title }title: Event = ...`",
+      "After the destructuring pattern: `const { title, date }: Event = ...`",
+      "Before the variable name: `const Event { title } = ...`",
+    ],
+    correctAnswerIndex: 1,
+    explanation:
+      "The type goes after the closing brace of the destructuring pattern, before the `=` sign. This tells the compiler what shape the destructured source should have.",
+  },
+  "level-2-9-rest-spread": {
+    question: "How do you type a rest parameter that collects string arguments?",
+    options: [
+      "`...names: string`",
+      "`...names: string[]`",
+      "`...names: Array`",
+    ],
+    correctAnswerIndex: 1,
+    explanation:
+      "Rest parameters collect all remaining arguments into an array, so the type is always an array type: `...names: string[]`.",
+  },
+  "level-2-10-classes": {
+    question: "What does `private` do in a TypeScript class?",
+    options: [
+      "It makes the field invisible at runtime",
+      "It prevents access from outside the class — only the class's own methods can touch it",
+      "It makes the field read-only",
+    ],
+    correctAnswerIndex: 1,
+    explanation:
+      "`private` is an access modifier that restricts access to within the class. It gives you real encapsulation — the events array can only be modified through the class's methods.",
+  },
+  "level-3-7-as-const": {
+    question: "What does `as const` do to an object literal?",
+    options: [
+      "It makes the object immutable at runtime",
+      "It makes every property `readonly` and every value a literal type at the type level",
+      "It converts the object to a const variable",
+    ],
+    correctAnswerIndex: 1,
+    explanation:
+      "`as const` tells the compiler to infer the narrowest possible type — every property becomes `readonly` and every value becomes its literal type (e.g., `3` instead of `number`).",
+  },
+  "level-3-8-intersections": {
+    question: "What does `Event & { createdAt: string }` require?",
+    options: [
+      "Either the Event fields OR the createdAt field",
+      "ALL Event fields AND the createdAt field",
+      "Only the createdAt field",
+    ],
+    correctAnswerIndex: 1,
+    explanation:
+      "The `&` operator creates an intersection — the result must satisfy ALL types. It's an AND, not an OR. Every property from both sides must be present.",
+  },
+  "level-4-7-overloads": {
+    question: "Why use function overloads instead of a single union return type?",
+    options: [
+      "Overloads run faster at runtime",
+      "Each overload gives a precise return type for each input type, instead of a loose union",
+      "Overloads are required by TypeScript",
+    ],
+    correctAnswerIndex: 1,
+    explanation:
+      "A single `string | number` return type is too loose — callers have to narrow it themselves. Overloads give each input a precise return type, so `process('hello')` is known to return `string`.",
+  },
+  "level-5-8-promises": {
+    question: "What does `Promise<Event[]>` tell the compiler?",
+    options: [
+      "The function returns an array of Events synchronously",
+      "The function returns a Promise that, when resolved, gives you an `Event[]`",
+      "The function returns an Event inside a Promise",
+    ],
+    correctAnswerIndex: 1,
+    explanation:
+      "`Promise<T>` is a generic type — `T` is what the async function resolves to. `Promise<Event[]>` means: when you `await` this, you get an `Event[]`.",
+  },
 };
 
 export function getPredictionQuestion(levelId: string): PredictionQuestion | null {

@@ -120,4 +120,146 @@ export const REFERENCE_LIBRARY: ReferenceEntry[] = [
     relatedTerms: ["ref-utility-types"],
     seeAlsoLevels: ["level-4-1-generics"],
   },
+  // ─── NEW ENTRIES: Missing Fundamental Concepts ───
+  {
+    id: "ref-arrays-of-objects",
+    term: "Arrays of Objects",
+    category: "Basics",
+    shortExplanation:
+      "An array of objects types a list where every item shares the same object shape, e.g., `{ title: string; date: string }[]`.",
+    syntax:
+      "let events: { title: string; date: string }[] = [\n  { title: 'Summit', date: '2026-01-01' }\n];",
+    commonPitfalls: [
+      "Using any[] instead of a typed array, losing all field safety.",
+      "Forgetting the object type and typing it as object[] instead, which allows any shape.",
+    ],
+    relatedTerms: ["ref-generics"],
+    seeAlsoLevels: ["level-1-8-arrays-of-objects"],
+  },
+  {
+    id: "ref-tuples",
+    term: "Tuples",
+    category: "Basics",
+    shortExplanation:
+      "A tuple is a fixed-length array where each position has a specific type, e.g., `[number, number]` for coordinates.",
+    syntax:
+      "let coordinate: [number, number] = [40.7, -74.0];",
+    commonPitfalls: [
+      "Confusing tuples with arrays — number[] allows any length, [number, number] requires exactly two.",
+    ],
+    relatedTerms: ["ref-arrays-of-objects"],
+    seeAlsoLevels: ["level-1-9-tuples"],
+  },
+  {
+    id: "ref-object-methods",
+    term: "Object Methods",
+    category: "Basics",
+    shortExplanation:
+      "Objects can contain functions typed as method signatures inside the object type, e.g., `getEvents(): Event[]`.",
+    syntax:
+      "const service: {\n  getEvents(): Event[];\n  createEvent(e: Event): Event;\n} = { ... };",
+    commonPitfalls: [
+      "Forgetting return types on methods, falling back to implicit any.",
+    ],
+    relatedTerms: ["ref-interfaces"],
+    seeAlsoLevels: ["level-2-7-object-methods"],
+  },
+  {
+    id: "ref-destructuring",
+    term: "Destructuring with Types",
+    category: "Basics",
+    shortExplanation:
+      "Destructuring unpacks fields from an object into variables; a type annotation after the pattern ensures safety.",
+    syntax:
+      "const { title, date }: Event = getEvent();",
+    commonPitfalls: [
+      "Placing the type annotation before the destructuring pattern, which is a syntax error.",
+    ],
+    relatedTerms: ["ref-object-methods"],
+    seeAlsoLevels: ["level-2-8-destructuring"],
+  },
+  {
+    id: "ref-rest-spread",
+    term: "Rest Parameters & Spread",
+    category: "Basics",
+    shortExplanation:
+      "Rest parameters (`...names: string[]`) collect all arguments into a typed array; spread (`...arr`) expands an array into arguments.",
+    syntax:
+      "function checkIn(...names: string[]): number { return names.length; }",
+    commonPitfalls: [
+      "Typing a rest parameter as a single value instead of an array: `...name: string` is wrong.",
+    ],
+    relatedTerms: ["ref-destructuring"],
+    seeAlsoLevels: ["level-2-9-rest-spread"],
+  },
+  {
+    id: "ref-classes",
+    term: "Classes",
+    category: "Basics",
+    shortExplanation:
+      "TypeScript classes support access modifiers (private, public, readonly) for encapsulation and typed properties.",
+    syntax:
+      "class EventManager { private events: Event[] = []; public add(e: Event): void { ... } }",
+    commonPitfalls: [
+      "Relying solely on convention instead of using private to enforce encapsulation.",
+    ],
+    relatedTerms: ["ref-interfaces"],
+    seeAlsoLevels: ["level-2-10-classes"],
+  },
+  {
+    id: "ref-as-const",
+    term: "as const",
+    category: "Advanced Types",
+    shortExplanation:
+      "`as const` makes every property readonly and every value a literal type, locking an object literal into its exact shape.",
+    syntax:
+      "const config = { retries: 3, env: 'prod' } as const;",
+    commonPitfalls: [
+      "Confusing readonly at the type level with immutability at runtime — `as const` doesn't freeze the object.",
+    ],
+    relatedTerms: ["ref-literal-types"],
+    seeAlsoLevels: ["level-3-7-as-const"],
+  },
+  {
+    id: "ref-intersections",
+    term: "Intersection Types (&)",
+    category: "Advanced Types",
+    shortExplanation:
+      "The `&` operator combines multiple types into one, requiring ALL properties from ALL types — it's an AND, not an OR.",
+    syntax:
+      "type AuditedEvent = Event & { createdAt: string; createdBy: string };",
+    commonPitfalls: [
+      "Confusing `&` (intersection, AND) with `|` (union, OR).",
+    ],
+    relatedTerms: ["ref-unions"],
+    seeAlsoLevels: ["level-3-8-intersections"],
+  },
+  {
+    id: "ref-function-overloads",
+    term: "Function Overloads",
+    category: "Advanced Types",
+    shortExplanation:
+      "Function overloads let you write multiple precise signatures for one function, so each input maps to a precise return type.",
+    syntax:
+      "function process(input: string): string;\nfunction process(input: number): number;\nfunction process(input: string | number): string | number { ... }",
+    commonPitfalls: [
+      "Forgetting that the implementation signature is not visible to callers — only the overload signatures are.",
+    ],
+    relatedTerms: ["ref-generics"],
+    seeAlsoLevels: ["level-4-7-overloads"],
+  },
+  {
+    id: "ref-promises",
+    term: "Promise Types",
+    category: "Advanced Types",
+    shortExplanation:
+      "`Promise<T>` is a generic type that declares what an async function resolves to, so callers can safely await the result.",
+    syntax:
+      "async function fetchEvents(): Promise<Event[]> { ... }",
+    commonPitfalls: [
+      "Omitting the return type so the compiler infers Promise<any>, losing all type safety on the resolved value.",
+    ],
+    relatedTerms: ["ref-generics"],
+    seeAlsoLevels: ["level-5-8-promises"],
+  },
 ];

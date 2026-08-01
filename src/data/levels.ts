@@ -2727,4 +2727,501 @@ export const LEVELS: Level[] = [
       ],
     },
   },
+  // ─── NEW LEVELS: Missing Fundamentals ───
+  {
+    id: "level-1-8-arrays-of-objects",
+    title: "Arrays of Objects",
+    moduleName: "The Primitive Runes",
+    difficulty: "easy",
+    xpAwarded: 60,
+    story: {
+      title: "The Event Roster",
+      narrative: [
+        {
+          type: "narration",
+          text: "Evans hands you a list of events from the database. Each event is an object with a title and a date.",
+        },
+        {
+          type: "dialogue",
+          speaker: "evans",
+          text: '"The database returns an array of event objects. Right now it\'s untyped — `any[]`. I need you to type it as an array of objects so the compiler knows exactly what shape each item has."',
+        },
+        {
+          type: "narration",
+          text: "Evans shows you the pattern: instead of `string[]`, you use an object type followed by `[]` — like `{ title: string; date: string }[]`.",
+        },
+      ],
+      realWorldContext:
+        "Arrays of objects are THE most common data structure in real projects. API responses, database queries, and React state all use arrays of objects.",
+      taskDescription:
+        "Type `events` as an array of objects, where each object has `title: string` and `date: string`.",
+      previousOutcome:
+        "You mastered primitive arrays like `string[]`. Now the database returns structured data — arrays of objects.",
+    },
+    playground: {
+      starterCode:
+        'let events = [\n  { title: "Founders Summit", date: "2026-09-01" },\n  { title: "Workshop Day", date: "2026-10-15" }\n];',
+      solutionCode:
+        'let events: { title: string; date: string }[] = [\n  { title: "Founders Summit", date: "2026-09-01" },\n  { title: "Workshop Day", date: "2026-10-15" }\n];',
+      objectives: [
+        "Type the events variable as an array",
+        "Each item must have title: string and date: string",
+      ],
+      hints: [
+        "The type goes before the = sign: `let events: TYPE[] = ...`",
+        "The object type is `{ title: string; date: string }`",
+        "Combine them: `{ title: string; date: string }[]`",
+      ],
+      filesToEdit: ["events.ts"],
+    },
+    validation: {
+      requiredKeywords: ["{ title: string; date: string }[]"],
+    },
+  },
+  {
+    id: "level-1-9-tuples",
+    title: "Tuples — Fixed-Shape Arrays",
+    moduleName: "The Primitive Runes",
+    difficulty: "easy",
+    xpAwarded: 60,
+    story: {
+      title: "GPS Coordinates",
+      narrative: [
+        {
+          type: "narration",
+          text: "Tasnim is building a map feature. Each venue has a GPS coordinate — exactly two numbers: latitude and longitude.",
+        },
+        {
+          type: "dialogue",
+          speaker: "tasnim",
+          text: '"A regular array like `number[]` allows any number of elements. But GPS coordinates always have exactly two numbers. TypeScript has a special type for this: a **tuple** — `[number, number]`."',
+        },
+        {
+          type: "narration",
+          text: "Tasnim explains that tuples are fixed-length arrays where each position has a specific type.",
+        },
+      ],
+      realWorldContext:
+        "Tuples are used in React's `useState` (returns `[value, setter]`), CSV rows, coordinate pairs, and any fixed-structure array.",
+      taskDescription:
+        "Type `coordinate` as a tuple of exactly two numbers: `[number, number]`.",
+      previousOutcome:
+        "You learned arrays of objects. Now you need a fixed-length array — a tuple.",
+    },
+    playground: {
+      starterCode: "let coordinate = [40.7128, -74.006];",
+      solutionCode: "let coordinate: [number, number] = [40.7128, -74.006];",
+      objectives: [
+        "Type coordinate as a tuple",
+        "The tuple must be exactly [number, number]",
+      ],
+      hints: [
+        "Tuples use square brackets with types inside: `[type1, type2]`",
+        "For two numbers: `[number, number]`",
+      ],
+      filesToEdit: ["coordinate.ts"],
+    },
+    validation: {
+      requiredKeywords: ["[number, number]"],
+    },
+  },
+  {
+    id: "level-2-7-object-methods",
+    title: "Objects with Methods",
+    moduleName: "The Structural Guild",
+    difficulty: "easy",
+    xpAwarded: 65,
+    story: {
+      title: "The Event Service Object",
+      narrative: [
+        {
+          type: "narration",
+          text: "Apurba is refactoring the event service. Instead of standalone functions, she wants a single service object with methods.",
+        },
+        {
+          type: "dialogue",
+          speaker: "apurba",
+          text: '"In real projects, you often group related functions into a service object. But we need to type the methods too — the return type of `getEvents()` should be `Event[]`, not `any`."',
+        },
+        {
+          type: "narration",
+          text: "Apurba shows you that object methods are typed just like function signatures, but inside the object type.",
+        },
+      ],
+      realWorldContext:
+        "Service objects with typed methods are everywhere — API clients, data layers, utility libraries. You need to know how to type them.",
+      taskDescription:
+        "Type the `eventService` object so that `getEvents()` returns `Event[]` and `createEvent()` takes an `Event` and returns `Event`.",
+      previousOutcome:
+        "You mastered interfaces and type aliases. Now you need to type objects that contain functions.",
+    },
+    playground: {
+      starterCode:
+        'const eventService = {\n  getEvents() {\n    return [];\n  },\n  createEvent(event) {\n    return event;\n  }\n};',
+      solutionCode:
+        'interface Event {\n  title: string;\n  date: string;\n}\n\nconst eventService: {\n  getEvents(): Event[];\n  createEvent(event: Event): Event;\n} = {\n  getEvents() {\n    return [];\n  },\n  createEvent(event) {\n    return event;\n  }\n};',
+      objectives: [
+        "Type getEvents() to return Event[]",
+        "Type createEvent() to accept and return Event",
+      ],
+      hints: [
+        "Object method types look like: `methodName(params): returnType`",
+        "getEvents(): Event[] means it returns an array of Event",
+        "createEvent(event: Event): Event means it takes and returns an Event",
+      ],
+      filesToEdit: ["event-service.ts"],
+    },
+    validation: {
+      requiredKeywords: ["getEvents(): Event[]", "createEvent(event: Event): Event"],
+    },
+  },
+  {
+    id: "level-2-8-destructuring",
+    title: "Destructuring with Types",
+    moduleName: "The Structural Guild",
+    difficulty: "easy",
+    xpAwarded: 65,
+    story: {
+      title: "Unpacking the Event",
+      narrative: [
+        {
+          type: "narration",
+          text: "Minhaj is reviewing your code. You keep accessing `event.title` and `event.date` repeatedly.",
+        },
+        {
+          type: "dialogue",
+          speaker: "minhaj",
+          text: '"Use destructuring! Instead of `event.title`, write `const { title, date } = event`. But don\'t forget the type annotation — `const { title, date }: Event = event`."',
+        },
+        {
+          type: "narration",
+          text: "Minhaj explains that destructuring with types makes your code cleaner and safer at the same time.",
+        },
+      ],
+      realWorldContext:
+        "Destructuring is used in virtually every React component (`const { title } = props`) and API handler. Typing it ensures safety.",
+      taskDescription:
+        "Destructure `title` and `date` from `getEvent()` with the correct `Event` type annotation.",
+      previousOutcome:
+        "You learned object methods. Now let's make accessing object properties cleaner with typed destructuring.",
+    },
+    playground: {
+      starterCode:
+        'interface Event {\n  title: string;\n  date: string;\n  capacity: number;\n}\n\nfunction getEvent(): Event {\n  return { title: "Founders Summit", date: "2026-09-01", capacity: 200 };\n}\n\nconst { title, date } = getEvent();',
+      solutionCode:
+        'interface Event {\n  title: string;\n  date: string;\n  capacity: number;\n}\n\nfunction getEvent(): Event {\n  return { title: "Founders Summit", date: "2026-09-01", capacity: 200 };\n}\n\nconst { title, date }: Event = getEvent();',
+      objectives: [
+        "Add the Event type annotation to the destructuring",
+        "Keep the destructured variables: title and date",
+      ],
+      hints: [
+        "The type goes after the destructuring pattern: `const { title, date }: Event = ...`",
+        "The colon and type go before the = sign",
+      ],
+      filesToEdit: ["destructuring.ts"],
+    },
+    validation: {
+      requiredKeywords: ["{ title, date }: Event"],
+    },
+  },
+  {
+    id: "level-2-9-rest-spread",
+    title: "Rest Parameters & Spread",
+    moduleName: "The Structural Guild",
+    difficulty: "easy",
+    xpAwarded: 65,
+    story: {
+      title: "The Flexible Check-in Function",
+      narrative: [
+        {
+          type: "narration",
+          text: "Evans needs a function that accepts any number of attendee names at check-in.",
+        },
+        {
+          type: "dialogue",
+          speaker: "evans",
+          text: '"Sometimes we check in one person, sometimes fifty. I need a **rest parameter** — `...names` — that collects all arguments into a single typed array. Type it as `...names: string[]`."',
+        },
+        {
+          type: "narration",
+          text: "Evans also shows you the spread operator for passing arrays as arguments.",
+        },
+      ],
+      realWorldContext:
+        "Rest parameters are used in every utility library (lodash, ramda) and in React component props. Spread is used to merge arrays and objects.",
+      taskDescription:
+        "Type the `checkIn` function's rest parameter as `...names: string[]` and give it a `number` return type.",
+      previousOutcome:
+        "You learned destructuring. Now let's handle functions that accept variable numbers of arguments.",
+    },
+    playground: {
+      starterCode:
+        "function checkIn(...names) {\n  return names.length;\n}",
+      solutionCode:
+        "function checkIn(...names: string[]): number {\n  return names.length;\n}",
+      objectives: [
+        "Type the rest parameter as ...names: string[]",
+        "Add a number return type annotation",
+      ],
+      hints: [
+        "Rest parameters use ... followed by a name and type",
+        "The type is an array: `...names: string[]`",
+        "Don't forget the return type: `): number`",
+      ],
+      filesToEdit: ["check-in.ts"],
+    },
+    validation: {
+      requiredKeywords: ["...names: string[]", "): number"],
+    },
+  },
+  {
+    id: "level-2-10-classes",
+    title: "TypeScript Classes",
+    moduleName: "The Structural Guild",
+    difficulty: "medium",
+    xpAwarded: 75,
+    story: {
+      title: "The Event Manager Class",
+      narrative: [
+        {
+          type: "narration",
+          text: "Tasnim wants to organize the event logic into a proper class with access modifiers.",
+        },
+        {
+          type: "dialogue",
+          speaker: "tasnim",
+          text: '"Classes in TypeScript have access modifiers: `private`, `public`, and `readonly`. I need an `EventManager` class with a private events array and a public `add` method."',
+        },
+        {
+          type: "narration",
+          text: "Tasnim explains that TypeScript classes give you encapsulation — the events array is private, so only the class's methods can touch it.",
+        },
+      ],
+      realWorldContext:
+        "Classes are fundamental in OOP projects — services, controllers, repositories, and data models all use classes with typed properties and methods.",
+      taskDescription:
+        "Create an `EventManager` class with a `private events: Event[]` field and a public `add(event: Event): void` method.",
+      previousOutcome:
+        "You learned rest parameters and spread. Now let's build a proper class with access modifiers.",
+    },
+    playground: {
+      starterCode:
+        'interface Event {\n  title: string;\n  date: string;\n}\n\nclass EventManager {\n  events = [];\n\n  add(event) {\n    this.events.push(event);\n  }\n}',
+      solutionCode:
+        'interface Event {\n  title: string;\n  date: string;\n}\n\nclass EventManager {\n  private events: Event[] = [];\n\n  public add(event: Event): void {\n    this.events.push(event);\n  }\n}',
+      objectives: [
+        "Make events private with type Event[]",
+        "Type the add method with event: Event and void return",
+        "Add public modifier to add method",
+      ],
+      hints: [
+        "Private fields use `private` before the name: `private events: Event[]`",
+        "Method types go in the parameter and return: `add(event: Event): void`",
+        "Public is the default, but you can write it explicitly",
+      ],
+      filesToEdit: ["event-manager.ts"],
+    },
+    validation: {
+      requiredKeywords: ["private events: Event[]", "add(event: Event): void"],
+    },
+  },
+  {
+    id: "level-3-7-as-const",
+    title: "as const Assertions",
+    moduleName: "The Shapeshifter's Path",
+    difficulty: "easy",
+    xpAwarded: 65,
+    story: {
+      title: "The Immutable Config",
+      narrative: [
+        {
+          type: "narration",
+          text: "Jordan is locking down the app configuration. He wants the compiler to treat every value as a literal type.",
+        },
+        {
+          type: "dialogue",
+          speaker: "jordan",
+          text: '"When you write `const config = { retries: 3 }`, TypeScript infers `number` for retries. But with `as const`, it becomes the literal `3` — immutable and exact."',
+        },
+        {
+          type: "narration",
+          text: "Jordan explains that `as const` makes every property `readonly` and every value a literal type.",
+        },
+      ],
+      realWorldContext:
+        "`as const` is used for config objects, action types in Redux, and anywhere you need exact literal types from object literals.",
+      taskDescription:
+        "Add `as const` to the `config` object so all values become readonly literal types.",
+      previousOutcome:
+        "You learned classes with access modifiers. Now let's make object literals deeply immutable with `as const`.",
+    },
+    playground: {
+      starterCode:
+        'const config = {\n  retries: 3,\n  environment: "production",\n  port: 3000\n};',
+      solutionCode:
+        'const config = {\n  retries: 3,\n  environment: "production",\n  port: 3000\n} as const;',
+      objectives: [
+        "Add as const at the end of the object",
+        "All properties should become readonly literals",
+      ],
+      hints: [
+        "`as const` goes after the closing brace",
+        "Write: `} as const;`",
+      ],
+      filesToEdit: ["config.ts"],
+    },
+    validation: {
+      requiredKeywords: ["as const"],
+    },
+  },
+  {
+    id: "level-3-8-intersections",
+    title: "Intersection Types",
+    moduleName: "The Shapeshifter's Path",
+    difficulty: "medium",
+    xpAwarded: 70,
+    story: {
+      title: "Combining the Audit Trail",
+      narrative: [
+        {
+          type: "narration",
+          text: "Evans needs to add audit fields to the Event type without modifying the original interface.",
+        },
+        {
+          type: "dialogue",
+          speaker: "evans",
+          text: '"Instead of duplicating Event, I use an **intersection type** — `Event & { createdAt: string; createdBy: string }`. The `&` operator combines both types into one."',
+        },
+        {
+          type: "narration",
+          text: "Evans explains that intersections require ALL properties from ALL combined types — it's an AND, not an OR.",
+        },
+      ],
+      realWorldContext:
+        "Intersection types are used for mixins, adding metadata, combining utility types, and extending third-party types without modifying them.",
+      taskDescription:
+        "Create an `AuditedEvent` type that is the intersection of `Event` and an audit object with `createdAt: string` and `createdBy: string`.",
+      previousOutcome:
+        "You learned `as const` for immutability. Now let's combine types with intersections.",
+    },
+    playground: {
+      starterCode:
+        'interface Event {\n  title: string;\n  date: string;\n}\n\ntype AuditedEvent = Event;',
+      solutionCode:
+        'interface Event {\n  title: string;\n  date: string;\n}\n\ntype AuditedEvent = Event & { createdAt: string; createdBy: string };',
+      objectives: [
+        "Use the & operator to combine Event with audit fields",
+        "Include createdAt: string and createdBy: string",
+      ],
+      hints: [
+        "The & operator combines types: `TypeA & TypeB`",
+        "Both sides must be satisfied — all properties from both types",
+        "Write: `Event & { createdAt: string; createdBy: string }`",
+      ],
+      filesToEdit: ["audited-event.ts"],
+    },
+    validation: {
+      requiredKeywords: ["Event & { createdAt: string; createdBy: string }"],
+    },
+  },
+  {
+    id: "level-4-7-overloads",
+    title: "Function Overloads",
+    moduleName: "The Generic Alchemists",
+    difficulty: "medium",
+    xpAwarded: 75,
+    story: {
+      title: "The Flexible Processor",
+      narrative: [
+        {
+          type: "narration",
+          text: "Tasnim has a utility function that processes either a string or a number. She wants the return type to match the input — string in, string out; number in, number out.",
+        },
+        {
+          type: "dialogue",
+          speaker: "tasnim",
+          text: '"A union return type like `string | number` is too loose. I need **function overloads** — multiple signatures that tell the compiler exactly what comes out for each input."',
+        },
+        {
+          type: "narration",
+          text: "Tasnim shows you the pattern: write the overload signatures first, then the implementation.",
+        },
+      ],
+      realWorldContext:
+        "Function overloads are common in library APIs — `document.createElement('div')` returns `HTMLDivElement`, `createElement('canvas')` returns `HTMLCanvasElement`, etc.",
+      taskDescription:
+        "Add two overload signatures: one for `string` input returning `string`, and one for `number` input returning `number`.",
+      previousOutcome:
+        "You learned intersection types. Now let's give functions multiple precise signatures with overloads.",
+    },
+    playground: {
+      starterCode:
+        'function process(input: string | number): string | number {\n  return input;\n}',
+      solutionCode:
+        'function process(input: string): string;\nfunction process(input: number): number;\nfunction process(input: string | number): string | number {\n  return input;\n}',
+      objectives: [
+        "Add an overload signature for string input returning string",
+        "Add an overload signature for number input returning number",
+        "Keep the implementation signature",
+      ],
+      hints: [
+        "Overloads are multiple function signatures before the implementation",
+        "Each overload has specific parameter and return types",
+        "The implementation signature must be compatible with all overloads",
+      ],
+      filesToEdit: ["process.ts"],
+    },
+    validation: {
+      requiredKeywords: ["function process(input: string): string", "function process(input: number): number"],
+    },
+  },
+  {
+    id: "level-5-8-promises",
+    title: "Promise Types",
+    moduleName: "The Frontend Convergence",
+    difficulty: "medium",
+    xpAwarded: 75,
+    story: {
+      title: "The Async Fetch",
+      narrative: [
+        {
+          type: "narration",
+          text: "Evans is writing an async function to fetch events from the API. Without types, the return is `Promise<any>` — unsafe.",
+        },
+        {
+          type: "dialogue",
+          speaker: "evans",
+          text: '"Async functions always return a Promise. But I need to tell the compiler WHAT\'S inside the Promise — `Promise<Event[]>`, not `Promise<any>`."',
+        },
+        {
+          type: "narration",
+          text: "Evans explains that `Promise<T>` is a generic type — you specify what the async function resolves to.",
+        },
+      ],
+      realWorldContext:
+        "Promise types are essential for any async code — API calls, database queries, file reads. Without them, you lose all type safety in async functions.",
+      taskDescription:
+        "Type the `fetchEvents` function to return `Promise<Event[]>`.",
+      previousOutcome:
+        "You learned function overloads. Now let's type async functions with Promise<T>.",
+    },
+    playground: {
+      starterCode:
+        'interface Event {\n  title: string;\n  date: string;\n}\n\nasync function fetchEvents() {\n  const response = await fetch("/api/events");\n  const data: Event[] = await response.json();\n  return data;\n}',
+      solutionCode:
+        'interface Event {\n  title: string;\n  date: string;\n}\n\nasync function fetchEvents(): Promise<Event[]> {\n  const response = await fetch("/api/events");\n  const data: Event[] = await response.json();\n  return data;\n}',
+      objectives: [
+        "Add Promise<Event[]> as the return type",
+        "Keep the async keyword",
+      ],
+      hints: [
+        "The return type goes after the closing paren: `): Promise<Event[]>`",
+        "Promise is a generic type — specify what's inside: `Promise<Event[]>`",
+      ],
+      filesToEdit: ["fetch-events.ts"],
+    },
+    validation: {
+      requiredKeywords: ["Promise<Event[]>"],
+    },
+  },
 ];
