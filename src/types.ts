@@ -4,6 +4,10 @@ export interface Stage {
   description: string;
   order: number;
   levelIds: string[];
+  storyHook?: string;
+  completionBeat?: string;
+  badgeId?: string;
+  badgeName?: string;
 }
 
 export interface Level {
@@ -14,10 +18,11 @@ export interface Level {
   xpAwarded: number;
   story: {
     title: string;
-    narrative: { type: "narration" | "dialogue"; text: string }[];
+    narrative: { type: "narration" | "dialogue"; text: string; speaker?: string }[];
     realWorldContext: string;
     taskDescription: string;
     previousOutcome: string;
+    completionBeat?: string;
   };
   playground: {
     starterCode: string;

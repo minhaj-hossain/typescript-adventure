@@ -1,5 +1,6 @@
 import React from "react";
 import "../index.css";
+import Providers from "./providers";
 
 export const metadata = {
   title: "TypeScript Adventure | Academy",
@@ -24,7 +25,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-background text-on-background flex flex-col font-sans">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

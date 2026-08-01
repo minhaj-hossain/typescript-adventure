@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import Navigation from "../components/Navigation";
 import Home from "../components/Home";
 import WizardSanctum from "../components/WizardSanctum";
-import { GameProvider, useGame } from "../context/GameContext";
+import { useGame } from "../context/GameContext";
 
-function HomePageContent() {
+export default function HomePage() {
   const router = useRouter();
   const {
     xp,
@@ -56,13 +56,5 @@ function HomePageContent() {
         onSignOut={handleSignOut}
       />
     </>
-  );
-}
-
-export default function HomePage() {
-  return (
-    <GameProvider>
-      <HomePageContent />
-    </GameProvider>
   );
 }

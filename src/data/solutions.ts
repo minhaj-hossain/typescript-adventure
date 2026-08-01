@@ -128,6 +128,19 @@ export const LEVEL_SOLUTIONS: Record<string, SolutionDetails> = {
     codeTip:
       "The syntax (a: string, b: string) => number represents a callback contract that takes two string arguments and yields a number.",
   },
+  "level-1-7-unknown-any-never": {
+    explanation:
+      "unknown is the type-safe counterpart to any: you must narrow it before accessing properties. never represents values that should be impossible, making it perfect for exhaustive switch guards via assertNever.",
+    steps: [
+      "Change payload: any to payload: unknown in parseWebhookPayload.",
+      "Add a typeof/object/null check before reading payload.name.",
+      "Declare assertNever(value: never): never that throws on unexpected input.",
+      "Call assertNever(status) in the default branch of describeStatus.",
+    ],
+    codeExample: `function parseWebhookPayload(payload: unknown) {\n  if (typeof payload === "object" && payload !== null && "name" in payload) {\n    return (payload as { name: string }).name;\n  }\n  throw new Error("Invalid payload shape");\n}\n\nfunction assertNever(value: never): never {\n  throw new Error(\`Unhandled case: \${value}\`);\n}`,
+    codeTip:
+      "Replace any with unknown at untrusted boundaries — it forces real checks instead of silencing the compiler.",
+  },
 
   // STAGE 2
   "level-2-1-interfaces": {
@@ -189,6 +202,17 @@ export const LEVEL_SOLUTIONS: Record<string, SolutionDetails> = {
     codeTip:
       "By using exact optional modifiers, you enable general-admission tickets to omit 'seatNumber' while assigned seating tickets require it.",
   },
+  "level-2-6-index-signatures": {
+    explanation:
+      "An index signature lets an interface accept any string key while keeping a consistent value type — ideal for dashboards keyed by dynamic event ids.",
+    steps: [
+      "Remove the hardcoded literal keys evt-001 and evt-002.",
+      "Add an index signature: [eventId: string]: EventState",
+    ],
+    codeExample: `interface EventStateMap {\n  [eventId: string]: EventState;\n}`,
+    codeTip:
+      "One index signature replaces an infinite number of literal keys without losing type safety on values.",
+  },
 
   // STAGE 3
   "level-3-1-unions": {
@@ -249,6 +273,18 @@ export const LEVEL_SOLUTIONS: Record<string, SolutionDetails> = {
     codeTip:
       "Always perform runtime schema validation (or trust upstream sanitizers) before using the 'as' keyword, as assertions do not check anything at runtime.",
   },
+  "level-3-6-type-predicates": {
+    explanation:
+      "A type predicate (param is Type) performs a real runtime check and tells TypeScript to narrow the type inside conditional blocks — unlike assertions, which change nothing at runtime.",
+    steps: [
+      "Write isSpeaker(payload: unknown): payload is Speaker with field checks for name and talkTitle.",
+      "Replace 'payload as Speaker' in getSpeakerName with if (isSpeaker(payload)).",
+      "Return payload.name only after the predicate passes.",
+    ],
+    codeExample: `function isSpeaker(payload: unknown): payload is Speaker {\n  return (\n    typeof payload === "object" &&\n    payload !== null &&\n    "name" in payload &&\n    "talkTitle" in payload\n  );\n}`,
+    codeTip:
+      "The return type 'payload is Speaker' is what makes this a type predicate, not just a boolean guard.",
+  },
 
   // STAGE 4
   "level-4-1-generics": {
@@ -308,6 +344,18 @@ export const LEVEL_SOLUTIONS: Record<string, SolutionDetails> = {
     codeExample: `enum RegistrationStatus {\n  Pending,\n  Confirmed,\n  Rejected\n}`,
     codeTip:
       "Enums exist as real objects at runtime, so you can iterate over their values or use them inside logical evaluation directly.",
+  },
+  "level-4-6-keyof-operator": {
+    explanation:
+      "keyof T produces a union of all property names on T. Combined with generics, it constrains lookup keys so typos become compile errors instead of silent undefined values.",
+    steps: [
+      "Add generic parameters <T, K extends keyof T> to getField.",
+      "Type field as K and the return type as T[K].",
+      "Return item[field] inside the function body.",
+    ],
+    codeExample: `function getField<T, K extends keyof T>(item: T, field: K): T[K] {\n  return item[field];\n}`,
+    codeTip:
+      "T[K] is an indexed access type — it resolves to whatever type is stored at key K on T.",
   },
 
   // STAGE 5

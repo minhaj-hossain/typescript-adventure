@@ -204,4 +204,29 @@ The application manages metadata dynamically during tab changes:
 
 ---
 
+## Deploying to Vercel
+
+This project uses **Next.js 16** with the App Router. Deploy with:
+
+```bash
+npm run build
+```
+
+### Vercel setup
+
+1. Connect the repository to [Vercel](https://vercel.com) — framework preset: **Next.js**.
+2. Build command: `npm run build` (also set in `vercel.json`).
+3. No custom output directory is required.
+
+### Firebase Auth on Vercel
+
+If you use cloud sync (Wizard Sanctum), add your Vercel deployment URL to Firebase:
+
+1. Open [Firebase Console](https://console.firebase.google.com) → your project → **Authentication** → **Settings** → **Authorized domains**.
+2. Add your Vercel domain (e.g. `your-app.vercel.app` and any custom domain).
+
+Client Firebase config lives in `firebase-applet-config.json`. For multi-environment deploys, consider moving keys to `NEXT_PUBLIC_FIREBASE_*` environment variables in Vercel project settings.
+
+---
+
 _“May your compilers always run green, and your models stay strictly defined!”_ 🔮✨

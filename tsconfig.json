@@ -41,6 +41,10 @@
     "**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "server.ts",
+    "vite.config.ts",
+    "src/curriculum.test.ts",
+    "index.html"
   ]
 }

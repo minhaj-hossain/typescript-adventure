@@ -1,13 +1,27 @@
 "use client";
 
 import React, { use } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import { LevelDetailsPage } from "../../../components/LevelDetailsPage";
 import Navigation from "../../../components/Navigation";
 import WizardSanctum from "../../../components/WizardSanctum";
-import { GameProvider, useGame } from "../../../context/GameContext";
+import { useGame } from "../../../context/GameContext";
+import { LEVELS } from "../../../curriculum";
 
-function LevelPageContent({ levelId }: { levelId: string }) {
+export default function LevelPage({
+  params,
+}: {
+  params: Promise<{ id: string }> | { id: string };
+}) {
+  const resolvedParams = params instanceof Promise ? use(params) : params;
+  const levelId = resolvedParams?.id || "";
+
+  // Return 404 if level does not exist
+  const exists = LEVELS.some((l) => l.id === levelId);
+  if (!exists && levelId) {
+    notFound();
+  }
+
   const router = useRouter();
   const {
     xp,
@@ -33,7 +47,6 @@ function LevelPageContent({ levelId }: { levelId: string }) {
 
   return (
     <>
-      {/* Global nav bar — same as Home page */}
       <Navigation
         activeTab="level"
         onTabChange={(tab) => {
@@ -45,7 +58,6 @@ function LevelPageContent({ levelId }: { levelId: string }) {
         onOpenSanctum={() => setIsSanctumOpen(true)}
       />
 
-      {/* Level workspace */}
       <LevelDetailsPage
         levelId={levelId}
         onSelectLevelId={handleSelectLevelId}
@@ -56,7 +68,6 @@ function LevelPageContent({ levelId }: { levelId: string }) {
         onBackToHome={handleBackToHome}
       />
 
-      {/* Wizard Sanctum modal */}
       <WizardSanctum
         isOpen={isSanctumOpen}
         onClose={() => setIsSanctumOpen(false)}
@@ -67,20 +78,5 @@ function LevelPageContent({ levelId }: { levelId: string }) {
         onSignOut={handleSignOut}
       />
     </>
-  );
-}
-
-export default function LevelPage({
-  params,
-}: {
-  params: Promise<{ id: string }> | { id: string };
-}) {
-  const resolvedParams = params instanceof Promise ? use(params) : params;
-  const levelId = resolvedParams?.id || "level-0-1-bootstrap";
-
-  return (
-    <GameProvider>
-      <LevelPageContent levelId={levelId} />
-    </GameProvider>
   );
 }

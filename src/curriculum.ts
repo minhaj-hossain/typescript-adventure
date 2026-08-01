@@ -162,6 +162,7 @@ export const LEVELS: Level[] = [
         },
         {
           type: "dialogue",
+          speaker: "minhaj",
           text: '"Welcome aboard! We\'re building the Event Management Kingdom in TypeScript. Every project starts by declaring TypeScript inside your `package.json` under `devDependencies`."',
         },
         {
@@ -170,6 +171,7 @@ export const LEVELS: Level[] = [
         },
         {
           type: "dialogue",
+          speaker: "minhaj",
           text: '"To add TypeScript, add a `"devDependencies"` object with `"typescript": "^5.4.0"` like this:\n\n```json\n{\n  "devDependencies": {\n    "typescript": "^5.4.0"\n  }\n}\n```\n\nThis tells npm that TypeScript is needed during build time. Let\'s add `devDependencies` to your `package.json` now!"',
         },
       ],
@@ -213,6 +215,7 @@ export const LEVELS: Level[] = [
         },
         {
           type: "dialogue",
+          speaker: "tasnim",
           text: '"This is the file that decides how strict our compiler is," she explains. "In TypeScript, strict type checking is enabled by setting `"strict": true` inside `"compilerOptions"`:\n\n```json\n{\n  "compilerOptions": {\n    "target": "ES2020",\n    "module": "ESNext",\n    "strict": true\n  }\n}\n```"',
         },
         {
@@ -221,6 +224,7 @@ export const LEVELS: Level[] = [
         },
         {
           type: "dialogue",
+          speaker: "tasnim",
           text: '"Enabling `"strict": true` activates `noImplicitAny`, `strictNullChecks`, and full type safety. Add `"strict": true` inside `compilerOptions` now!"',
         },
       ],
@@ -393,7 +397,21 @@ export const LEVELS: Level[] = [
       narrative: [
         {
           type: "narration",
-          text: "Tasnim leaves a comment on your pull request: you don't need to annotate every single variable, the compiler already knows this one is a number. She points out three lines where you wrote out ': number' and ': string' on values that are obviously typed from their initializer. Tasnim isn't asking you to remove all types, just the redundant ones, so the real annotations stand out where they actually matter. Clean up the ledger helper so only the necessary annotations remain.",
+          text: "The code review notification pings. Tasnim has left a comment on your pull request.",
+        },
+        {
+          type: "dialogue",
+          speaker: "tasnim",
+          text: '"Hey — you added `: number` here but TypeScript already knows it\'s a number from the `= 5` on the right. You don\'t need to repeat yourself. Redundant annotations add noise and bury the ones that actually matter."',
+        },
+        {
+          type: "narration",
+          text: "She\'s right. The compiler can infer the type from the value. Removing the annotation doesn\'t weaken the code — it makes the real type guarantees stand out more clearly.",
+        },
+        {
+          type: "dialogue",
+          speaker: "tasnim",
+          text: '"Clean up the ledger helper so only annotations that add new information stay. Let inference handle the rest. Then we can merge."',
         },
       ],
       realWorldContext:
@@ -432,7 +450,21 @@ export const LEVELS: Level[] = [
       narrative: [
         {
           type: "narration",
-          text: "Apurba, the Product Manager, wants a simple attendee roster feature by Friday: a list of attendee names for check-in. A teammate's earlier attempt let a stray number sneak into the array, and check-in crashed at the venue. Apurba doesn't want a repeat. Minhaj asks you to type the roster array so it can only ever hold strings, and to write a helper that safely adds a new name to it without breaking that guarantee. Get this typed correctly and the roster feature ships clean; get it wrong and check-in breaks again at the next event.",
+          text: "Apurba drops a message in the team channel. Friday's event check-in needs a working attendee roster — and the last attempt went badly.",
+        },
+        {
+          type: "dialogue",
+          speaker: "apurba",
+          text: '"Last time a number slipped into the names array and check-in crashed at the venue. I need this typed so that can never happen again. Can you get this done before Friday?"',
+        },
+        {
+          type: "narration",
+          text: "Minhaj pulls up the broken roster file and looks over your shoulder.",
+        },
+        {
+          type: "dialogue",
+          speaker: "minhaj",
+          text: '"Type `attendeeRoster` as `string[]` and add types to the `addAttendee` parameters. The compiler will catch any wrong value the moment someone tries to push it in. That\'s the fix."',
         },
       ],
       realWorldContext:
@@ -472,7 +504,21 @@ export const LEVELS: Level[] = [
       narrative: [
         {
           type: "narration",
-          text: "Salman, the Designer, sends over a mockup of the first Event card: a title, a date, and a capacity number, all shown together. Minhaj wants the underlying data typed to match exactly what Salman designed, before any component gets built. This is the very first time in the codebase we describe a whole Event as one typed shape instead of loose separate variables, Minhaj explains. Get this object type right, since Salman's whole card design depends on these exact three fields existing.",
+          text: "A design file lands in the team channel. Salman has finished the first Event card mockup — title, date, capacity, all in one place.",
+        },
+        {
+          type: "dialogue",
+          speaker: "salman",
+          text: '"Here\'s the card design. I need exactly three fields: `title` as text, `date` as a date string, and `capacity` as a number. The component is ready to build the moment the data shape exists."',
+        },
+        {
+          type: "narration",
+          text: "Minhaj opens the file and pauses.",
+        },
+        {
+          type: "dialogue",
+          speaker: "minhaj",
+          text: '"This is the first time we describe a whole Event as one typed shape. Get this right and every component, every API response, builds on it. Get it wrong and nothing downstream fits. Add an inline object type to `event` matching Salman\'s three fields exactly."',
         },
       ],
       realWorldContext:
@@ -512,7 +558,21 @@ export const LEVELS: Level[] = [
       narrative: [
         {
           type: "narration",
-          text: "Evans, the Backend Engineer, pings you: someone called calculateTotal with a discount as a string and it silently returned garbage. Evans is tired of guessing what every function expects just by reading its body. They want every parameter and return type on this function explicitly typed, so the function itself documents its own contract and the compiler enforces it at every call site, not just this one. Evans doesn't want to guess anymore what a function expects just by reading its body line by line every single time.",
+          text: "A direct message from Evans arrives. There\'s an edge case in production that returned garbage pricing data to a customer.",
+        },
+        {
+          type: "dialogue",
+          speaker: "evans",
+          text: '"Someone passed a discount as a string and `calculateTotal` just returned `NaN` silently. No error, no warning. The customer got charged the wrong amount. I\'m tired of guessing what this function expects every time I look at it."',
+        },
+        {
+          type: "narration",
+          text: "You pull up `calculateTotal`. No parameter types, no return type. It could accept anything.",
+        },
+        {
+          type: "dialogue",
+          speaker: "evans",
+          text: '"Type every parameter and the return value explicitly. The function should document its own contract. If someone passes a string again, the compiler stops them before it ships — not after a customer complains."',
         },
       ],
       realWorldContext:
@@ -551,7 +611,21 @@ export const LEVELS: Level[] = [
       narrative: [
         {
           type: "narration",
-          text: "Jordan reports that the event list sometimes sorts backwards, only when a specific teammate touches the sort logic. Digging in, Minhaj finds the sortEvents function accepts a comparator callback with no type at all, so nothing stops someone from passing one with swapped arguments. Minhaj wants a proper function type for the comparator parameter, so the compiler catches a wrong-shaped callback before it ever ships, instead of QA catching it after the fact. Once the comparator itself is properly typed, this exact class of silent sorting bug becomes structurally impossible to reintroduce later.",
+          text: "Jordan files a bug report. The event list is sorting backwards again — only on certain teammates\' machines. It\'s the third time this month.",
+        },
+        {
+          type: "dialogue",
+          speaker: "jordan",
+          text: '"I traced it. The `sortEvents` function takes a comparator callback with zero type on it. Nothing stops someone from passing one with swapped arguments, and the list silently inverts. QA caught it this time. Next time they might not."',
+        },
+        {
+          type: "narration",
+          text: "Minhaj reads the function signature. The comparator parameter is completely untyped — any function fits.",
+        },
+        {
+          type: "dialogue",
+          speaker: "minhaj",
+          text: '"Give the comparator parameter a proper function type — two strings in, a number out. Once that\'s in place, passing a wrong-shaped callback is a compiler error. This entire class of sorting bug becomes structurally impossible to reintroduce."',
         },
       ],
       realWorldContext:
@@ -863,10 +937,12 @@ export const LEVELS: Level[] = [
         },
         {
           type: "dialogue",
+          speaker: "tasnim",
           text: '"This level doesn\'t teach anything new," Tasnim says. "It just proves the last four lessons actually fit together into something the rest of the team can safely build on."',
         },
         {
           type: "dialogue",
+          speaker: "tasnim",
           text: '"No new syntax this time," she reminds you. "Just proof that everything from Levels 6 through 9 actually fits together cleanly."',
         },
       ],
@@ -991,6 +1067,7 @@ export const LEVELS: Level[] = [
     validation: {
       requiredKeywords: ["ConcertEvent | WorkshopEvent | MeetupEvent"],
     },
+    visualizationType: "union-flow",
   },
   {
     id: "level-3-2-literal-types",
@@ -1297,6 +1374,7 @@ export const LEVELS: Level[] = [
     validation: {
       requiredKeywords: ["<T extends { id: string }>"],
     },
+    visualizationType: "generic-machine",
   },
   {
     id: "level-4-2-generic-constraints",

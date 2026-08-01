@@ -1,4 +1,5 @@
 import { STAGES, LEVELS } from "./curriculum";
+import { LEVEL_SOLUTIONS } from "./data/solutions";
 
 function testCurriculumIntegrity() {
   console.log("🔍 Starting Curriculum Integrity Audit...");
@@ -56,6 +57,13 @@ function testCurriculumIntegrity() {
         errors.push(`Level ${level.id}: solutionCode contains forbidden keyword: "${kw}"`);
       }
     });
+  });
+
+  // Check LEVEL_SOLUTIONS coverage
+  LEVELS.forEach((level) => {
+    if (!LEVEL_SOLUTIONS[level.id]) {
+      console.warn(`⚠️ Warning: Level "${level.id}" is missing explicit LEVEL_SOLUTIONS entry.`);
+    }
   });
 
   // 3. Check for orphaned level IDs in stages
