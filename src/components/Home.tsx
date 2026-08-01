@@ -114,11 +114,9 @@ export default function Home({
   const handleLevelClick = (lvlId: string) => {
     sessionStorage.setItem("last_clicked_level_id", lvlId);
     onSelectLevel(lvlId);
-    onTabChange("level" as any);
   };
 
   const handleStartLearning = () => {
-    // Get last active level, or choose highest unlocked level that is not completed
     const lastVisited = localStorage.getItem("last_active_level_id");
     let targetLevelId = lastVisited;
 
@@ -138,9 +136,8 @@ export default function Home({
 
     if (targetLevelId) {
       sessionStorage.setItem("last_clicked_level_id", targetLevelId);
+      onSelectLevel(targetLevelId);
     }
-    onSelectLevel(targetLevelId);
-    onTabChange("level" as any);
   };
 
   return (
@@ -182,14 +179,6 @@ export default function Home({
           >
             Start Learning
             <span className="material-icons-out">arrow_forward</span>
-          </button>
-
-          <button
-            onClick={() => onTabChange("docs")}
-            className="flex items-center justify-center gap-2 border border-outline-variant bg-surface-container-low text-on-surface px-8 py-4 rounded-xl font-bold hover:bg-surface-container transition-all active:scale-95 cursor-pointer"
-          >
-            <span className="material-icons-out">menu_book</span>
-            Cheat Sheet
           </button>
         </div>
 

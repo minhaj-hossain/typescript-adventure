@@ -159,8 +159,10 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [showStoryModal, showCompletionModal, userCode, level.id]);
 
-  // Monaco editor configuration callback to ignore code 2695 ("Left side of comma operator is unused...")
-  const handleEditorDidMount = (_editor: any, monaco: any) => {
+  const runValidationRef = React.useRef<() => void>(() => {});
+
+  // Monaco editor configuration callback with direct Ctrl+Enter shortcut binding
+  const handleEditorDidMount = (editor: any, monaco: any) => {
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
       noSemanticValidation: false,
       noSyntaxValidation: false,
@@ -174,6 +176,13 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
       noSemanticValidation: false,
       noSyntaxValidation: false,
       diagnosticCodesToIgnore: [2695, 6133, 2307],
+    });
+
+    // Bind Ctrl+Enter (Cmd+Enter on macOS) directly inside Monaco editor
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+      if (runValidationRef.current) {
+        runValidationRef.current();
+      }
     });
   };
 
@@ -193,6 +202,7 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
   };
 
   const runValidation = () => {
+    runValidationRef.current = runValidation;
     setTerminalLogs((prev) => [...prev, `[compiler] Evaluating ${activeFile}...`]);
     const errors: string[] = [];
 
@@ -474,12 +484,12 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
               <X className="w-5 h-5" />
             </button>
 
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_20px_rgba(164,201,255,0.25)]">
               <CheckCircle2 className="w-9 h-9 animate-bounce" />
             </div>
 
             <div className="space-y-2">
-              <span className="font-mono text-xs font-bold uppercase tracking-widest text-emerald-400">
+              <span className="font-mono text-xs font-bold uppercase tracking-widest text-primary">
                 Type Safety Verified
               </span>
               <h3 className="text-2xl font-extrabold text-on-surface font-sans">
@@ -516,9 +526,9 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
       )}
 
       {/* 4. MAIN WORKSPACE / PLAYGROUND VIEW */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 min-h-0 overflow-hidden">
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 min-h-0 overflow-y-auto lg:overflow-hidden">
         {/* Left Interactive Sidebar */}
-        <aside className="lg:col-span-4 bg-surface-container-low border-r border-outline-variant/30 p-6 overflow-y-auto space-y-6 flex flex-col">
+        <aside className="lg:col-span-4 bg-surface-container-low border-b lg:border-b-0 lg:border-r border-outline-variant/30 p-4 md:p-6 overflow-y-auto space-y-5 md:space-y-6 flex flex-col">
           {/* File selector tabs */}
           {level.playground.filesToEdit && level.playground.filesToEdit.length > 0 && (
             <div className="space-y-2">
@@ -657,7 +667,7 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
         </aside>
 
         {/* Right Monaco Code Editor & Terminal Workspace */}
-        <section className="lg:col-span-8 flex flex-col min-h-0 bg-surface">
+        <section className="lg:col-span-8 flex flex-col min-h-[450px] lg:min-h-0 bg-surface">
           {/* Editor Header Bar */}
           <div className="h-10 bg-surface-container-low border-b border-outline-variant/30 px-4 flex items-center justify-between text-xs">
             <div className="flex items-center space-x-3">

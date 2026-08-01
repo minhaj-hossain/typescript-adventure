@@ -1,12 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import {
-  Sparkles,
-  Terminal,
-  BookOpen,
-  Home,
-  Trophy,
-  Award,
-} from "lucide-react";
+import { Sparkles, Home, Award } from "lucide-react";
 import { User } from "firebase/auth";
 
 interface NavigationProps {
@@ -66,7 +59,7 @@ export default function Navigation({
           </span>
         </div>
 
-        {/* Main Navigation Tab choices (Responsive) */}
+        {/* Main Navigation — Home only */}
         <div className="flex items-center gap-0.5 md:gap-1 bg-surface-container/40 p-1 rounded-xl border border-outline-variant/20">
           <button
             onClick={() => onTabChange("home")}
@@ -78,42 +71,6 @@ export default function Navigation({
           >
             <Home className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Home</span>
-          </button>
-
-          <button
-            onClick={() => onTabChange("quest")}
-            className={`flex items-center gap-1.5 px-2 md:px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-lg transition-all cursor-pointer border ${
-              activeTab === "quest"
-                ? "bg-primary/10 text-primary border-primary/20 shadow-[0_0_12px_rgba(164,201,255,0.06)]"
-                : "text-on-surface-variant hover:text-on-surface border-transparent hover:bg-surface-container-high/40"
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Quests</span>
-          </button>
-
-          <button
-            onClick={() => onTabChange("playground")}
-            className={`flex items-center gap-1.5 px-2 md:px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-lg transition-all cursor-pointer border ${
-              activeTab === "playground"
-                ? "bg-primary/10 text-primary border-primary/20 shadow-[0_0_12px_rgba(164,201,255,0.06)]"
-                : "text-on-surface-variant hover:text-on-surface border-transparent hover:bg-surface-container-high/40"
-            }`}
-          >
-            <Terminal className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Playground</span>
-          </button>
-
-          <button
-            onClick={() => onTabChange("docs")}
-            className={`flex items-center gap-1.5 px-2 md:px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-lg transition-all cursor-pointer border ${
-              activeTab === "docs"
-                ? "bg-primary/10 text-primary border-primary/20 shadow-[0_0_12px_rgba(164,201,255,0.06)]"
-                : "text-on-surface-variant hover:text-on-surface border-transparent hover:bg-surface-container-high/40"
-            }`}
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Library</span>
           </button>
         </div>
 

@@ -162,22 +162,21 @@ export const LEVELS: Level[] = [
         },
         {
           type: "dialogue",
-          text: '"Welcome aboard. We\'re rebuilding the Event Management System in TypeScript, and every new hire starts the same way: get Node installed, initialize the project, and add TypeScript as a dev dependency. Nothing fancy yet, just a clean package.json we can build on."',
-        },
-        { type: "narration", text: "Minhaj taps the screen." },
-        {
-          type: "dialogue",
-          text: '"Half our onboarding tickets are people stuck right here, so let\'s get this right the first time."',
+          text: '"Welcome aboard! We\'re building the Event Management Kingdom in TypeScript. Every project starts by declaring TypeScript inside your `package.json` under `devDependencies`."',
         },
         {
+          type: "narration",
+          text: "Minhaj opens `package.json` and points out the structure.",
+        },
+        {
           type: "dialogue",
-          text: '"It\'s a small step," Minhaj admits, "but every future lesson in this course builds directly on top of this one file."',
+          text: '"To add TypeScript, add a `"devDependencies"` object with `"typescript": "^5.4.0"` like this:\n\n```json\n{\n  "devDependencies": {\n    "typescript": "^5.4.0"\n  }\n}\n```\n\nThis tells npm that TypeScript is needed during build time. Let\'s add `devDependencies` to your `package.json` now!"',
         },
       ],
       realWorldContext:
         "Every real TypeScript project starts with a working Node/npm toolchain and a package.json declaring TypeScript as a dependency.",
       taskDescription:
-        "Initialize package.json and add typescript as a devDependency.",
+        "Add a `devDependencies` object containing `\"typescript\": \"^5.4.0\"` to `package.json`.",
       previousOutcome:
         "It's your first day. There is no previous outcome yet — just an empty repository waiting for its first commit.",
     },
@@ -214,16 +213,20 @@ export const LEVELS: Level[] = [
         },
         {
           type: "dialogue",
-          text: '"This is the file that decides how strict we are," she says. "Last quarter a teammate\'s editor caught bugs mine didn\'t, all because our configs disagreed. Tasnim wants strict mode on from day one so the whole team catches the same class of bugs, instead of everyone discovering them separately in production."',
+          text: '"This is the file that decides how strict our compiler is," she explains. "In TypeScript, strict type checking is enabled by setting `"strict": true` inside `"compilerOptions"`:\n\n```json\n{\n  "compilerOptions": {\n    "target": "ES2020",\n    "module": "ESNext",\n    "strict": true\n  }\n}\n```"',
         },
         {
           type: "narration",
-          text: 'She points at the empty file: "Get strict mode enabled before you touch a single line of Event code."',
+          text: "Tasnim points to the compilerOptions block in tsconfig.json.",
+        },
+        {
+          type: "dialogue",
+          text: '"Enabling `"strict": true` activates `noImplicitAny`, `strictNullChecks`, and full type safety. Add `"strict": true` inside `compilerOptions` now!"',
         },
       ],
       realWorldContext:
         "A shared, strict tsconfig.json ensures every teammate's compiler catches the same bugs, instead of relying on individual discipline.",
-      taskDescription: "Enable strict mode in tsconfig.json.",
+      taskDescription: "Add `\"strict\": true` inside `compilerOptions` in `tsconfig.json`.",
       previousOutcome:
         "You initialized the project and added TypeScript as a dependency. Now the team needs the compiler's rules actually configured.",
     },
@@ -251,25 +254,25 @@ export const LEVELS: Level[] = [
       narrative: [
         {
           type: "narration",
-          text: "Minhaj notices you re-running npx tsc after every single edit.",
+          text: "Minhaj notices you re-running `npx tsc` by hand after every edit.",
         },
         {
           type: "dialogue",
-          text: '"You\'re going to wear out that Enter key," they laugh. "There\'s a watch flag that recompiles automatically the moment you save. Every engineer on this team runs it in a side terminal all day."',
+          text: '"There\'s a watch flag that recompiles automatically whenever you save," Minhaj says. "In `package.json`, we add executable tasks under `"scripts"`:\n\n```json\n{\n  "scripts": {\n    "dev": "tsc --watch"\n  }\n}\n```"',
         },
         {
           type: "narration",
-          text: "Minhaj wants you to add a package.json script called dev that runs tsc in watch mode, so the whole team can just type npm run dev instead of memorizing compiler flags.",
+          text: "Minhaj shows you how the script object works.",
         },
         {
           type: "dialogue",
-          text: '"Small habit, huge time savings once you\'re touching real Event code."',
+          text: '"Running `tsc --watch` keeps the compiler listening in the background. Add a `"dev"` script with `"tsc --watch"` inside `"scripts"` now!"',
         },
       ],
       realWorldContext:
         "A shared npm script for watch mode standardizes the dev workflow across the whole team, not just your own muscle memory.",
       taskDescription:
-        "Add a dev script to package.json that runs tsc in watch mode.",
+        "Add a `\"dev\": \"tsc --watch\"` script inside `\"scripts\"` in `package.json`.",
       previousOutcome:
         "Strict mode is on. Now the team needs a fast, repeatable way to actually run the compiler while working.",
     },
@@ -346,13 +349,25 @@ export const LEVELS: Level[] = [
       narrative: [
         {
           type: "narration",
-          text: "You've just been rotated onto the billing module. Minhaj hands you a ledger file with a live bug: our team keeps recording ticket prices as text strings like '50', causing '5050' instead of 100 whenever two prices are added. Finance is furious. Minhaj wants a strict primitive guard on ticketPrice so this exact bug becomes impossible to reintroduce, no matter who touches this file next. This is the first Event Management System file you'll actually own. This is the very first file you'll own end to end, so Minhaj wants it airtight before you move on to anything bigger.",
+          text: "Minhaj hands you a ledger file with a live bug: ticket prices are recorded as text strings like `'50'`, causing `'50' + '50'` to equal `'5050'` instead of `100`!",
+        },
+        {
+          type: "dialogue",
+          text: '"In TypeScript, primitive types like numbers, strings, and booleans are guarded using explicit type annotations with colon syntax `:` like this:\n\n```typescript\nlet ticketPrice: number = 50;\nlet eventTitle: string = "TypeScript Conf";\nlet isPublished: boolean = true;\n```"',
+        },
+        {
+          type: "narration",
+          text: "Minhaj points to the broken ledger variable.",
+        },
+        {
+          type: "dialogue",
+          text: '"By writing `let ticketPrice: number = 50;`, the compiler enforces that `ticketPrice` can only hold true numeric values, preventing text string bugs forever. Fix `ticketPrice` now!"',
         },
       ],
       realWorldContext:
         "TypeScript prevents accidental mixing of text and numbers, which is exactly the bug class silently corrupting the billing totals.",
       taskDescription:
-        "Annotate ticketPrice as a number and assign it a numeric literal.",
+        "Annotate `ticketPrice` with `: number` and assign it the numeric literal `50`.",
       previousOutcome:
         "You fixed your first compiler error in the onboarding sandbox. Now you're handed a real production bug in the billing ledger.",
     },
