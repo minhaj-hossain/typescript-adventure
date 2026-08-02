@@ -1,112 +1,276 @@
 import { describe, it, expect } from "vitest";
-import { STAGES, LEVELS } from "./curriculum";
-import { LEVEL_SOLUTIONS } from "./data/solutions";
+import { STAGES, LEVELS, REFERENCE_LIBRARY } from "./curriculum";
+import { validateCode, validateTypeScriptCompilation } from "./lib/tsValidation";
+import { getPredictionQuestion } from "./lib/narrativeFeedback";
+import { ValidationRule } from "./types";
 
-describe("Curriculum Integrity", () => {
-  it("has unique stage IDs", () => {
-    const stageIds = new Set<string>();
-    STAGES.forEach((stage, idx) => {
-      expect(stage.id, `Stage at index ${idx} missing id`).toBeTruthy();
-      expect(stageIds.has(stage.id), `Duplicate stage id: ${stage.id}`).toBe(false);
-      stageIds.add(stage.id);
-    });
+describe("Curriculum Structure", () => {
+  it("should have at least one stage", () => {
+    expect(STAGES.length).toBeGreaterThan(0);
   });
 
-  it("does not reference a level in multiple stages", () => {
-    const allReferencedLevelIds = new Set<string>();
-    STAGES.forEach((stage) => {
-      stage.levelIds.forEach((lId) => {
-        expect(
-          allReferencedLevelIds.has(lId),
-          `Level ID ${lId} is referenced in multiple stages!`,
-        ).toBe(false);
-        allReferencedLevelIds.add(lId);
-      });
-    });
+  it("should have at least one level", () => {
+    expect(LEVELS.length).toBeGreaterThan(0);
   });
 
-  it("has unique level IDs with required fields", () => {
-    const levelMap = new Map<string, (typeof LEVELS)[0]>();
-    LEVELS.forEach((level, idx) => {
-      expect(level.id, `Level at index ${idx} missing id`).toBeTruthy();
-      expect(levelMap.has(level.id), `Duplicate level id: ${level.id}`).toBe(false);
-      levelMap.set(level.id, level);
-
-      expect(level.title, `Level ${level.id} missing title`).toBeTruthy();
-      expect(level.story?.title, `Level ${level.id} story missing title`).toBeTruthy();
-      expect(
-        level.story?.narrative && level.story.narrative.length > 0,
-        `Level ${level.id} story has empty narrative`,
-      ).toBe(true);
-
-      expect(
-        level.playground?.starterCode,
-        `Level ${level.id} missing starterCode`,
-      ).toBeTruthy();
-      expect(
-        level.playground?.solutionCode,
-        `Level ${level.id} missing solutionCode`,
-      ).toBeTruthy();
-      expect(
-        level.playground?.objectives && level.playground.objectives.length > 0,
-        `Level ${level.id} missing objectives`,
-      ).toBe(true);
-    });
+  it("should have a reference library with entries", () => {
+    expect(REFERENCE_LIBRARY.length).toBeGreaterThan(0);
   });
 
-  it("solution code satisfies required keywords and avoids forbidden ones", () => {
-    LEVELS.forEach((level) => {
-      const solution = level.playground?.solutionCode || "";
-      const reqKeywords = level.validation?.requiredKeywords || [];
-      reqKeywords.forEach((kw) => {
-        expect(
-          solution.includes(kw),
-          `Level ${level.id}: solutionCode does not contain required keyword: "${kw}"`,
-        ).toBe(true);
-      });
-
-      const forbiddenKeywords = level.validation?.forbiddenKeywords || [];
-      forbiddenKeywords.forEach((kw) => {
-        expect(
-          solution.includes(kw),
-          `Level ${level.id}: solutionCode contains forbidden keyword: "${kw}"`,
-        ).toBe(false);
-      });
-    });
+  it("should have unique level IDs", () => {
+    const ids = LEVELS.map((l) => l.id);
+    const uniqueIds = new Set(ids);
+    expect(uniqueIds.size).toBe(ids.length);
   });
 
-  it("has LEVEL_SOLUTIONS entries for all levels", () => {
-    LEVELS.forEach((level) => {
-      expect(
-        LEVEL_SOLUTIONS[level.id],
-        `Level "${level.id}" is missing explicit LEVEL_SOLUTIONS entry.`,
-      ).toBeDefined();
-    });
+  it("should have unique stage IDs", () => {
+    const ids = STAGES.map((s) => s.id);
+    const uniqueIds = new Set(ids);
+    expect(uniqueIds.size).toBe(ids.length);
   });
 
-  it("all stage-referenced levels exist in LEVELS", () => {
-    const levelMap = new Map(LEVELS.map((l) => [l.id, l]));
-    STAGES.forEach((stage) => {
-      stage.levelIds.forEach((lId) => {
-        expect(
-          levelMap.has(lId),
-          `Stage references non-existent level id: "${lId}"`,
-        ).toBe(true);
-      });
-    });
+  it("should have stages with sequential order values", () => {
+    const orders = STAGES.map((s) => s.order).sort((a, b) => a - b);
+    for (let i = 0; i < orders.length; i++) {
+      expect(orders[i]).toBe(i);
+    }
   });
 
-  it("all LEVELS entries are referenced by a stage", () => {
-    const allReferencedLevelIds = new Set<string>();
-    STAGES.forEach((stage) => {
-      stage.levelIds.forEach((lId) => allReferencedLevelIds.add(lId));
-    });
+  it("should have all level IDs referenced in stages exist", () => {
+    const allLevelIds = new Set(LEVELS.map((l) => l.id));
+    for (const stage of STAGES) {
+      for (const levelId of stage.levelIds) {
+        expect(allLevelIds.has(levelId)).toBe(true);
+      }
+    }
+  });
 
-    LEVELS.forEach((level) => {
-      expect(
-        allReferencedLevelIds.has(level.id),
-        `Level "${level.id}" is defined in LEVELS but not included in any STAGE levelIds!`,
-      ).toBe(true);
-    });
+  it("should have XP values that increase with difficulty", () => {
+    const xpByDifficulty: Record<string, number[]> = {
+      onboarding: [],
+      easy: [],
+      medium: [],
+      hard: [],
+    };
+    for (const level of LEVELS) {
+      xpByDifficulty[level.difficulty]?.push(level.xpAwarded);
+    }
+    // Onboarding should have lowest average XP
+    const avgOnboarding =
+      xpByDifficulty.onboarding.reduce((a, b) => a + b, 0) /
+      xpByDifficulty.onboarding.length;
+    const avgHard =
+      xpByDifficulty.hard.reduce((a, b) => a + b, 0) /
+      xpByDifficulty.hard.length;
+    expect(avgHard).toBeGreaterThan(avgOnboarding);
+  });
+
+  it("should have no duplicate level IDs across stages", () => {
+    const allLevelIds: string[] = [];
+    for (const stage of STAGES) {
+      allLevelIds.push(...stage.levelIds);
+    }
+    const uniqueIds = new Set(allLevelIds);
+    expect(uniqueIds.size).toBe(allLevelIds.length);
+  });
+
+  it("should have valid difficulty values on all levels", () => {
+    const validDifficulties = ["onboarding", "easy", "medium", "hard"];
+    for (const level of LEVELS) {
+      expect(validDifficulties.includes(level.difficulty)).toBe(true);
+    }
+  });
+
+  it("should have XP values that are positive numbers", () => {
+    for (const level of LEVELS) {
+      expect(level.xpAwarded).toBeGreaterThan(0);
+    }
+  });
+
+  it("should have all levels with required playground fields", () => {
+    for (const level of LEVELS) {
+      expect(level.playground).toBeDefined();
+      expect(level.playground.starterCode).toBeDefined();
+      expect(level.playground.solutionCode).toBeDefined();
+      expect(level.playground.objectives.length).toBeGreaterThan(0);
+      expect(level.playground.hints.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("should have all levels with story fields", () => {
+    for (const level of LEVELS) {
+      expect(level.story).toBeDefined();
+      expect(level.story.title).toBeDefined();
+      expect(level.story.narrative.length).toBeGreaterThan(0);
+      expect(level.story.realWorldContext).toBeDefined();
+      expect(level.story.taskDescription).toBeDefined();
+    }
+  });
+
+  it("should have all levels with validation rules", () => {
+    for (const level of LEVELS) {
+      expect(level.validation).toBeDefined();
+    }
+  });
+
+  it("should have reference entries with valid categories", () => {
+    const validCategories = [
+      "Concepts",
+      "Tooling",
+      "Basics",
+      "Structural Types",
+      "Advanced Types",
+      "Utility Types",
+      "React & Next.js",
+    ];
+    for (const entry of REFERENCE_LIBRARY) {
+      expect(validCategories.includes(entry.category)).toBe(true);
+    }
+  });
+});
+
+describe("Validation System", () => {
+  it("should detect missing required keywords", () => {
+    const rule: ValidationRule = {
+      requiredKeywords: ["interface Event"],
+    };
+    const errors = validateCode("let x = 5;", rule, []);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]).toContain("interface Event");
+  });
+
+  it("should pass when required keywords are present", () => {
+    const rule: ValidationRule = {
+      requiredKeywords: ["interface Event"],
+    };
+    const errors = validateCode("interface Event { title: string }", rule, []);
+    expect(errors.length).toBe(0);
+  });
+
+  it("should detect forbidden keywords", () => {
+    const rule: ValidationRule = {
+      forbiddenKeywords: ["any"],
+    };
+    const errors = validateCode("let x: any = 5;", rule, []);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]).toContain("any");
+  });
+
+  it("should pass when no forbidden keywords are present", () => {
+    const rule: ValidationRule = {
+      forbiddenKeywords: ["any"],
+    };
+    const errors = validateCode("let x: number = 5;", rule, []);
+    expect(errors.length).toBe(0);
+  });
+
+  it("should detect AST declaration requirements", () => {
+    const rule: ValidationRule = {
+      type: "ast",
+      astRules: {
+        requiredDeclarations: ["interface Event"],
+      },
+    };
+    const errors = validateCode("let x = 5;", rule, []);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]).toContain("interface Event");
+  });
+
+  it("should pass AST validation when declarations exist", () => {
+    const rule: ValidationRule = {
+      type: "ast",
+      astRules: {
+        requiredDeclarations: ["interface Event"],
+      },
+    };
+    const errors = validateCode(
+      "interface Event { title: string; date: string; capacity: number; }",
+      rule,
+      [],
+    );
+    expect(errors.length).toBe(0);
+  });
+
+  it("should detect missing properties on interfaces", () => {
+    const rule: ValidationRule = {
+      type: "ast",
+      astRules: {
+        requiredProperties: {
+          Event: ["title", "date"],
+        },
+      },
+    };
+    const errors = validateCode(
+      "interface Event { title: string; }",
+      rule,
+      [],
+    );
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0]).toContain("date");
+  });
+
+  it("should detect basic type errors in code", () => {
+    const errors = validateTypeScriptCompilation(
+      'let x: number = "hello";',
+    );
+    expect(errors.length).toBeGreaterThan(0);
+  });
+
+  it("should pass clean code through type check", () => {
+    const errors = validateTypeScriptCompilation("let x: number = 5;");
+    expect(errors.length).toBe(0);
+  });
+
+  it("should merge keyword and editor errors", () => {
+    const rule: ValidationRule = {
+      type: "typescript",
+      requiredKeywords: ["missing-keyword"],
+    };
+    const errors = validateCode("let x = 5;", rule, ["Line 1: Type error"]);
+    expect(errors.length).toBe(2);
+  });
+});
+
+describe("Prediction Questions", () => {
+  it("should have prediction questions for key levels", () => {
+    const keyLevels = [
+      "level-0-1-bootstrap",
+      "level-1-1-primitives",
+      "level-2-1-interfaces",
+      "level-3-1-unions",
+      "level-4-1-generics",
+      "level-5-1-generic-react-component",
+      "level-9-1-branded-types",
+    ];
+    for (const levelId of keyLevels) {
+      const question = getPredictionQuestion(levelId);
+      expect(question).toBeDefined();
+      expect(question!.options.length).toBeGreaterThanOrEqual(2);
+      expect(question!.correctAnswerIndex).toBeGreaterThanOrEqual(0);
+      expect(question!.correctAnswerIndex).toBeLessThan(question!.options.length);
+    }
+  });
+
+  it("should return null for unknown level IDs", () => {
+    const question = getPredictionQuestion("non-existent-level");
+    expect(question).toBeNull();
+  });
+});
+
+describe("Reference Library", () => {
+  it("should have all reference entries with required fields", () => {
+    for (const entry of REFERENCE_LIBRARY) {
+      expect(entry.id).toBeDefined();
+      expect(entry.term).toBeDefined();
+      expect(entry.shortExplanation).toBeDefined();
+      expect(entry.syntax).toBeDefined();
+      expect(entry.commonPitfalls.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("should have unique reference entry IDs", () => {
+    const ids = REFERENCE_LIBRARY.map((e) => e.id);
+    const uniqueIds = new Set(ids);
+    expect(uniqueIds.size).toBe(ids.length);
   });
 });

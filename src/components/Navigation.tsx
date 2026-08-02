@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, Home, Award, Compass } from "lucide-react";
+import { Sparkles, Home, Award, Compass, Volume2, VolumeX } from "lucide-react";
+import { useGame } from "../context/GameContext";
 
 interface NavigationProps {
   activeTab: string;
@@ -16,6 +17,19 @@ export default function Navigation({
   badgesCount,
   onOpenSanctum,
 }: NavigationProps) {
+  const { settings, updateSettings } = useGame();
+  const soundEnabled = settings.soundEnabled;
+  
+  // Keyboard shortcut: M to toggle sound
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "m" || e.key === "M") {
+        updateSettings({ soundEnabled: !soundEnabled });
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [soundEnabled, updateSettings]);
   const progressPercent = Math.min(100, Math.max(10, (xp / 1500) * 100));
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -70,6 +84,21 @@ export default function Navigation({
             <span className="hidden sm:inline">Home</span>
           </button>
         </div>
+
+        {/* Sound Toggle */}
+        <button
+          onClick={() => updateSettings({ soundEnabled: !soundEnabled })}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] md:text-xs font-bold rounded-lg transition-all cursor-pointer border border-outline-variant/20 bg-surface-container/40 hover:bg-surface-container-high/60 text-on-surface-variant hover:text-on-surface"
+          title={soundEnabled ? "Mute sounds (M)" : "Enable sounds (M)"}
+          aria-label={soundEnabled ? "Mute sounds" : "Enable sounds"}
+        >
+          {soundEnabled ? (
+            <Volume2 className="w-3.5 h-3.5 text-primary" />
+          ) : (
+            <VolumeX className="w-3.5 h-3.5 text-outline" />
+          )}
+          <span className="hidden sm:inline">{soundEnabled ? "Sound On" : "Muted"}</span>
+        </button>
 
         {/* User Profile dropdown */}
         <div className="relative shrink-0" ref={dropdownRef}>

@@ -1,4 +1,3 @@
-
 export function formatValidationError(
   error: string,
   characterName: string,

@@ -318,7 +318,7 @@ export const LEVELS: Level[] = [
         {
           type: "dialogue",
           speaker: "minhaj",
-          text: '"Type `attendeeRoster` as `string[]` and add types to the `addAttendee` parameters. The compiler will catch any wrong value the moment someone tries to push it in. That\'s the fix."',
+          text: '"Type `attendeeRoster` as `string[]` and add types to the `addAttendee` parameters. Here\'s exactly how the syntax looks:\n\n```typescript\nlet attendeeRoster: string[] = [];\nfunction addAttendee(roster: string[], name: string): void {\n  roster.push(name);\n}\n```\n\nThe compiler will catch any wrong value the moment someone tries to push it in. That\'s the fix."',
         },
       ],
       realWorldContext:
@@ -479,7 +479,7 @@ export const LEVELS: Level[] = [
         {
           type: "dialogue",
           speaker: "minhaj",
-          text: '"Give the comparator parameter a proper function type — two strings in, a number out. Once that\'s in place, passing a wrong-shaped callback is a compiler error. This entire class of sorting bug becomes structurally impossible to reintroduce."',
+          text: '"Give the comparator parameter a proper function type. The syntax is:\n\n```typescript\n(a: string, b: string) => number\n```\n\nThat reads as: a function taking two string parameters (a and b) and returning a number. Once that\'s in place, passing a wrong-shaped callback is a compiler error. This entire class of sorting bug becomes structurally impossible to reintroduce."',
         },
       ],
       realWorldContext:
@@ -530,8 +530,9 @@ export const LEVELS: Level[] = [
           text: '"Any turns off checking completely," Minhaj says, "right at the exact moment we can trust this data the least."',
         },
         {
-          type: "narration",
-          text: "Minhaj wants the payload typed as unknown instead. That forces a real narrowing check before anything touches it. He also wants a proper exhaustive guard on the nearby status switch, so a forgotten case fails to compile — instead of silently falling through in production.",
+          type: "dialogue",
+          speaker: "minhaj",
+          text: '"Use `unknown` instead of `any`. It forces a narrowing check before any property access:\n\n```typescript\nfunction parseWebhookPayload(payload: unknown) {\n  if (typeof payload === "object" && payload !== null && "name" in payload) {\n    return (payload as { name: string }).name;\n  }\n}\n```\n\nAnd for the status switch, add a `default` branch with `assertNever` so a forgotten case fails to compile:\n\n```typescript\nfunction assertNever(value: never): never {\n  throw new Error(`Unhandled case: ${value}`);\n}\n```"',
         },
       ],
       realWorldContext:
@@ -693,7 +694,12 @@ export const LEVELS: Level[] = [
         },
         {
           type: "dialogue",
-          text: '"Two small modifiers," Tasnim says. "Two real production bugs. Both fixes belong in the same interface update this time."',
+          speaker: "tasnim",
+          text: '"Two small modifiers," Tasnim says. "For optional fields, add a `?` after the field name:\n\n```typescript\ninterface Event {\n  discountCode?: string;  // the ? means this field can be undefined\n}\n```\n\nFor fields that should never change, prepend `readonly` before the field name:\n\n```typescript\ninterface Event {\n  readonly id: string;  // the readonly prevents assignment\n}\n```"',
+        },
+        {
+          type: "dialogue",
+          text: '"Get this right," she says, "and both bugs stay fixed forever — no one can accidentally overwrite an id or crash on a missing discount code."',
         },
       ],
       realWorldContext:
@@ -848,6 +854,10 @@ export const LEVELS: Level[] = [
           type: "narration",
           text: "Tasnim explains the real problem: event ids are created dynamically, all day long. So the type needs to accept any string key up front — not a fixed, guessed-at list decided when the file was written.",
         },
+        {
+          type: "dialogue",
+          text: '"The fix is an index signature," Tasnim says. "Instead of listing every possible key, you declare one pattern the compiler accepts for any key:\n\n```typescript\ninterface EventStateMap {\n  [eventId: string]: EventState;\n}\n```\n\nThe `[eventId: string]` part means any string key maps to an EventState value."',
+        },
       ],
       realWorldContext:
         "An index signature models an open-ended dictionary whose exact keys aren't known in advance, which is exactly the shape a live, ever-growing dashboard needs.",
@@ -989,7 +999,7 @@ export const LEVELS: Level[] = [
         { type: "narration", text: "Minhaj explains the problem." },
         {
           type: "dialogue",
-          text: '"You have to narrow the union first," he says. "Use a runtime check the compiler can follow. Only then will it let you access a field that doesn\'t exist on every branch."',
+          text: '"You have to narrow the union first," he says. "Use a runtime check the compiler can follow, like this:\n\n```typescript\nif (event.kind === "workshop") {\n  return event.instructor;  // TypeScript knows this is safe here\n}\nreturn event.title;  // fallback for the other kinds\n```\n\nOnly then will it let you access a field that doesn\'t exist on every branch."',
         },
         {
           type: "narration",

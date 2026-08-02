@@ -19,6 +19,7 @@ import CodeEditor from "./CodeEditor";
 import StoryModal from "./StoryModal";
 import CompletionModal from "./CompletionModal";
 import GrimoirePanel from "./GrimoirePanel";
+import ErrorBoundary from "./ErrorBoundary";
 import { getStagePrimaryCharacter, CHECKPOINT_LEVEL_IDS } from "../data/characters";
 import { formatValidationError } from "../lib/narrativeFeedback";
 import { CHECKPOINT_BADGES, getStageMeta } from "../data/stageMeta";
@@ -290,6 +291,7 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl/Cmd+Enter: Submit code or close story modal
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
         e.preventDefault();
         if (showStoryModal) {
@@ -297,6 +299,20 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
           playChime("click");
         } else if (!showCompletionModal) {
           runValidationRef.current();
+        }
+        return;
+      }
+      // H: Toggle hints
+      if (e.key === "h" || e.key === "H") {
+        if (!showStoryModal && !showCompletionModal) {
+          setShowHints((prev) => !prev);
+        }
+        return;
+      }
+      // R: Reset code to starter
+      if (e.key === "r" || e.key === "R") {
+        if (!showStoryModal && !showCompletionModal && !e.ctrlKey && !e.metaKey) {
+          resetCodeToStarter();
         }
       }
     };
@@ -661,21 +677,23 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
           </div>
 
           <div className="flex-1 min-h-[300px] sm:min-h-[350px]">
-            <CodeEditor
-              height="100%"
-              theme="vs-dark"
-              language={editorLanguage}
-              value={userCode}
-              onChange={handleCodeChange}
-              onMount={handleEditorDidMount}
-              options={{
-                fontSize: 14,
-                minimap: { enabled: false },
-                scrollBeyondLastLine: false,
-                fontFamily: "JetBrains Mono, monospace",
-                automaticLayout: true,
-              }}
-            />
+            <ErrorBoundary>
+              <CodeEditor
+                height="100%"
+                theme="vs-dark"
+                language={editorLanguage}
+                value={userCode}
+                onChange={handleCodeChange}
+                onMount={handleEditorDidMount}
+                options={{
+                  fontSize: 14,
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  fontFamily: "JetBrains Mono, monospace",
+                  automaticLayout: true,
+                }}
+              />
+            </ErrorBoundary>
           </div>
 
           <div className="h-32 sm:h-44 bg-surface-container-lowest border-t border-outline-variant/30 p-3 sm:p-4 font-mono text-xs overflow-y-auto space-y-1">
