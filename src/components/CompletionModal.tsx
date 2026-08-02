@@ -1,9 +1,11 @@
 "use client";
 
-import { X, Zap, ArrowRight, Award, CheckCircle2 } from "lucide-react";
+import { useEffect } from "react";
+import { X, Zap, ArrowRight, Award, CheckCircle2, CornerDownLeft } from "lucide-react";
 import { Level, Stage } from "../types";
 import { CHECKPOINT_LEVEL_IDS } from "../data/characters";
 import { CHECKPOINT_BADGES } from "../data/stageMeta";
+import Confetti from "./Confetti";
 
 interface CompletionModalProps {
   level: Level;
@@ -20,12 +22,35 @@ export default function CompletionModal({
   nextLevel,
   onClose,
   onNext,
+  playChime,
 }: CompletionModalProps) {
   const isCheckpoint = CHECKPOINT_LEVEL_IDS.has(level.id);
   const checkpointBadge = CHECKPOINT_BADGES[level.id];
 
+  // Keyboard shortcuts: Enter or ArrowRight → next level, Escape → close
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Enter or ArrowRight: advance to next level
+      if (e.key === "Enter" || e.key === "ArrowRight") {
+        e.preventDefault();
+        playChime("click");
+        onNext();
+        return;
+      }
+      // Escape: close modal (Review Code)
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onNext, onClose, playChime]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/85 backdrop-blur-md animate-fadeIn">
+      <Confetti />
       <div className="p-8 bg-surface-container border border-outline-variant/40 rounded-2xl max-w-md w-full flex flex-col items-center text-center gap-5 shadow-2xl glow-primary relative">
         <button onClick={onClose} className="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface cursor-pointer">
           <X className="w-5 h-5" />
@@ -98,6 +123,10 @@ export default function CompletionModal({
           >
             <span>{nextLevel ? "Next Level" : "Back to Academy"}</span>
             <ArrowRight className="w-4 h-4" />
+            <span className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-neutral-950/10 rounded text-[9px] font-mono">
+              <CornerDownLeft className="w-2.5 h-2.5" />
+              Enter
+            </span>
           </button>
         </div>
       </div>

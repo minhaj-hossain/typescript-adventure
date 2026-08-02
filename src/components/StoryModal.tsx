@@ -101,7 +101,7 @@ export default function StoryModal({
             <span>{character.name}</span>
             <span className="text-on-surface-variant/60 font-normal">· {character.role}</span>
           </div>
-          <div className="text-on-surface text-sm leading-relaxed italic">
+          <div className="text-on-surface text-sm leading-relaxed">
             {renderFormattedText(text.replace(/^["']|["']$/g, ""))}
           </div>
         </div>

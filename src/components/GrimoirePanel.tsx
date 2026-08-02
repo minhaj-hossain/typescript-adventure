@@ -47,9 +47,24 @@ export default function GrimoirePanel({ levelId, isOpen, onClose }: GrimoirePane
           </div>
         ))
       ) : (
-        <p className="text-on-surface-variant text-[11px]">
-          No specific grimoire entry for this level yet. Check hints or the solution guide.
-        </p>
+        <div className="p-3 rounded-lg bg-surface-container-low border border-outline-variant/20 space-y-2">
+          <p className="text-on-surface-variant text-[11px] leading-relaxed">
+            No specific grimoire entry for this level yet. But the arcane library is vast — explore these fundamentals:
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {REFERENCE_LIBRARY.slice(0, 3).map((ref) => (
+              <span
+                key={ref.id}
+                className="text-[9px] font-mono font-bold text-secondary bg-secondary/10 border border-secondary/20 px-2 py-0.5 rounded"
+              >
+                {ref.term}
+              </span>
+            ))}
+          </div>
+          <p className="text-[10px] text-on-surface-variant/70">
+            💡 Check hints or the solution guide for level-specific guidance.
+          </p>
+        </div>
       )}
 
       {illustrationKeys.length > 0 && (

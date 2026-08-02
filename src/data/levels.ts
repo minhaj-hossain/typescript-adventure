@@ -519,7 +519,7 @@ export const LEVELS: Level[] = [
       narrative: [
         {
           type: "narration",
-          text: "Evans just wired up an external webhook. It pings the Kingdom whenever a third-party ticketing partner sells a seat. But nobody controls what shape that payload actually arrives in.",
+          text: "Evans just wired up an external webhook. It pings the Kingdom whenever a third-party ticketing partner sells a seat. But nobody controls what shape that payload actually arrives in — the partner's server could send anything.",
         },
         {
           type: "narration",
@@ -527,35 +527,46 @@ export const LEVELS: Level[] = [
         },
         {
           type: "dialogue",
-          text: '"Any turns off checking completely," Minhaj says, "right at the exact moment we can trust this data the least."',
+          text: '"Any turns off checking completely," Minhaj says. "It\'s like yelling at a security guard to go home right at the moment we trust this data the least."',
         },
         {
           type: "dialogue",
           speaker: "minhaj",
-          text: '"Use `unknown` instead of `any`. It forces a narrowing check before any property access:\n\n```typescript\nfunction parseWebhookPayload(payload: unknown) {\n  if (typeof payload === "object" && payload !== null && "name" in payload) {\n    return (payload as { name: string }).name;\n  }\n}\n```\n\nAnd for the status switch, add a `default` branch with `assertNever` so a forgotten case fails to compile:\n\n```typescript\nfunction assertNever(value: never): never {\n  throw new Error(`Unhandled case: ${value}`);\n}\n```"',
+          text: '"Use `unknown` instead of `any`. Think of `unknown` as a **sealed box**. You can\'t open it and grab `.name` until you first check what\'s inside:\n\n```typescript\nfunction parseWebhookPayload(payload: unknown) {\n  // First verify the box is an object and has a name\n  if (typeof payload === "object" && payload !== null && "name" in payload) {\n    return (payload as { name: string }).name; // NOW it\'s safe\n  }\n  throw new Error("Invalid payload shape");\n}\n```"',
+        },
+        {
+          type: "narration",
+          text: "Then Minhaj shows you the other half: `never`. Imagine a switch statement for event status. If every possible status is already handled, the function always returns. But if someone adds a new status later and forgets to handle it, `assertNever` forces the compiler to cry out — like an alarm that catches the unhandled case.",
+        },
+        {
+          type: "dialogue",
+          speaker: "minhaj",
+          text: '"Add a `default` branch that calls `assertNever(status)`. If a new status is ever added and not handled, TypeScript will refuse to compile — that\'s the `never` guard doing its job."',
         },
       ],
       realWorldContext:
-        "unknown forces a narrowing check before any property access is allowed, while never statically proves every real case in a switch has already been handled.",
+        "unknown is a sealed box: you must verify what's inside before using it. never is an alarm: it guarantees you've handled every possible case in a switch.",
       taskDescription:
-        "Type the webhook payload as unknown with a narrowing check, and add an assertNever guard to the status switch's default case.",
+        "Change `payload: any` to `payload: unknown`, add a narrowing check before touching `.name`, and add an `assertNever` guard to the switch's `default` branch.",
       previousOutcome:
         "The sorting callback bug is fixed and merged. Now Evans's new webhook integration hands you data whose shape you can't fully trust yet.",
     },
     playground: {
       starterCode:
-        'function parseWebhookPayload(payload: any) {\n  return payload.name;\n}\n\nfunction describeStatus(status: EventStatus) {\n  switch (status) {\n    case "draft":\n      return "Not yet public";\n    case "published":\n      return "Live now";\n    case "cancelled":\n      return "No longer happening";\n  }\n}',
+        'type EventStatus = "draft" | "published" | "cancelled";\n\nfunction parseWebhookPayload(payload: any) {\n  return payload.name;\n}\n\nfunction describeStatus(status: EventStatus) {\n  switch (status) {\n    case "draft":\n      return "Not yet public";\n    case "published":\n      return "Live now";\n    case "cancelled":\n      return "No longer happening";\n  }\n}',
       solutionCode:
-        'function parseWebhookPayload(payload: unknown) {\n  if (typeof payload === "object" && payload !== null && "name" in payload) {\n    return (payload as { name: string }).name;\n  }\n  throw new Error("Invalid payload shape");\n}\n\nfunction assertNever(value: never): never {\n  throw new Error(`Unhandled case: ${value}`);\n}\n\nfunction describeStatus(status: EventStatus) {\n  switch (status) {\n    case "draft":\n      return "Not yet public";\n    case "published":\n      return "Live now";\n    case "cancelled":\n      return "No longer happening";\n    default:\n      return assertNever(status);\n  }\n}',
+        'type EventStatus = "draft" | "published" | "cancelled";\n\nfunction parseWebhookPayload(payload: unknown) {\n  if (typeof payload === "object" && payload !== null && "name" in payload) {\n    return (payload as { name: string }).name;\n  }\n  throw new Error("Invalid payload shape");\n}\n\nfunction assertNever(value: never): never {\n  throw new Error(`Unhandled case: ${value}`);\n}\n\nfunction describeStatus(status: EventStatus) {\n  switch (status) {\n    case "draft":\n      return "Not yet public";\n    case "published":\n      return "Live now";\n    case "cancelled":\n      return "No longer happening";\n    default:\n      return assertNever(status);\n  }\n}',
       objectives: [
-        "Type payload as unknown instead of any",
-        "Narrow payload before accessing any property on it",
-        "Add an assertNever helper typed to accept only never",
-        "Wire assertNever into describeStatus's default case",
+        "Change payload from any to unknown",
+        "Narrow payload with a safe check before accessing .name",
+        "Declare assertNever(value: never): never",
+        "Call assertNever(status) in the switch's default branch",
       ],
       hints: [
-        "unknown requires a real narrowing check before any property access is allowed, unlike any",
-        "A function parameter typed as never can only ever actually be called once every real case has already been handled",
+        "Step 1: Change `payload: any` to `payload: unknown` — but now TS will complain about `.name`. That's the whole point!",
+        "Step 2: Before touching `.name`, check: typeof payload === 'object' && payload !== null && 'name' in payload",
+        "Step 3: Declare `function assertNever(value: never): never { throw new Error('Unhandled case: ' + value); }`",
+        "Step 4: Add `default: return assertNever(status);` to the switch — now a brand-new status becomes a compile error instead of a silent bug",
       ],
       filesToEdit: ["type-triad.ts"],
     },
