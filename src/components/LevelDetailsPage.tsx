@@ -480,14 +480,29 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
           return (
             <span
               key={`${bIdx}-${idx}`}
-              className="inline-flex items-center gap-1 px-2 py-0.5 my-0.5 mx-0.5 bg-surface-container-low border border-outline-variant/40 text-primary font-mono text-xs rounded-md shadow-inner"
+              className="text-primary font-mono text-xs font-semibold"
             >
-              {isTerminal && <span className="text-secondary font-bold">&gt;_</span>}
+              {isTerminal && <span className="text-secondary font-bold">{">_"}</span>}
               <span>{isTerminal ? codeContent.replace(">_", "").trim() : codeContent}</span>
             </span>
           );
         }
-        return part;
+
+        // 3. Split **bold** markdown
+        const boldParts = part.split(/(\*\*[^*]+\*\*)/g);
+        return boldParts.map((boldPart, bIdx2) => {
+          if (boldPart.startsWith("**") && boldPart.endsWith("**") && boldPart.length > 4) {
+            return (
+              <strong
+                key={`${bIdx}-${idx}-${bIdx2}`}
+                className="text-primary font-bold"
+              >
+                {boldPart.slice(2, -2)}
+              </strong>
+            );
+          }
+          return boldPart;
+        });
       });
     });
   };
@@ -667,7 +682,7 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
                   ? "bg-primary/10 text-primary border-primary/20"
                   : "text-on-surface-variant hover:text-on-surface border-transparent hover:bg-surface-container-high/40"
               }`}
-            >mi 
+            >
               <Lightbulb className="w-3 h-3" />
               <span className="hidden sm:inline">Help</span>
             </button>

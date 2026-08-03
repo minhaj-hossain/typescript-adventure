@@ -120,7 +120,9 @@ export default function StoryModal({
       <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-tertiary">
         Quick Prediction
       </h4>
-      <p className="text-sm text-on-surface font-semibold">{q.question}</p>
+      <p className="text-sm text-on-surface font-semibold leading-relaxed">
+        {renderFormattedText(q.question)}
+      </p>
       <div className="space-y-2">
         {q.options.map((opt, i) => (
           <button
@@ -141,13 +143,13 @@ export default function StoryModal({
                 : "border-outline-variant/30 hover:border-primary/40 text-on-surface hover:bg-surface-container-high"
             }`}
           >
-            {opt}
+            <span className="leading-relaxed">{renderFormattedText(opt)}</span>
           </button>
         ))}
       </div>
       {predictionRevealed && q.explanation && (
         <p className="text-xs text-on-surface-variant leading-relaxed pt-1 border-t border-outline-variant/20">
-          💡 {q.explanation}
+          💡 {renderFormattedText(q.explanation)}
         </p>
       )}
     </div>
