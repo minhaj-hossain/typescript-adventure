@@ -116,7 +116,7 @@ export default function StoryModal({
   };
 
   const renderPrediction = (q: PredictionQuestion) => (
-    <div className="p-5 rounded-2xl bg-surface-container-low border border-tertiary/30 space-y-3">
+    <div className="p-4 sm:p-5 rounded-2xl bg-surface-container-low border border-tertiary/30 space-y-3">
       <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-tertiary">
         Quick Prediction
       </h4>
@@ -156,43 +156,47 @@ export default function StoryModal({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-3xl bg-surface-container border border-outline-variant/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] glow-primary">
-        <div className="p-6 bg-surface-container-low border-b border-outline-variant/30 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <BookOpen className="w-5 h-5 text-primary" />
-            <div>
-              <h2 className="text-xl font-extrabold text-on-surface tracking-tight font-sans">
-                {level.story.title || level.title}
-              </h2>
-              {isCheckpoint && (
-                <span className="text-[10px] font-mono font-bold uppercase text-amber-400 tracking-wider">
-                  ★ Chapter Checkpoint
-                </span>
-              )}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-background/80 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-3xl bg-surface-container border border-outline-variant/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90dvh] sm:max-h-[90vh] glow-primary">
+        <div className="px-4 py-4 sm:p-6 bg-surface-container-low border-b border-outline-variant/30">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-6">
+            {/* Title — always gets maximum width; controls wrap to second row on mobile */}
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <BookOpen className="w-5 h-5 text-primary shrink-0" />
+              <div className="min-w-0">
+                <h2 className="text-lg sm:text-xl font-extrabold text-on-surface tracking-tight font-sans leading-snug">
+                  {level.story.title || level.title}
+                </h2>
+                {isCheckpoint && (
+                  <span className="text-[10px] font-mono font-bold uppercase text-amber-400 tracking-wider">
+                    ★ Chapter Checkpoint
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setAdvancedMode(!advancedMode)}
-              className={`text-xs font-mono font-bold px-3 py-1.5 rounded-xl border transition-colors cursor-pointer ${
-                advancedMode
-                  ? "bg-secondary/20 text-secondary border-secondary/50"
-                  : "bg-surface-container-high text-on-surface-variant border-outline-variant/40"
-              }`}
-            >
-              &lt;&gt; Advanced ({advancedMode ? "On" : "Off"})
-            </button>
-            <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface p-1.5 cursor-pointer">
-              <X className="w-5 h-5" />
-            </button>
+            {/* Controls — own row on mobile (justified between), inline on desktop */}
+            <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 shrink-0">
+              <button
+                onClick={() => setAdvancedMode(!advancedMode)}
+                className={`text-[11px] sm:text-xs font-mono font-bold px-2.5 sm:px-3 py-1.5 rounded-xl border transition-colors cursor-pointer ${
+                  advancedMode
+                    ? "bg-secondary/20 text-secondary border-secondary/50"
+                    : "bg-surface-container-high text-on-surface-variant border-outline-variant/40"
+                }`}
+              >
+                {`<> Advanced (${advancedMode ? "On" : "Off"})`}
+              </button>
+              <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface p-1.5 -mr-1 cursor-pointer">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="p-6 md:p-8 overflow-y-auto flex-1 space-y-6">
+        <div className="px-4 py-5 sm:p-6 lg:p-8 overflow-y-auto flex-1 space-y-4 sm:space-y-6">
           {level.id !== "level-0-1-bootstrap" && level.story.previousOutcome && step === 0 && (
-            <div className="p-5 rounded-2xl bg-primary/5 border border-primary/20 space-y-2">
+            <div className="p-4 sm:p-5 rounded-2xl bg-primary/5 border border-primary/20 space-y-2">
               <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-primary">
                 Previously in the Kingdom
               </h4>
@@ -220,7 +224,7 @@ export default function StoryModal({
               {prediction && predictionRevealed && renderPrediction(prediction)}
 
               {level.story.realWorldContext && (
-                <div className="p-5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-2">
+                <div className="p-4 sm:p-5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-2">
                   <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-secondary">
                     Real-World Context
                   </h4>
@@ -230,7 +234,7 @@ export default function StoryModal({
                 </div>
               )}
 
-              <div className="p-5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-2">
+              <div className="p-4 sm:p-5 rounded-2xl bg-surface-container-low border border-outline-variant/30 space-y-2">
                 <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-secondary">
                   Your Task
                 </h4>
@@ -251,56 +255,58 @@ export default function StoryModal({
           </div>
         </div>
 
-        <div className="p-6 bg-surface-container-low border-t border-outline-variant/30 flex items-center justify-between gap-3">
-          {/* Left: Back button (hidden on step 0) */}
-          <div className="flex-1 flex items-center">
-            {step > 0 ? (
-              <button
-                onClick={() => {
-                  playChime("click");
-                  setStep((s) => s - 1);
-                }}
-                className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-on-surface cursor-pointer"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                Back
-              </button>
-            ) : (
-              <span />
-            )}
-          </div>
+        <div className="px-4 py-4 sm:p-6 bg-surface-container-low border-t border-outline-variant/30">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-3">
+            {/* Left: Back button (hidden on step 0) */}
+            <div className="flex items-center justify-between sm:flex-1 sm:justify-start">
+              {step > 0 ? (
+                <button
+                  onClick={() => {
+                    playChime("click");
+                    setStep((s) => s - 1);
+                  }}
+                  className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-on-surface cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Back
+                </button>
+              ) : (
+                <span />
+              )}
 
-          {/* Center: Skip to coding */}
-          <button
-            onClick={finishStory}
-            className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-on-surface cursor-pointer"
-          >
-            <SkipForward className="w-3.5 h-3.5" />
-            Skip to coding
-          </button>
-
-          {/* Right: Continue / Start Coding */}
-          <div className="flex-1 flex justify-end">
-            {step < maxStep ? (
-              <button
-                onClick={() => {
-                  playChime("click");
-                  setStep((s) => s + 1);
-                }}
-                className="flex items-center gap-2 px-6 py-3 bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/40 rounded-xl font-bold text-sm cursor-pointer"
-              >
-                Continue
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            ) : (
+              {/* Center: Skip to coding — moves to left row on mobile */}
               <button
                 onClick={finishStory}
-                className="lift-button flex items-center gap-3 px-8 py-3.5 bg-gradient-to-r from-primary via-secondary to-tertiary text-neutral-950 rounded-xl font-extrabold text-sm cursor-pointer shadow-lg"
+                className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-on-surface cursor-pointer"
               >
-                Start Coding
-                <span className="px-2 py-0.5 bg-neutral-950/10 rounded text-[10px] font-mono">(Ctrl+Enter)</span>
+                <SkipForward className="w-3.5 h-3.5" />
+                Skip to coding
               </button>
-            )}
+            </div>
+
+            {/* Right: Continue / Start Coding — full-width primary action on mobile */}
+            <div className="sm:flex-1 sm:flex sm:justify-end">
+              {step < maxStep ? (
+                <button
+                  onClick={() => {
+                    playChime("click");
+                    setStep((s) => s + 1);
+                  }}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant/40 rounded-xl font-bold text-sm cursor-pointer"
+                >
+                  Continue
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={finishStory}
+                  className="lift-button w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-3.5 bg-gradient-to-r from-primary via-secondary to-tertiary text-neutral-950 rounded-xl font-extrabold text-sm cursor-pointer shadow-lg"
+                >
+                  Start Coding
+                  <span className="px-2 py-0.5 bg-neutral-950/10 rounded text-[10px] font-mono">(Ctrl+Enter)</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
