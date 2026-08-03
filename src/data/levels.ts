@@ -1902,9 +1902,9 @@ export const LEVELS: Level[] = [
     validation: {
       requiredKeywords: [
         "ResolvePayload<T extends WebhookAction>",
-        "CREATED",
-        "UPDATED",
-        "DELETED",
+        'extends "CREATED"',
+        '? KingdomEvent',
+        ": never",
       ],
     },
   },

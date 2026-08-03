@@ -28,17 +28,24 @@ export default function Navigation({
   const soundEnabled = settings.soundEnabled;
   const [mounted, setMounted] = useState(false);
   const [displayXp, setDisplayXp] = useState(0);
+  const [displaySoundEnabled, setDisplaySoundEnabled] = useState(true);
 
-  // Hydration-safe: only show real XP after mount
+  // Hydration-safe: only show real XP + sound state after mount
   useEffect(() => {
     setMounted(true);
     setDisplayXp(getInitialXp());
+    setDisplaySoundEnabled(soundEnabled);
   }, []);
 
   // Keep in sync with context updates
   useEffect(() => {
     if (mounted) setDisplayXp(xp);
   }, [xp, mounted]);
+
+  // Keep sound state in sync once mounted
+  useEffect(() => {
+    if (mounted) setDisplaySoundEnabled(soundEnabled);
+  }, [soundEnabled, mounted]);
 
   // Keyboard shortcut: M to toggle sound
   useEffect(() => {
@@ -118,19 +125,19 @@ export default function Navigation({
             <span className="font-mono">{displayXp} XP</span>
           </div>
 
-          {/* Sound Toggle */}
+          {/* Sound Toggle — uses displaySoundEnabled so server and client render identically on first paint */}
           <button
-            onClick={() => updateSettings({ soundEnabled: !soundEnabled })}
+            onClick={() => updateSettings({ soundEnabled: !displaySoundEnabled })}
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] md:text-xs font-bold rounded-lg transition-all cursor-pointer border border-outline-variant/20 bg-surface-container/40 hover:bg-surface-container-high/60 text-on-surface-variant hover:text-on-surface"
-            title={soundEnabled ? "Mute sounds (M)" : "Enable sounds (M)"}
-            aria-label={soundEnabled ? "Mute sounds" : "Enable sounds"}
+            title={displaySoundEnabled ? "Mute sounds (M)" : "Enable sounds (M)"}
+            aria-label={displaySoundEnabled ? "Mute sounds" : "Enable sounds"}
           >
-            {soundEnabled ? (
+            {displaySoundEnabled ? (
               <Volume2 className="w-3.5 h-3.5 text-primary" />
             ) : (
               <VolumeX className="w-3.5 h-3.5 text-outline" />
             )}
-            <span className="hidden sm:inline">{soundEnabled ? "Sound On" : "Muted"}</span>
+            <span className="hidden sm:inline">{displaySoundEnabled ? "Sound On" : "Muted"}</span>
           </button>
 
           {/* User Profile dropdown */}
