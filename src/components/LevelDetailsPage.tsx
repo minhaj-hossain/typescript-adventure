@@ -203,7 +203,18 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
     localStorage.setItem("last_active_level_id", level.id);
 
     const savedCode = localStorage.getItem(`code_${level.id}`);
-    setUserCode(savedCode || level.playground.starterCode);
+    // Guard against corrupted saved code from a previous session.
+    // Catches: literal "\n"/"\t" text AND real line-break runs (4+ consecutive
+    // \r\n, \r, or \n — handles Windows/Unix/Mac line endings).
+    const isCorrupted =
+      savedCode !== null &&
+      (savedCode.includes("\\n") ||
+        savedCode.includes("\\t") ||
+        /(?:\r\n|\r|\n){4,}/.test(savedCode));
+    if (isCorrupted) {
+      localStorage.removeItem(`code_${level.id}`);
+    }
+    setUserCode(isCorrupted ? level.playground.starterCode : savedCode || level.playground.starterCode);
     setActiveFile(level.playground.filesToEdit[0] || "index.ts");
 
     const completed = loadCompletedLevels().includes(level.id);
@@ -478,13 +489,13 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
           const codeContent = part.slice(1, -1);
           const isTerminal = codeContent.startsWith(">_");
           return (
-            <span
+            <code
               key={`${bIdx}-${idx}`}
-              className="text-primary font-mono text-xs font-semibold"
+              className="px-1.5 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-mono text-xs font-semibold"
             >
               {isTerminal && <span className="text-secondary font-bold">{">_"}</span>}
               <span>{isTerminal ? codeContent.replace(">_", "").trim() : codeContent}</span>
-            </span>
+            </code>
           );
         }
 
