@@ -10,83 +10,37 @@ export interface Stage {
   badgeName?: string;
 }
 
-export interface NarrativeBlock {
-  type: "narration" | "dialogue";
-  text: string;
-  speaker?: string;
-}
-
-export interface ValidationRule {
-  /** Strategy to use for validation (defaults to "keyword" if not specified) */
-  type?: "keyword" | "ast" | "typescript";
-  requiredKeywords?: string[];
-  forbiddenKeywords?: string[];
-  /** AST-based rules: e.g. require a specific interface declaration */
-  astRules?: {
-    requiredDeclarations?: string[];       // "interface Event", "type EventStatus"
-    requiredProperties?: Record<string, string[]>; // { "Event": ["title", "date"] }
-    requiredTypes?: string[];              // "Event", "string[]"
-    forbiddenPatterns?: string[];           // "any", "var"
-  };
-}
-
-export interface LevelPlayground {
-  starterCode: string;
-  solutionCode: string;
-  objectives: string[];
-  hints: string[];
-  filesToEdit: string[];
-}
-
-export interface LevelStory {
-  title: string;
-  narrative: NarrativeBlock[];
-  realWorldContext: string;
-  taskDescription: string;
-  previousOutcome: string;
-  completionBeat?: string;
-}
-
-export interface LevelAnalytics {
-  /** Average number of attempts to complete this level */
-  averageAttempts?: number;
-  /** Common error messages users encounter */
-  commonErrors?: string[];
-  /** Difficulty rating from user feedback (1-5) */
-  userDifficultyRating?: number;
-  /** Hint usage rate (0-1) */
-  hintUsageRate?: number;
-}
-
-export interface PredictionQuestion {
-  question: string;
-  options: string[];
-  correctAnswerIndex: number;
-  explanation?: string;
-}
-
 export interface Level {
   id: string;
   title: string;
   moduleName: string;
   difficulty: "onboarding" | "easy" | "medium" | "hard";
   xpAwarded: number;
-  /** Estimated time to complete in minutes */
-  estimatedMinutes?: number;
-  /** Level IDs that must be completed before this one */
-  prerequisites?: string[];
-  
-  story: LevelStory;
-  playground: LevelPlayground;
-  validation: ValidationRule;
-  
-  /** Optional prediction question shown before the level */
-  predictionQuestion?: PredictionQuestion;
-  
-  /** Optional stageId for backwards-compatibility */
+  story: {
+    title: string;
+    narrative: { type: "narration" | "dialogue"; text: string; speaker?: string }[];
+    realWorldContext: string;
+    taskDescription: string;
+    previousOutcome: string;
+    completionBeat?: string;
+  };
+  playground: {
+    starterCode: string;
+    solutionCode: string;
+    objectives: string[];
+    hints: string[];
+    filesToEdit: string[];
+  };
+  validation: {
+    requiredKeywords?: string[];
+    forbiddenKeywords?: string[];
+  };
+
+  // Optional legacy properties for backwards-compatibility or transition helper
   stageId?: string;
   levelNumber?: number;
   slug?: string;
+  estimatedMinutes?: number;
   storyTheme?: string;
   projectContext?: string;
   whyThisLessonExists?: string;
@@ -115,6 +69,14 @@ export interface Level {
     | "build-component"
     | "playground"
     | "debugging";
+  starterCode?: string;
+  solutionCode?: string;
+  validationRules?: {
+    forbiddenKeywords?: string[];
+    requiredKeywords?: string[];
+    regexes?: string[]; // regex patterns that must match
+  };
+  hints?: string[];
   reflection?: {
     problem: string;
     solution: string;
@@ -141,7 +103,12 @@ export interface Level {
   badgeId?: string;
   badgeName?: string;
   learningPattern?: string[];
-  analytics?: LevelAnalytics;
+  predictionQuestion?: {
+    question: string;
+    options: string[];
+    correctAnswerIndex: number;
+    explanation?: string;
+  };
 }
 
 export interface ReferenceEntry {
@@ -166,7 +133,7 @@ export interface Achievement {
   id: string;
   name: string;
   description: string;
-  unlockedAt: string;
+  unlockedAt: string; // date string or level ID
 }
 
 export interface ChatMessage {
@@ -176,7 +143,6 @@ export interface ChatMessage {
   timestamp: string;
 }
 
-/** Per-level progress tracking */
 export interface LevelProgress {
   levelId: string;
   attempts: number;
@@ -188,18 +154,9 @@ export interface LevelProgress {
   completed: boolean;
 }
 
-/** Overall game state with persistence */
-export interface GameState {
-  xp: number;
-  unlockedLevelIds: string[];
-  unlockedBadges: string[];
-  wizardTitle: string;
-  levelProgress: Record<string, LevelProgress>;
-  settings: GameSettings;
-}
-
 export interface GameSettings {
   soundEnabled: boolean;
   animationsEnabled: boolean;
   showHints: boolean;
 }
+

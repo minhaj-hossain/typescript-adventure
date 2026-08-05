@@ -1,8 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, useCallback, useRef } from "react";
-import { useLocalStorage } from "../lib/useLocalStorage";
+import React, { createContext, useContext, useCallback, useRef, useEffect, useState } from "react";
 import { LevelProgress, GameSettings } from "../types";
+import {
+  loadProgress,
+  saveProgress,
+  exportProgressJSON,
+  importProgressJSON,
+  clearProgress,
+  PlayerProgress,
+} from "../lib/progressStore";
 
 interface GameContextType {
   xp: number;
@@ -16,27 +23,23 @@ interface GameContextType {
   setShowCelebration: (badgeName: string | null) => void;
   handleXpAwarded: (points: number) => void;
   handleBadgeUnlocked: (badgeId: string, badgeName: string) => void;
-  
-  // New: per-level analytics
+
+  // Level progress & code
   levelProgress: Record<string, LevelProgress>;
   trackLevelAttempt: (levelId: string) => void;
   trackLevelCompletion: (levelId: string, hintsUsed: number, errors: string[], timeSpentMs: number) => void;
   trackHintUsed: (levelId: string) => void;
   trackError: (levelId: string, error: string) => void;
-  
-  // New: settings
+
+  // Settings
   settings: GameSettings;
   updateSettings: (settings: Partial<GameSettings>) => void;
-  
-  // New: reset
-  resetAllProgress: () => void;
-}
 
-const DEFAULT_SETTINGS: GameSettings = {
-  soundEnabled: true,
-  animationsEnabled: true,
-  showHints: true,
-};
+  // Export / Reset
+  resetAllProgress: () => void;
+  exportJSON: () => string;
+  importJSON: (json: string) => boolean;
+}
 
 const WIZARD_TITLES = [
   { minXp: 0, title: "Primitive Initiate" },
@@ -59,146 +62,176 @@ function getWizardTitle(xp: number): string {
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [xp, setXp] = useLocalStorage("wizard_xp", 0);
-  const [unlockedBadges, setUnlockedBadges] = useLocalStorage<string[]>("wizard_badges", []);
-  const [unlockedLevelIds, setUnlockedLevelIds] = useLocalStorage<string[]>("unlocked_levels", [
-    "level-0-1-bootstrap",
-  ]);
-  const [wizardTitle, setWizardTitle] = useLocalStorage("wizard_title", "Primitive Initiate");
-  const [isSanctumOpen, setIsSanctumOpen] = useLocalStorage("wizard_sanctum_open", false);
-  const [showCelebration, setShowCelebration] = useLocalStorage<string | null>("wizard_celebration", null);
-  const [levelProgress, setLevelProgress] = useLocalStorage<Record<string, LevelProgress>>("level_progress", {});
-  const [settings, setSettings] = useLocalStorage("game_settings", DEFAULT_SETTINGS);
+  const [progressState, setProgressState] = useState<PlayerProgress>(loadProgress);
+  const [isSanctumOpen, setIsSanctumOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState<string | null>(null);
 
-  // Track level start time for accurate time measurement
   const levelStartTimes = useRef<Record<string, number>>({});
 
-  const handleXpAwarded = useCallback((points: number) => {
-    setXp((prev) => {
-      const nextXp = prev + points;
-      const newTitle = getWizardTitle(nextXp);
-      setWizardTitle(newTitle);
-      return nextXp;
+  useEffect(() => {
+    saveProgress(progressState);
+  }, [progressState]);
+
+  const setUnlockedLevelIds: React.Dispatch<React.SetStateAction<string[]>> = useCallback((action) => {
+    setProgressState((prev) => {
+      const nextUnlocked = typeof action === "function" ? action(prev.unlockedLevelIds) : action;
+      return { ...prev, unlockedLevelIds: nextUnlocked };
     });
-  }, [setXp, setWizardTitle]);
+  }, []);
+
+  const handleXpAwarded = useCallback((points: number) => {
+    setProgressState((prev) => ({ ...prev, xp: prev.xp + points }));
+  }, []);
 
   const handleBadgeUnlocked = useCallback((badgeId: string, badgeName: string) => {
-    setUnlockedBadges((prev) => {
-      if (prev.includes(badgeId)) return prev;
-      const next = [...prev, badgeId];
+    setProgressState((prev) => {
+      if (prev.badges.includes(badgeId)) return prev;
       setShowCelebration(badgeName);
-      return next;
+      return { ...prev, badges: [...prev.badges, badgeId] };
     });
-  }, [setUnlockedBadges, setShowCelebration]);
+  }, []);
 
-  // Per-level analytics tracking
   const trackLevelAttempt = useCallback((levelId: string) => {
     levelStartTimes.current[levelId] = Date.now();
-    setLevelProgress((prev) => {
-      const existing = prev[levelId];
+    setProgressState((prev) => {
+      const existing = prev.levelProgress[levelId];
       return {
         ...prev,
-        [levelId]: {
-          levelId,
-          attempts: (existing?.attempts ?? 0) + 1,
-          startedAt: existing?.startedAt ?? new Date().toISOString(),
-          hintsUsed: existing?.hintsUsed ?? 0,
-          errorsEncountered: existing?.errorsEncountered ?? [],
-          timeSpentMs: existing?.timeSpentMs ?? 0,
-          completed: existing?.completed ?? false,
+        levelProgress: {
+          ...prev.levelProgress,
+          [levelId]: {
+            levelId,
+            attempts: (existing?.attempts ?? 0) + 1,
+            startedAt: existing?.startedAt ?? new Date().toISOString(),
+            hintsUsed: existing?.hintsUsed ?? 0,
+            errorsEncountered: existing?.errorsEncountered ?? [],
+            timeSpentMs: existing?.timeSpentMs ?? 0,
+            completed: existing?.completed ?? false,
+          },
         },
       };
     });
-  }, [setLevelProgress]);
+  }, []);
 
   const trackLevelCompletion = useCallback(
     (levelId: string, hintsUsed: number, errors: string[], timeSpentMs: number) => {
-      setLevelProgress((prev) => ({
-        ...prev,
-        [levelId]: {
-          levelId,
-          attempts: (prev[levelId]?.attempts ?? 0) + 1,
-          startedAt: prev[levelId]?.startedAt ?? new Date().toISOString(),
-          completedAt: new Date().toISOString(),
-          hintsUsed,
-          errorsEncountered: errors,
-          timeSpentMs,
-          completed: true,
-        },
-      }));
+      setProgressState((prev) => {
+        const existing = prev.levelProgress[levelId];
+        const nextCompleted = prev.completedLevelIds.includes(levelId)
+          ? prev.completedLevelIds
+          : [...prev.completedLevelIds, levelId];
+
+        return {
+          ...prev,
+          completedLevelIds: nextCompleted,
+          levelProgress: {
+            ...prev.levelProgress,
+            [levelId]: {
+              levelId,
+              attempts: (existing?.attempts ?? 0) + 1,
+              startedAt: existing?.startedAt ?? new Date().toISOString(),
+              completedAt: new Date().toISOString(),
+              hintsUsed,
+              errorsEncountered: errors,
+              timeSpentMs,
+              completed: true,
+            },
+          },
+        };
+      });
     },
-    [setLevelProgress],
+    [],
   );
 
   const trackHintUsed = useCallback((levelId: string) => {
-    setLevelProgress((prev) => {
-      const existing = prev[levelId];
+    setProgressState((prev) => {
+      const existing = prev.levelProgress[levelId];
       if (!existing) return prev;
       return {
         ...prev,
-        [levelId]: {
-          ...existing,
-          hintsUsed: existing.hintsUsed + 1,
+        levelProgress: {
+          ...prev.levelProgress,
+          [levelId]: {
+            ...existing,
+            hintsUsed: existing.hintsUsed + 1,
+          },
         },
       };
     });
-  }, [setLevelProgress]);
+  }, []);
 
   const trackError = useCallback((levelId: string, error: string) => {
-    setLevelProgress((prev) => {
-      const existing = prev[levelId];
+    setProgressState((prev) => {
+      const existing = prev.levelProgress[levelId];
       return {
         ...prev,
-        [levelId]: {
-          levelId,
-          attempts: existing?.attempts ?? 0,
-          startedAt: existing?.startedAt ?? new Date().toISOString(),
-          hintsUsed: existing?.hintsUsed ?? 0,
-          errorsEncountered: [...(existing?.errorsEncountered ?? []), error].slice(-20), // Keep last 20
-          timeSpentMs: existing?.timeSpentMs ?? 0,
-          completed: existing?.completed ?? false,
+        levelProgress: {
+          ...prev.levelProgress,
+          [levelId]: {
+            levelId,
+            attempts: existing?.attempts ?? 0,
+            startedAt: existing?.startedAt ?? new Date().toISOString(),
+            hintsUsed: existing?.hintsUsed ?? 0,
+            errorsEncountered: [...(existing?.errorsEncountered ?? []), error].slice(-20),
+            timeSpentMs: existing?.timeSpentMs ?? 0,
+            completed: existing?.completed ?? false,
+          },
         },
       };
     });
-  }, [setLevelProgress]);
+  }, []);
 
   const updateSettings = useCallback((partial: Partial<GameSettings>) => {
-    setSettings((prev) => ({ ...prev, ...partial }));
-  }, [setSettings]);
+    setProgressState((prev) => ({
+      ...prev,
+      settings: { ...prev.settings, ...partial },
+    }));
+  }, []);
 
   const resetAllProgress = useCallback(() => {
-    setXp(0);
-    setUnlockedBadges([]);
-    setUnlockedLevelIds(["level-0-1-bootstrap"]);
-    setWizardTitle("Primitive Initiate");
-    setLevelProgress({});
-    setSettings(DEFAULT_SETTINGS);
+    clearProgress();
+    setProgressState(loadProgress());
     setShowCelebration(null);
     levelStartTimes.current = {};
-  }, [setXp, setUnlockedBadges, setUnlockedLevelIds, setWizardTitle, setLevelProgress, setSettings, setShowCelebration]);
+  }, []);
+
+  const exportJSON = useCallback(() => {
+    return exportProgressJSON(progressState);
+  }, [progressState]);
+
+  const importJSON = useCallback((json: string) => {
+    const res = importProgressJSON(json);
+    if (res) {
+      setProgressState(res);
+      return true;
+    }
+    return false;
+  }, []);
 
   return (
     <GameContext.Provider
       value={{
-        xp,
-        unlockedLevelIds,
+        xp: progressState.xp,
+        unlockedLevelIds: progressState.unlockedLevelIds,
         setUnlockedLevelIds,
-        unlockedBadges,
-        wizardTitle,
+        unlockedBadges: progressState.badges,
+        wizardTitle: getWizardTitle(progressState.xp),
         isSanctumOpen,
         setIsSanctumOpen,
         showCelebration,
         setShowCelebration,
         handleXpAwarded,
         handleBadgeUnlocked,
-        levelProgress,
+        levelProgress: progressState.levelProgress,
         trackLevelAttempt,
         trackLevelCompletion,
         trackHintUsed,
         trackError,
-        settings,
+        settings: progressState.settings,
         updateSettings,
         resetAllProgress,
+        exportJSON,
+        importJSON,
       }}
     >
       {children}

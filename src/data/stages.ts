@@ -3,9 +3,9 @@ import { Stage } from "../types";
 export const STAGES: Stage[] = [
   {
     id: "stage-0-onboarding",
-    title: "Stage 0 — The Onboarding Ritual",
+    title: "Stage 0 — Day 1 Setup & Tooling",
     description:
-      "Initialize your workspace, set up strict compiler rules, configure automated watchers, and master the language of the TypeScript Compiler.",
+      "Initialize your team repository, set up compiler safety rules, configure dev watchers, and learn to read error messages.",
     order: 0,
     levelIds: [
       "level-0-1-bootstrap",
@@ -16,9 +16,9 @@ export const STAGES: Stage[] = [
   },
   {
     id: "stage-1a-primitives",
-    title: "Stage 1A — The Primitive Runes",
+    title: "Stage 1A — The Billing Crisis (Basic Data Types)",
     description:
-      "Harness standard primitives (number, string, boolean), declare robust array list conduits, and master type inference.",
+      "Fix ticket billing bugs by assigning strict numbers, strings, booleans, arrays, and fixed tuples to data fields.",
     order: 1,
     levelIds: [
       "level-1-1-primitives",
@@ -27,16 +27,16 @@ export const STAGES: Stage[] = [
       "level-1-8-arrays-of-objects",
       "level-1-9-tuples",
     ],
-    storyHook: "The Royal Accounting Guild has a billing crisis — tickets are being recorded as text strings!",
-    completionBeat: "With arrays and tuples mastered, the billing system is finally stable.",
+    storyHook: "The finance team discovered a billing bug — ticket prices are being saved as text strings!",
+    completionBeat: "With numbers and arrays typed, the billing system is calculating prices accurately.",
     badgeId: "badge-primitive-runner",
-    badgeName: "Rune Scribe",
+    badgeName: "Type Guardian",
   },
   {
     id: "stage-1b-functions",
-    title: "Stage 1B — The Function Contracts",
+    title: "Stage 1B — Function Contracts & Safety Gates",
     description:
-      "Design exact object shapes, function signatures, callback contracts, and learn why 'any' is dangerous.",
+      "Design clear input/output types for functions, enforce return shapes, and ban dangerous 'any' types.",
     order: 2,
     levelIds: [
       "level-1-4-objects",
@@ -44,14 +44,14 @@ export const STAGES: Stage[] = [
       "level-1-6-function-types",
       "level-1-7-unknown-any-never",
     ],
-    storyHook: "Evans discovered a silent pricing bug — a function with no type contract let garbage data through.",
-    completionBeat: "The team now writes self-documenting, compiler-enforced function contracts.",
+    storyHook: "Evans found a silent checkout bug — an un-typed function allowed corrupted data into the database.",
+    completionBeat: "The team now writes safe, compiler-checked function contracts.",
   },
   {
     id: "stage-2a-structural",
-    title: "Stage 2A — The Structural Guild",
+    title: "Stage 2A — Reusable Blueprints (Interfaces)",
     description:
-      "Map complex objects using named reusable interfaces, add optionals/readonly safety modifiers, and specialize shapes with interface extension.",
+      "Design single-source-of-truth Event interfaces, add optional fields, and extend blueprints cleanly.",
     order: 3,
     levelIds: [
       "level-2-1-interfaces",
@@ -60,10 +60,10 @@ export const STAGES: Stage[] = [
       "level-2-4-extension",
       "level-2-5-checkpoint-domain",
     ],
-    storyHook: "Tasnim calls a halt to copy-pasting — five files each redeclare the same Event shape.",
-    completionBeat: "The Event interface is now a single source of truth, extended by WorkshopEvent.",
+    storyHook: "Tasnim calls a halt to copy-pasting — five files each redeclare their own mismatched Event shape.",
+    completionBeat: "The Event interface is now a shared, team-wide blueprint.",
     badgeId: "badge-structural-artisan",
-    badgeName: "Structural Artisan",
+    badgeName: "Blueprint Architect",
   },
   {
     id: "stage-2b-advanced-shapes",

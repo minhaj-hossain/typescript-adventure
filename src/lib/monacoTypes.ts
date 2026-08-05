@@ -14,8 +14,14 @@ export interface MonacoInstance {
   };
   languages: {
     typescript: {
-      typescriptDefaults: { setDiagnosticsOptions: (o: object) => void };
-      javascriptDefaults: { setDiagnosticsOptions: (o: object) => void };
+      typescriptDefaults: {
+        setDiagnosticsOptions: (o: object) => void;
+        setCompilerOptions: (o: object) => void;
+      };
+      javascriptDefaults: {
+        setDiagnosticsOptions: (o: object) => void;
+        setCompilerOptions: (o: object) => void;
+      };
     };
   };
   KeyMod: { CtrlCmd: number };

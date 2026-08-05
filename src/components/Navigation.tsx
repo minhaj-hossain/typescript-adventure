@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, Home, Award, Compass, Volume2, VolumeX, Zap } from "lucide-react";
+import { Sparkles, Award, Compass, Volume2, VolumeX, Zap } from "lucide-react";
 import { useGame } from "../context/GameContext";
+import Link from "next/link";
 
-// Helper to safely read from localStorage on client only
 function getInitialXp(): number {
   if (typeof window === "undefined") return 0;
   const saved = localStorage.getItem("wizard_xp");
@@ -11,7 +11,7 @@ function getInitialXp(): number {
 
 interface NavigationProps {
   activeTab: string;
-  onTabChange: (tab: string) => void;
+  onTabChange?: (tab: string) => void;
   xp: number;
   badgesCount: number;
   onOpenSanctum: () => void;
@@ -19,7 +19,7 @@ interface NavigationProps {
 
 export default function Navigation({
   activeTab,
-  onTabChange,
+  onTabChange: _onTabChange,
   xp,
   badgesCount,
   onOpenSanctum,
@@ -30,24 +30,20 @@ export default function Navigation({
   const [displayXp, setDisplayXp] = useState(0);
   const [displaySoundEnabled, setDisplaySoundEnabled] = useState(true);
 
-  // Hydration-safe: only show real XP + sound state after mount
   useEffect(() => {
     setMounted(true);
     setDisplayXp(getInitialXp());
     setDisplaySoundEnabled(soundEnabled);
   }, []);
 
-  // Keep in sync with context updates
   useEffect(() => {
     if (mounted) setDisplayXp(xp);
   }, [xp, mounted]);
 
-  // Keep sound state in sync once mounted
   useEffect(() => {
     if (mounted) setDisplaySoundEnabled(soundEnabled);
   }, [soundEnabled, mounted]);
 
-  // Keyboard shortcut: M to toggle sound
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "m" || e.key === "M") {
@@ -81,42 +77,53 @@ export default function Navigation({
       id="app-navigation"
     >
       <div className="flex flex-row justify-between items-center px-4 md:px-8 h-full max-w-[1440px] mx-auto w-full">
-        {/* Left group: Logo + Home */}
+        {/* Left group: Logo + Navigation Links */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
-          {/* Logo and Brand */}
-          <span
-            onClick={() => onTabChange("home")}
+          <Link
+            href="/"
             className="font-sans text-base md:text-lg font-black flex items-center gap-2 cursor-pointer hover:opacity-90 active:scale-95 transition-all select-none"
           >
-            <div className="p-1.5 bg-gradient-to-br from-primary via-secondary to-tertiary rounded-lg shadow-sm shadow-primary/10 flex items-center justify-center shrink-0">
+            <div className="p-1.5 bg-gradient-to-br from-primary via-secondary to-tertiary rounded-lg shadow-sm flex items-center justify-center shrink-0">
               <Sparkles className="w-4 h-4 text-[#001c39] animate-pulse" />
             </div>
             <span className="bg-gradient-to-r from-primary via-secondary to-tertiary bg-clip-text text-transparent tracking-tight font-extrabold">
-              <span className="xs:hidden md:hidden">TS</span>
-              <span className="hidden xs:inline md:hidden">TS Adventure</span>
-              <span className="hidden md:inline">TypeScript Adventure</span>
+              TypeScript Adventure
             </span>
-          </span>
+          </Link>
 
-          {/* Main Navigation — Home only */}
-          <div className="flex items-center bg-surface-container/40 p-0.5 rounded-lg border border-outline-variant/20">
-            <button
-              onClick={() => onTabChange("home")}
-              className={`flex items-center gap-1.5 px-2.5 md:px-3 py-1.5 text-[11px] md:text-xs font-bold rounded-md transition-all cursor-pointer border ${
-                activeTab === "home"
-                  ? "bg-primary/10 text-primary border-primary/20 shadow-[0_0_12px_rgba(164,201,255,0.06)]"
-                  : "text-on-surface-variant hover:text-on-surface border-transparent hover:bg-surface-container-high/40"
+          {/* Navigation Links */}
+          <div className="flex items-center gap-1 bg-surface-container/40 p-0.5 rounded-lg border border-outline-variant/20 ml-2">
+            <Link
+              href="/"
+              className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
+                activeTab === "home" ? "bg-primary/10 text-primary" : "text-on-surface-variant hover:text-on-surface"
               }`}
             >
-              <Home className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Home</span>
-            </button>
+              Home
+            </Link>
+            <Link
+              href="/playground"
+              className="px-2.5 py-1 text-xs font-bold text-on-surface-variant hover:text-on-surface rounded-md transition-all"
+            >
+              Playground
+            </Link>
+            <Link
+              href="/grimoire"
+              className="px-2.5 py-1 text-xs font-bold text-on-surface-variant hover:text-on-surface rounded-md transition-all"
+            >
+              Grimoire
+            </Link>
+            <Link
+              href="/progress"
+              className="px-2.5 py-1 text-xs font-bold text-on-surface-variant hover:text-on-surface rounded-md transition-all"
+            >
+              Stats
+            </Link>
           </div>
         </div>
 
         {/* Right group: XP + Sound + Profile */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          {/* Persistent XP Indicator */}
           <div
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] md:text-xs font-bold rounded-lg border border-tertiary/30 bg-tertiary/10 text-tertiary"
             title={`${displayXp} XP earned`}
@@ -125,7 +132,6 @@ export default function Navigation({
             <span className="font-mono">{displayXp} XP</span>
           </div>
 
-          {/* Sound Toggle — uses displaySoundEnabled so server and client render identically on first paint */}
           <button
             onClick={() => updateSettings({ soundEnabled: !displaySoundEnabled })}
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] md:text-xs font-bold rounded-lg transition-all cursor-pointer border border-outline-variant/20 bg-surface-container/40 hover:bg-surface-container-high/60 text-on-surface-variant hover:text-on-surface"
@@ -140,7 +146,6 @@ export default function Navigation({
             <span className="hidden sm:inline">{displaySoundEnabled ? "Sound On" : "Muted"}</span>
           </button>
 
-          {/* User Profile dropdown */}
           <div className="relative shrink-0" ref={dropdownRef}>
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -156,7 +161,6 @@ export default function Navigation({
               </span>
             </button>
 
-            {/* Dropdown Panel */}
             {isOpen && (
               <div className="absolute right-0 mt-2.5 w-72 bg-surface-container-high border border-outline-variant/60 rounded-xl shadow-2xl p-4 flex flex-col gap-3.5 z-50 animate-slide-down">
                 <div className="border-b border-outline-variant/30 pb-2.5 flex flex-col">
@@ -168,7 +172,6 @@ export default function Navigation({
                   </span>
                 </div>
 
-                {/* XP display */}
                 <div className="flex flex-col gap-1.5">
                   <div className="flex justify-between items-center text-[10px] font-mono">
                     <span className="text-on-surface-variant">XP Progress</span>
@@ -182,7 +185,6 @@ export default function Navigation({
                   </div>
                 </div>
 
-                {/* Badges count */}
                 <div className="flex items-center justify-between bg-surface-container-low px-3 py-2 rounded-lg border border-outline-variant/20">
                   <div className="flex items-center gap-2">
                     <Award className="w-4 h-4 text-tertiary animate-pulse" />
@@ -195,7 +197,6 @@ export default function Navigation({
                   </span>
                 </div>
 
-                {/* Action Button */}
                 <button
                   onClick={() => {
                     setIsOpen(false);

@@ -12,25 +12,21 @@ import {
   Check,
   FileText,
   Trophy,
-  Target,
-  Lightbulb,
-  Layers,
-  AlertCircle,
-  CheckCircle2,
-  Clock,
+  Sparkles,
 } from "lucide-react";
 import { STAGES, LEVELS } from "../curriculum";
-import { Level } from "../types";
 import { LEVEL_SOLUTIONS } from "../data/solutions";
 import CodeEditor from "./CodeEditor";
 import StoryModal from "./StoryModal";
 import CompletionModal from "./CompletionModal";
 import GrimoirePanel from "./GrimoirePanel";
-import ErrorBoundary from "./ErrorBoundary";
+import OraclePanel from "./OraclePanel";
 import { getStagePrimaryCharacter, CHECKPOINT_LEVEL_IDS } from "../data/characters";
 import { formatValidationError } from "../lib/narrativeFeedback";
 import { CHECKPOINT_BADGES, getStageMeta } from "../data/stageMeta";
 import { getEditorErrors } from "../lib/tsValidation";
+import { validateCode } from "../lib/validationEngine";
+import { useGame } from "../context/GameContext";
 import { MonacoEditorInstance, MonacoInstance } from "../lib/monacoTypes";
 import ConceptDiagram from "./ConceptDiagram";
 
@@ -126,6 +122,14 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
   const solDetails = LEVEL_SOLUTIONS[level.id];
   const hintCharacter = stage ? getStagePrimaryCharacter(stage.id) : getStagePrimaryCharacter("stage-0-onboarding");
 
+  const {
+    trackLevelAttempt,
+    trackLevelCompletion,
+    trackHintUsed,
+    trackError,
+    settings,
+  } = useGame();
+
   const [completedList, setCompletedList] = useState<string[]>([]);
   const [showStoryModal, setShowStoryModal] = useState(true);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
@@ -138,55 +142,15 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
   const [showSolution, setShowSolution] = useState(false);
   const [showHints, setShowHints] = useState(false);
   const [showGrimoire, setShowGrimoire] = useState(false);
+  const [showOracle, setShowOracle] = useState(false);
   const [objectivesChecked, setObjectivesChecked] = useState<boolean[]>([]);
-  const [sidebarTab, setSidebarTab] = useState<"objectives" | "concept" | "help">("objectives");
 
   const completedCount = completedList.length;
   const totalCount = LEVELS.length;
   const progressPercent = Math.round((completedCount / totalCount) * 100);
 
   const currentIdx = LEVELS.findIndex((l) => l.id === level.id);
-  // Use stage's declared level order for next-level determination
-  const stageLevels = stage
-    ? stage.levelIds
-        .map((id) => LEVELS.find((l) => l.id === id))
-        .filter((l): l is Level => l !== undefined)
-    : [];
-  const currentStageIdx = stage ? stageLevels.findIndex((l) => l.id === level.id) : -1;
-
-  // Next level in curriculum order (unconditional, used for unlocking)
-  const rawNextLevel = (() => {
-    // Same stage: next level in the stage's declared order
-    if (stage && currentStageIdx !== -1 && currentStageIdx + 1 < stageLevels.length) {
-      return stageLevels[currentStageIdx + 1];
-    }
-    // Last level of a stage: find the next stage by order and use its first level
-    if (stage) {
-      const nextStage = STAGES.find((s) => s.order === stage.order + 1);
-      if (nextStage && nextStage.levelIds.length > 0) {
-        const firstLevelOfNextStage = LEVELS.find((l) => l.id === nextStage.levelIds[0]);
-        if (firstLevelOfNextStage) return firstLevelOfNextStage;
-      }
-    }
-    // Fallback: next in global array
-    if (currentIdx !== -1 && currentIdx + 1 < LEVELS.length) {
-      return LEVELS[currentIdx + 1];
-    }
-    return null;
-  })();
-
-  // For the completion modal: always offer the curriculum-ordered next level.
-  // The modal only appears after successful validation, at which point the next
-  // level has just been unlocked (in the same handler), so it's always accessible.
-  const nextLevel = rawNextLevel;
-
-  // Stage progress for header feedback
-  const stageLevelIndex = stage ? stageLevels.findIndex((l) => l.id === level.id) : -1;
-  const stageCompletedCount = stage
-    ? stageLevels.filter((l) => completedList.includes(l.id)).length
-    : 0;
-  const stageTotalCount = stageLevels.length;
-  const stageProgressPercent = stageTotalCount > 0 ? Math.round((stageCompletedCount / stageTotalCount) * 100) : 0;
+  const nextLevel = currentIdx !== -1 && currentIdx + 1 < LEVELS.length ? LEVELS[currentIdx + 1] : null;
 
   const runValidationRef = useRef<() => void>(() => {});
   const monacoRef = useRef<MonacoInstance | null>(null);
@@ -203,22 +167,13 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
     localStorage.setItem("last_active_level_id", level.id);
 
     const savedCode = localStorage.getItem(`code_${level.id}`);
-    // Guard against corrupted saved code from a previous session.
-    // Catches: literal "\n"/"\t" text AND real line-break runs (4+ consecutive
-    // \r\n, \r, or \n — handles Windows/Unix/Mac line endings).
-    const isCorrupted =
-      savedCode !== null &&
-      (savedCode.includes("\\n") ||
-        savedCode.includes("\\t") ||
-        /(?:\r\n|\r|\n){4,}/.test(savedCode));
-    if (isCorrupted) {
-      localStorage.removeItem(`code_${level.id}`);
-    }
-    setUserCode(isCorrupted ? level.playground.starterCode : savedCode || level.playground.starterCode);
+    setUserCode(savedCode || level.playground.starterCode);
     setActiveFile(level.playground.filesToEdit[0] || "index.ts");
 
     const completed = loadCompletedLevels().includes(level.id);
     setIsCompleted(completed);
+
+    trackLevelAttempt(level.id);
 
     setTerminalLogs([
       `[info] Initialized TypeScript workspace for ${level.title}`,
@@ -237,64 +192,28 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
 
   const runValidation = useCallback(() => {
     setTerminalLogs((prev) => [...prev, `[compiler] Evaluating ${activeFile}...`]);
-    const errors: string[] = [];
+    const editorErrors =
+      monacoRef.current && !activeFile.endsWith(".json") && !activeFile.endsWith(".md")
+        ? getEditorErrors(monacoRef.current.editor.getModelMarkers({}))
+        : [];
 
-    // Normalize code for flexible keyword matching (ignore whitespace differences)
-    const normalizedCode = userCode.replace(/\s+/g, " ").trim();
-
-    if (level.validation.requiredKeywords) {
-      for (const kw of level.validation.requiredKeywords) {
-        // Normalize the keyword too, and also try a comma-separated variant
-        const normalizedKw = kw.replace(/\s+/g, " ").trim();
-        const commaVariant = normalizedKw.replace(/;/g, ",");
-        const noSpaceVariant = normalizedKw.replace(/\s+/g, "");
-        const commaNoSpaceVariant = commaVariant.replace(/\s+/g, "");
-
-        const normalizedCodeNoSpace = normalizedCode.replace(/\s+/g, "");
-
-        const found =
-          normalizedCode.includes(normalizedKw) ||
-          normalizedCode.includes(commaVariant) ||
-          normalizedCodeNoSpace.includes(noSpaceVariant) ||
-          normalizedCodeNoSpace.includes(commaNoSpaceVariant);
-
-        if (!found) {
-          errors.push(`Missing required statement or type symbol: "${kw}"`);
-        }
-      }
-    }
-
-    if (level.validation.forbiddenKeywords) {
-      for (const kw of level.validation.forbiddenKeywords) {
-        if (userCode.includes(kw)) {
-          errors.push(`Forbidden keyword detected: "${kw}"`);
-        }
-      }
-    }
-
-    if (monacoRef.current && !activeFile.endsWith(".json") && !activeFile.endsWith(".md")) {
-      const markers = monacoRef.current.editor.getModelMarkers({});
-      const editorErrors = getEditorErrors(markers);
-      if (editorErrors.length > 0 && errors.length === 0) {
-        errors.push(...editorErrors.slice(0, 3).map((e) => `Compiler diagnostic: ${e}`));
-      }
-    }
-
+    const errors = validateCode(userCode, level.validation, editorErrors);
     const narrativeErrors = errors.map((e) =>
       formatValidationError(e, hintCharacter.name),
     );
 
     if (errors.length > 0) {
-      playChime("error");
+      if (settings.soundEnabled) playChime("error");
       setValidationStatus("error");
       setValidationErrors(narrativeErrors);
+      trackError(level.id, errors[0]);
       setTerminalLogs((prev) => [
         ...prev,
         `❌ Validation failed with ${errors.length} error(s):`,
         ...narrativeErrors.map((e) => `   - ${e}`),
       ]);
     } else {
-      playChime("success");
+      if (settings.soundEnabled) playChime("success");
       setValidationStatus("success");
       setValidationErrors([]);
       setObjectivesChecked(new Array(level.playground.objectives.length).fill(true));
@@ -303,6 +222,8 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
         `✅ Compilation clean! Type safety verified.`,
         `🎉 XP Awarded: +${level.xpAwarded}`,
       ]);
+
+      trackLevelCompletion(level.id, 0, [], 0);
 
       const currentCompleted = loadCompletedLevels();
       const updatedList = currentCompleted.includes(level.id)
@@ -316,10 +237,10 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
       }
       setIsCompleted(true);
 
-      const nextToUnlock = rawNextLevel ? rawNextLevel.id : null;
-      if (nextToUnlock) {
-        if (!unlockedLevelIds.includes(nextToUnlock)) {
-          const nextUnlocked = [...unlockedLevelIds, nextToUnlock];
+      if (currentIdx !== -1 && currentIdx + 1 < LEVELS.length) {
+        const nextLevelId = LEVELS[currentIdx + 1].id;
+        if (!unlockedLevelIds.includes(nextLevelId)) {
+          const nextUnlocked = [...unlockedLevelIds, nextLevelId];
           setUnlockedLevelIds(nextUnlocked);
           localStorage.setItem("unlocked_levels", JSON.stringify(nextUnlocked));
         }
@@ -367,16 +288,6 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger shortcuts when typing in the editor or any input field
-      const target = e.target as HTMLElement;
-      const isTyping = 
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.isContentEditable ||
-        target.closest(".monaco-editor") !== null ||
-        target.classList.contains("monaco-editor");
-
-      // Ctrl/Cmd+Enter: Submit code or close story modal (always works)
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
         e.preventDefault();
         if (showStoryModal) {
@@ -384,24 +295,6 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
           playChime("click");
         } else if (!showCompletionModal) {
           runValidationRef.current();
-        }
-        return;
-      }
-
-      // Skip single-key shortcuts when typing in editor
-      if (isTyping) return;
-
-      // H: Toggle hints
-      if (e.key === "h" || e.key === "H") {
-        if (!showStoryModal && !showCompletionModal) {
-          setShowHints((prev) => !prev);
-        }
-        return;
-      }
-      // R: Reset code to starter
-      if (e.key === "r" || e.key === "R") {
-        if (!showStoryModal && !showCompletionModal && !e.ctrlKey && !e.metaKey) {
-          resetCodeToStarter();
         }
       }
     };
@@ -414,15 +307,27 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
     monaco: MonacoInstance,
   ) => {
     monacoRef.current = monaco;
+    
+    // Ignore DOM global collisions (like DOM Event interface collision TS2300/TS2440/TS2305/TS2451)
     const diagOpts = {
       noSemanticValidation: false,
       noSyntaxValidation: false,
-      // 2695: unused left operand | 6133: declared but never read
-      // 2307: cannot find module | 2304: cannot find name | 2552: cannot find name (did you mean?)
-      diagnosticCodesToIgnore: [2695, 6133, 2307, 2304, 2552],
+      diagnosticCodesToIgnore: [2300, 2440, 2451, 2695, 6133, 2307],
     };
+
+    const compilerOpts = {
+      target: 7, // ES2020
+      moduleResolution: 2, // Node
+      isolatedModules: true,
+      noLib: false,
+      lib: ["es2020", "esnext"], // Exclude DOM to prevent interface Event collision with DOM Event
+    };
+
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions(diagOpts);
     monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions(diagOpts);
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compilerOpts);
+    monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compilerOpts);
+
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
       runValidationRef.current();
     });
@@ -489,31 +394,16 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
           const codeContent = part.slice(1, -1);
           const isTerminal = codeContent.startsWith(">_");
           return (
-            <code
+            <span
               key={`${bIdx}-${idx}`}
-              className="px-1.5 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-mono text-xs font-semibold"
+              className="inline-flex items-center gap-1 px-2 py-0.5 my-0.5 mx-0.5 bg-surface-container-low border border-outline-variant/40 text-primary font-mono text-xs rounded-md shadow-inner"
             >
-              {isTerminal && <span className="text-secondary font-bold">{">_"}</span>}
+              {isTerminal && <span className="text-secondary font-bold">&gt;_</span>}
               <span>{isTerminal ? codeContent.replace(">_", "").trim() : codeContent}</span>
-            </code>
+            </span>
           );
         }
-
-        // 3. Split **bold** markdown
-        const boldParts = part.split(/(\*\*[^*]+\*\*)/g);
-        return boldParts.map((boldPart, bIdx2) => {
-          if (boldPart.startsWith("**") && boldPart.endsWith("**") && boldPart.length > 4) {
-            return (
-              <strong
-                key={`${bIdx}-${idx}-${bIdx2}`}
-                className="text-primary font-bold"
-              >
-                {boldPart.slice(2, -2)}
-              </strong>
-            );
-          }
-          return boldPart;
-        });
+        return part;
       });
     });
   };
@@ -551,23 +441,10 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
                   {stage.title.replace(/^Stage \d+ — /, "")}
                 </span>
               )}
-              {stage && stageLevelIndex >= 0 && (
-                <span className="text-[10px] font-mono font-bold text-secondary/80 shrink-0">
-                  Trial {stageLevelIndex + 1}/{stageTotalCount}
-                </span>
-              )}
               {CHECKPOINT_LEVEL_IDS.has(level.id) && (
                 <span className="text-[10px] text-amber-400 font-bold">★ Checkpoint</span>
               )}
             </div>
-            {stage && stageTotalCount > 0 && (
-              <div className="w-24 sm:w-32 h-0.5 bg-surface-container-low rounded-full overflow-hidden mt-1">
-                <div
-                  className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-500 rounded-full"
-                  style={{ width: `${stageProgressPercent}%` }}
-                />
-              </div>
-            )}
           </div>
 
           {/* Right: Action buttons */}
@@ -653,177 +530,162 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
             </div>
           )}
 
-          {/* Tabbed Sidebar Navigation */}
-          <div className="flex items-center gap-1 bg-surface-container/60 p-1 rounded-xl border border-outline-variant/20">
-            <button
-              onClick={() => {
-                playChime("click");
-                setSidebarTab("objectives");
-              }}
-              className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer border ${
-                sidebarTab === "objectives"
-                  ? "bg-primary/10 text-primary border-primary/20"
-                  : "text-on-surface-variant hover:text-on-surface border-transparent hover:bg-surface-container-high/40"
-              }`}
-            >
-              <Target className="w-3 h-3" />
-              <span className="hidden sm:inline">Objectives</span>
-            </button>
-            <button
-              onClick={() => {
-                playChime("click");
-                setSidebarTab("concept");
-              }}
-              className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer border ${
-                sidebarTab === "concept"
-                  ? "bg-primary/10 text-primary border-primary/20"
-                  : "text-on-surface-variant hover:text-on-surface border-transparent hover:bg-surface-container-high/40"
-              }`}
-            >
-              <Layers className="w-3 h-3" />
-              <span className="hidden sm:inline">Concept</span>
-            </button>
-            <button
-              onClick={() => {
-                playChime("click");
-                setSidebarTab("help");
-              }}
-              className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer border ${
-                sidebarTab === "help"
-                  ? "bg-primary/10 text-primary border-primary/20"
-                  : "text-on-surface-variant hover:text-on-surface border-transparent hover:bg-surface-container-high/40"
-              }`}
-            >
-              <Lightbulb className="w-3 h-3" />
-              <span className="hidden sm:inline">Help</span>
-            </button>
+          {/* Quick Action Navigation Bar directly under Active Files */}
+          <div className="space-y-3 pb-2 border-b border-outline-variant/30">
+            <div className="flex items-center justify-between text-xs font-semibold flex-wrap gap-2">
+              <button
+                onClick={() => {
+                  playChime("click");
+                  if (!showHints) {
+                    trackHintUsed(level.id);
+                    setShowGrimoire(false);
+                    setShowOracle(false);
+                    setShowSolution(false);
+                  }
+                  setShowHints(!showHints);
+                }}
+                className={`text-primary hover:text-primary/80 flex items-center gap-1.5 cursor-pointer ${
+                  showHints ? "font-bold underline" : ""
+                }`}
+              >
+                <HelpCircle className="w-4 h-4" />
+                <span>{showHints ? "Hide Hints" : "Guided Hints"}</span>
+              </button>
+              <button
+                onClick={() => {
+                  playChime("click");
+                  if (!showGrimoire) {
+                    setShowHints(false);
+                    setShowOracle(false);
+                    setShowSolution(false);
+                  }
+                  setShowGrimoire(!showGrimoire);
+                }}
+                className={`text-secondary hover:text-secondary/80 flex items-center gap-1.5 cursor-pointer ${
+                  showGrimoire ? "font-bold underline" : ""
+                }`}
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>Grimoire</span>
+              </button>
+              <button
+                onClick={() => {
+                  playChime("click");
+                  if (!showOracle) {
+                    setShowHints(false);
+                    setShowGrimoire(false);
+                    setShowSolution(false);
+                  }
+                  setShowOracle(!showOracle);
+                }}
+                className={`text-sky-400 hover:text-sky-300 flex items-center gap-1.5 cursor-pointer font-bold ${
+                  showOracle ? "underline" : ""
+                }`}
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>AI Mentor</span>
+              </button>
+              <button
+                onClick={() => {
+                  playChime("click");
+                  if (!showSolution) {
+                    setShowHints(false);
+                    setShowGrimoire(false);
+                    setShowOracle(false);
+                  }
+                  setShowSolution(!showSolution);
+                }}
+                className={`text-on-surface-variant hover:text-on-surface cursor-pointer ${
+                  showSolution ? "font-bold underline text-on-surface" : ""
+                }`}
+              >
+                {showSolution ? "Hide Solution" : "Solution"}
+              </button>
+            </div>
+
+            <GrimoirePanel levelId={level.id} isOpen={showGrimoire} onClose={() => setShowGrimoire(false)} />
+            <OraclePanel
+              isOpen={showOracle}
+              onClose={() => setShowOracle(false)}
+              levelTitle={level.title}
+              userCode={userCode}
+              lastError={validationErrors[0]}
+            />
+
+            {showHints && (
+              <div className="p-4 rounded-xl bg-surface-container border border-tertiary/20 text-xs text-on-surface-variant space-y-2 animate-fadeIn">
+                {level.playground.hints.map((hint, idx) => (
+                  <p key={idx} className="leading-relaxed">
+                    {hintCharacter.emoji}{" "}
+                    <strong className={`${hintCharacter.color} font-mono`}>
+                      {hintCharacter.name} whispers:
+                    </strong>{" "}
+                    {hint}
+                  </p>
+                ))}
+              </div>
+            )}
+
+            {showSolution && (
+              <div className="p-5 rounded-2xl bg-surface-container border border-outline-variant/40 space-y-4 text-xs animate-fadeIn">
+                <div className="space-y-1">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-400 block">
+                    Detailed Solution Explanation
+                  </span>
+                  <p className="text-on-surface-variant leading-relaxed">
+                    {solDetails?.explanation ||
+                      "This solution demonstrates clean type declarations following strict compiler requirements."}
+                  </p>
+                </div>
+                {solDetails?.steps && solDetails.steps.length > 0 && (
+                  <ol className="list-decimal list-inside space-y-1 text-on-surface-variant/90 pl-1">
+                    {solDetails.steps.map((step, idx) => (
+                      <li key={idx} className="leading-relaxed">{step}</li>
+                    ))}
+                  </ol>
+                )}
+                {solDetails?.codeTip && (
+                  <div className="p-3 rounded-xl bg-surface-container-low border border-tertiary/30 text-tertiary text-[11px]">
+                    💡 <strong>Pro Tip:</strong> {solDetails.codeTip}
+                  </div>
+                )}
+                <pre className="p-3.5 rounded-xl bg-surface-container-lowest border border-outline-variant/30 text-emerald-400 font-mono text-xs overflow-x-auto">
+                  {level.playground.solutionCode}
+                </pre>
+              </div>
+            )}
           </div>
 
-          {/* Objectives Tab */}
-          {sidebarTab === "objectives" && (
-            <div className="space-y-3 p-5 rounded-2xl bg-surface-container border border-outline-variant/30 shadow-sm animate-fadeIn">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-on-surface">
-                  Target Objectives
-                </h4>
-                <span className="text-[10px] font-mono font-bold text-secondary">
-                  {objectivesChecked.filter(Boolean).length}/{level.playground.objectives.length} Done
-                </span>
-              </div>
-              <ul className="space-y-2.5">
-                {level.playground.objectives.map((obj, i) => (
-                  <li key={i} className="flex items-start space-x-2.5 text-xs text-on-surface-variant">
-                    <div
-                      className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center shrink-0 border ${
-                        objectivesChecked[i]
-                          ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
-                          : "border-outline-variant bg-surface-container-low"
-                      }`}
-                    >
-                      {objectivesChecked[i] && <Check className="w-3 h-3" />}
-                    </div>
-                    <span className={objectivesChecked[i] ? "line-through text-on-surface-variant/60" : "text-on-surface"}>
-                      {obj}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+          <div className="space-y-3 p-5 rounded-2xl bg-surface-container border border-outline-variant/30 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-on-surface">
+                Target Objectives
+              </h4>
+              <span className="text-[10px] font-mono font-bold text-secondary">
+                {objectivesChecked.filter(Boolean).length}/{level.playground.objectives.length} Done
+              </span>
             </div>
-          )}
-
-          {/* Concept Tab */}
-          {sidebarTab === "concept" && (
-            <div className="space-y-3 animate-fadeIn">
-              <ConceptDiagram visualizationType={level.visualizationType} />
-              {!level.visualizationType && (
-                <div className="p-4 rounded-xl bg-surface-container border border-outline-variant/30 text-xs text-on-surface-variant">
-                  No concept visualization available for this level.
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Help Tab */}
-          {sidebarTab === "help" && (
-            <div className="space-y-3 animate-fadeIn">
-              <div className="flex items-center justify-between text-xs font-semibold flex-wrap gap-2">
-                <button
-                  onClick={() => {
-                    playChime("click");
-                    setShowHints(!showHints);
-                  }}
-                  className="text-primary hover:text-primary/80 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <HelpCircle className="w-4 h-4" />
-                  <span>{showHints ? "Hide Hints" : "Guided Hints"}</span>
-                </button>
-                <button
-                  onClick={() => {
-                    playChime("click");
-                    setShowGrimoire(!showGrimoire);
-                  }}
-                  className="text-secondary hover:text-secondary/80 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <BookOpen className="w-4 h-4" />
-                  <span>Grimoire</span>
-                </button>
-                <button
-                  onClick={() => {
-                    playChime("click");
-                    setShowSolution(!showSolution);
-                  }}
-                  className="text-on-surface-variant hover:text-on-surface cursor-pointer"
-                >
-                  {showSolution ? "Hide Solution" : "Solution"}
-                </button>
-              </div>
-
-              <GrimoirePanel levelId={level.id} isOpen={showGrimoire} onClose={() => setShowGrimoire(false)} />
-
-              {showHints && (
-                <div className="p-4 rounded-xl bg-surface-container border border-tertiary/20 text-xs text-on-surface-variant space-y-2">
-                  {level.playground.hints.map((hint, idx) => (
-                    <p key={idx} className="leading-relaxed">
-                      {hintCharacter.emoji}{" "}
-                      <strong className={`${hintCharacter.color} font-mono`}>
-                        {hintCharacter.name} whispers:
-                      </strong>{" "}
-                      {hint}
-                    </p>
-                  ))}
-                </div>
-              )}
-
-              {showSolution && (
-                <div className="p-5 rounded-2xl bg-surface-container border border-outline-variant/40 space-y-4 text-xs">
-                  <div className="space-y-1">
-                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-400 block">
-                      Detailed Solution Explanation
-                    </span>
-                    <p className="text-on-surface-variant leading-relaxed">
-                      {solDetails?.explanation ||
-                        "This solution demonstrates clean type declarations following strict compiler requirements."}
-                    </p>
+            <ul className="space-y-2.5">
+              {level.playground.objectives.map((obj, i) => (
+                <li key={i} className="flex items-start space-x-2.5 text-xs text-on-surface-variant">
+                  <div
+                    className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center shrink-0 border ${
+                      objectivesChecked[i]
+                        ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
+                        : "border-outline-variant bg-surface-container-low"
+                    }`}
+                  >
+                    {objectivesChecked[i] && <Check className="w-3 h-3" />}
                   </div>
-                  {solDetails?.steps && solDetails.steps.length > 0 && (
-                    <ol className="list-decimal list-inside space-y-1 text-on-surface-variant/90 pl-1">
-                      {solDetails.steps.map((step, idx) => (
-                        <li key={idx} className="leading-relaxed">{step}</li>
-                      ))}
-                    </ol>
-                  )}
-                  {solDetails?.codeTip && (
-                    <div className="p-3 rounded-xl bg-surface-container-low border border-tertiary/30 text-tertiary text-[11px]">
-                      💡 <strong>Pro Tip:</strong> {solDetails.codeTip}
-                    </div>
-                  )}
-                  <pre className="p-3.5 rounded-xl bg-surface-container-lowest border border-outline-variant/30 text-emerald-400 font-mono text-xs overflow-x-auto">
-                    {level.playground.solutionCode}
-                  </pre>
-                </div>
-              )}
-            </div>
-          )}
+                  <span className={objectivesChecked[i] ? "line-through text-on-surface-variant/60" : "text-on-surface"}>
+                    {obj}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <ConceptDiagram visualizationType={level.visualizationType} />
         </aside>
 
         <section className="lg:col-span-8 flex flex-col min-h-[400px] sm:min-h-[450px] lg:min-h-0 bg-surface">
@@ -858,81 +720,50 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
           </div>
 
           <div className="flex-1 min-h-[300px] sm:min-h-[350px]">
-            <ErrorBoundary>
-              <CodeEditor
-                height="100%"
-                theme="vs-dark"
-                language={editorLanguage}
-                value={userCode}
-                onChange={handleCodeChange}
-                onMount={handleEditorDidMount}
-                options={{
-                  fontSize: 14,
-                  minimap: { enabled: false },
-                  scrollBeyondLastLine: false,
-                  fontFamily: "JetBrains Mono, monospace",
-                  automaticLayout: true,
-                }}
-              />
-            </ErrorBoundary>
+            <CodeEditor
+              height="100%"
+              theme="vs-dark"
+              language={editorLanguage}
+              value={userCode}
+              onChange={handleCodeChange}
+              onMount={handleEditorDidMount}
+              options={{
+                fontSize: 14,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                fontFamily: "JetBrains Mono, monospace",
+                automaticLayout: true,
+              }}
+            />
           </div>
 
-          <div className="h-32 sm:h-44 bg-surface-container-lowest border-t border-outline-variant/30 p-3 sm:p-4 font-mono text-xs overflow-y-auto space-y-1.5">
-            <div className="flex items-center justify-between text-on-surface-variant mb-2 pb-1.5 border-b border-outline-variant/20">
-              <div className="flex items-center space-x-2">
-                <TermIcon className="w-3.5 h-3.5 text-primary" />
-                <span className="font-bold uppercase tracking-wider text-[10px] text-primary">
-                  Compiler Output Terminal
-                </span>
-              </div>
-              {validationStatus === "success" && (
-                <span className="flex items-center gap-1 text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
-                  <CheckCircle2 className="w-2.5 h-2.5" />
-                  PASS
-                </span>
-              )}
-              {validationStatus === "error" && (
-                <span className="flex items-center gap-1 text-[9px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/30">
-                  <AlertCircle className="w-2.5 h-2.5" />
-                  FAIL
-                </span>
-              )}
+          <div className="h-32 sm:h-44 bg-surface-container-lowest border-t border-outline-variant/30 p-3 sm:p-4 font-mono text-xs overflow-y-auto space-y-1">
+            <div className="flex items-center space-x-2 text-on-surface-variant mb-2 pb-1 border-b border-outline-variant/20">
+              <TermIcon className="w-3.5 h-3.5 text-primary" />
+              <span className="font-bold uppercase tracking-wider text-[10px] text-primary">
+                Compiler Output Terminal
+              </span>
             </div>
             {validationErrors.length > 0 &&
               validationErrors.map((err, i) => (
-                <div key={`err-${i}`} className="flex items-start gap-1.5 text-rose-400 font-semibold">
-                  <AlertCircle className="w-3 h-3 mt-0.5 shrink-0" />
-                  <span>{err}</span>
+                <div key={`err-${i}`} className="text-rose-400 font-semibold">
+                  ❌ {err}
                 </div>
               ))}
-            {terminalLogs.map((log, i) => {
-              const isError = log.includes("❌");
-              const isSuccess = log.includes("✅");
-              const isInfo = log.startsWith("[info]");
-              const isXp = log.includes("🎉");
-              return (
-                <div
-                  key={i}
-                  className={`flex items-start gap-1.5 ${
-                    isError
-                      ? "text-rose-400 font-semibold"
-                      : isSuccess
-                        ? "text-emerald-400 font-bold"
-                        : isXp
-                          ? "text-tertiary font-bold"
-                          : isInfo
-                            ? "text-on-surface-variant/70"
-                            : "text-on-surface-variant"
-                  }`}
-                >
-                  {isError && <AlertCircle className="w-3 h-3 mt-0.5 shrink-0" />}
-                  {isSuccess && <CheckCircle2 className="w-3 h-3 mt-0.5 shrink-0" />}
-                  {isXp && <Zap className="w-3 h-3 mt-0.5 shrink-0 fill-tertiary" />}
-                  {isInfo && <Clock className="w-3 h-3 mt-0.5 shrink-0 opacity-50" />}
-                  <span>{log}</span>
-                </div>
-              );
-            })}
+            {terminalLogs.map((log, i) => (
+              <div
+                key={i}
+                className={
+                  log.includes("❌")
+                    ? "text-rose-400 font-semibold"
+                    : log.includes("✅")
+                      ? "text-emerald-400 font-bold"
+                      : "text-on-surface-variant"
+                }
+              >
+                {log}
+              </div>
+            ))}
           </div>
         </section>
       </main>

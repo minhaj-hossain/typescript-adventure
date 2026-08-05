@@ -104,7 +104,7 @@ export const LEVELS: Level[] = [
   {
     id: "level-0-3-watch-mode",
     title: "The Watch Mode Habit",
-    moduleName: "The Onboarding Ritual",
+    moduleName: "Day 1 Setup & Tooling",
     difficulty: "onboarding",
     xpAwarded: 50,
     story: {
@@ -116,6 +116,7 @@ export const LEVELS: Level[] = [
         },
         {
           type: "dialogue",
+          speaker: "minhaj",
           text: '"There\'s a watch flag that recompiles automatically whenever you save," Minhaj says. "In `package.json`, we add executable tasks under `"scripts"`:\n\n```json\n{\n  "scripts": {\n    "dev": "tsc --watch"\n  }\n}\n```"',
         },
         {
@@ -124,6 +125,7 @@ export const LEVELS: Level[] = [
         },
         {
           type: "dialogue",
+          speaker: "minhaj",
           text: '"Running `tsc --watch` keeps the compiler listening in the background. Add a `"dev"` script with `"tsc --watch"` inside `"scripts"` now!"',
         },
       ],
@@ -152,7 +154,7 @@ export const LEVELS: Level[] = [
   {
     id: "level-0-4-reading-errors",
     title: "Translating the Red Squiggles",
-    moduleName: "The Onboarding Ritual",
+    moduleName: "Day 1 Setup & Tooling",
     difficulty: "onboarding",
     xpAwarded: 50,
     story: {
@@ -160,10 +162,11 @@ export const LEVELS: Level[] = [
       narrative: [
         {
           type: "narration",
-          text: "Jordan, QA, forwards you your first real compiler error: Type 'string' is not assignable to type 'number'. You stare at it for ten minutes before Minhaj walks by.",
+          text: "Jordan, QA, forwards you your first real compiler error: Type 'string' is not assignable to type 'number'. You stare at it before Minhaj walks by.",
         },
         {
           type: "dialogue",
+          speaker: "minhaj",
           text: '"Read it out loud," they say. "It\'s telling you exactly what it expected and exactly what it got."',
         },
         {

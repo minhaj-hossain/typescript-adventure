@@ -24,8 +24,6 @@ export default function Home({
   onBadgeUnlocked,
 }: HomeProps) {
   const [completedLevelIds, setCompletedLevelIds] = useState<string[]>([]);
-  const [displayUnlockedLevelIds, setDisplayUnlockedLevelIds] = useState<string[]>([]);
-  const [mounted, setMounted] = useState(false);
   const [expandedStageId, setExpandedStageId] = useState<string>("stage-0-onboarding");
   const [showSubModal, setShowSubModal] = useState<{ title: string; desc: string } | null>(null);
   const [showKingdomIntro, setShowKingdomIntro] = useState(false);
@@ -45,34 +43,28 @@ export default function Home({
     if (shouldShowKingdomIntro()) {
       setShowKingdomIntro(true);
     }
-    setMounted(true);
   }, []);
-
-  // Keep unlockedLevelIds in a mounted-safe state to avoid hydration mismatches
-  useEffect(() => {
-    if (mounted) setDisplayUnlockedLevelIds(unlockedLevelIds);
-  }, [unlockedLevelIds, mounted]);
 
   useEffect(() => {
     const lastClicked = sessionStorage.getItem("last_clicked_level_id");
     let targetLevelId = lastClicked;
 
-    if (!targetLevelId && displayUnlockedLevelIds.length > 0) {
+    if (!targetLevelId && unlockedLevelIds.length > 0) {
       const activeLevel = LEVELS.find(
         (lvl) =>
-          displayUnlockedLevelIds.includes(lvl.id) &&
+          unlockedLevelIds.includes(lvl.id) &&
           !completedLevelIds.includes(lvl.id),
       );
       targetLevelId = activeLevel
         ? activeLevel.id
-        : displayUnlockedLevelIds[displayUnlockedLevelIds.length - 1] || "level-0-1-bootstrap";
+        : unlockedLevelIds[unlockedLevelIds.length - 1] || "level-0-1-bootstrap";
     }
 
     if (targetLevelId) {
       const targetStage = STAGES.find((stage) => stage.levelIds.includes(targetLevelId!));
       if (targetStage) setExpandedStageId(targetStage.id);
     }
-  }, [displayUnlockedLevelIds, completedLevelIds]);
+  }, [unlockedLevelIds, completedLevelIds]);
 
   useEffect(() => {
     const lastClicked = sessionStorage.getItem("last_clicked_level_id");
@@ -89,9 +81,8 @@ export default function Home({
 
   // Stage unlock cinematics
   useEffect(() => {
-    if (!mounted) return;
     if (prevUnlockedRef.current.length === 0) {
-      prevUnlockedRef.current = displayUnlockedLevelIds;
+      prevUnlockedRef.current = unlockedLevelIds;
       return;
     }
 
@@ -99,7 +90,7 @@ export default function Home({
       if (stage.order === 0) continue;
       const firstLevelId = stage.levelIds[0];
       const wasUnlocked = prevUnlockedRef.current.includes(firstLevelId);
-      const isUnlocked = displayUnlockedLevelIds.includes(firstLevelId);
+      const isUnlocked = unlockedLevelIds.includes(firstLevelId);
       const seenKey = `seen_stage_unlock_${stage.id}`;
 
       if (!wasUnlocked && isUnlocked && !localStorage.getItem(seenKey)) {
@@ -108,8 +99,8 @@ export default function Home({
         break;
       }
     }
-    prevUnlockedRef.current = displayUnlockedLevelIds;
-  }, [displayUnlockedLevelIds, mounted]);
+    prevUnlockedRef.current = unlockedLevelIds;
+  }, [unlockedLevelIds]);
 
   // Stage completion cinematics
   useEffect(() => {
@@ -137,7 +128,7 @@ export default function Home({
   }, [completedLevelIds, onBadgeUnlocked]);
 
   const calculatedLevel = Math.max(1, Math.floor(xp / 100) + 1);
-  const hasProgress = mounted && (completedLevelIds.length > 0 || xp > 0);
+  const hasProgress = completedLevelIds.length > 0 || xp > 0;
 
   const getStatusTitle = (currentXp: number) => {
     if (currentXp < 150) return "Beginner 🌱";
@@ -157,13 +148,13 @@ export default function Home({
     const lastVisited = localStorage.getItem("last_active_level_id");
     let targetLevelId = lastVisited;
 
-    if (!targetLevelId || !displayUnlockedLevelIds.includes(targetLevelId)) {
+    if (!targetLevelId || !unlockedLevelIds.includes(targetLevelId)) {
       const incompleteUnlocked = LEVELS.find(
-        (l) => displayUnlockedLevelIds.includes(l.id) && !completedLevelIds.includes(l.id),
+        (l) => unlockedLevelIds.includes(l.id) && !completedLevelIds.includes(l.id),
       );
       targetLevelId = incompleteUnlocked
         ? incompleteUnlocked.id
-        : displayUnlockedLevelIds[displayUnlockedLevelIds.length - 1] || "level-0-1-bootstrap";
+        : unlockedLevelIds[unlockedLevelIds.length - 1] || "level-0-1-bootstrap";
     }
 
     if (targetLevelId) {
@@ -228,62 +219,12 @@ export default function Home({
             <span className="material-icons-out">arrow_forward</span>
           </button>
         </div>
-
-        {/* Animated Code Preview Demo */}
-        <div className="mt-12 max-w-2xl mx-auto text-left">
-          <div className="rounded-2xl overflow-hidden border border-outline-variant/30 bg-surface-container-lowest shadow-2xl glow-primary">
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-surface-container border-b border-outline-variant/30">
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-500/70" />
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
-              <span className="ml-2 text-[10px] font-mono text-on-surface-variant">index.ts</span>
-            </div>
-            <div className="p-4 sm:p-5 font-mono text-[11px] sm:text-xs leading-relaxed space-y-1.5">
-              <div className="flex items-center gap-2">
-                <span className="text-on-surface-variant/50">1</span>
-                <span className="text-rose-400">interface</span>{" "}
-                <span className="text-primary">Event</span>{" "}
-                <span className="text-on-surface-variant">{"{"}</span>
-              </div>
-              <div className="flex items-center gap-2 pl-6">
-                <span className="text-on-surface-variant/50">2</span>
-                <span className="text-emerald-400">title</span>
-                <span className="text-on-surface-variant">:</span>{" "}
-                <span className="text-tertiary">string</span>
-                <span className="text-on-surface-variant">;</span>
-              </div>
-              <div className="flex items-center gap-2 pl-6">
-                <span className="text-on-surface-variant/50">3</span>
-                <span className="text-emerald-400">date</span>
-                <span className="text-on-surface-variant">:</span>{" "}
-                <span className="text-tertiary">string</span>
-                <span className="text-on-surface-variant">;</span>
-              </div>
-              <div className="flex items-center gap-2 pl-6">
-                <span className="text-on-surface-variant/50">4</span>
-                <span className="text-emerald-400">capacity</span>
-                <span className="text-on-surface-variant">:</span>{" "}
-                <span className="text-tertiary">number</span>
-                <span className="text-on-surface-variant">;</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-on-surface-variant/50">5</span>
-                <span className="text-on-surface-variant">{"}"}</span>
-              </div>
-              <div className="flex items-center gap-2 pt-2">
-                <span className="text-on-surface-variant/50">6</span>
-                <span className="text-on-surface-variant">{"// "}</span>
-                <span className="text-emerald-400/80">✅ Type safety verified!</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-24 max-w-[1100px] w-full mx-auto px-6" id="stats-grid">
         <div className="glass-card p-6 rounded-xl text-center group hover:border-primary/50 transition-colors">
           <p className="font-mono text-xs uppercase tracking-wider text-on-surface-variant mb-2">Points</p>
-          <h3 className="text-3xl md:text-4xl font-extrabold text-on-surface font-sans">{mounted ? xp : 0} XP</h3>
+          <h3 className="text-3xl md:text-4xl font-extrabold text-on-surface font-sans">{xp} XP</h3>
         </div>
         <div className="glass-card p-6 rounded-xl text-center group hover:border-primary/50 transition-colors">
           <p className="font-mono text-xs uppercase tracking-wider text-on-surface-variant mb-2">Completed</p>
@@ -293,12 +234,12 @@ export default function Home({
         </div>
         <div className="glass-card p-6 rounded-xl text-center group hover:border-primary/50 transition-colors">
           <p className="font-mono text-xs uppercase tracking-wider text-on-surface-variant mb-2">Wizard Level</p>
-          <h3 className="text-3xl md:text-4xl font-extrabold text-on-surface font-sans">Lvl {mounted ? calculatedLevel : 1}</h3>
+          <h3 className="text-3xl md:text-4xl font-extrabold text-on-surface font-sans">Lvl {calculatedLevel}</h3>
         </div>
         <div className="glass-card p-6 rounded-xl text-center group hover:border-primary/50 transition-colors">
           <p className="font-mono text-xs uppercase tracking-wider text-on-surface-variant mb-2">Rank Status</p>
           <h3 className="text-base md:text-lg font-bold text-primary truncate px-1 mt-1 font-sans">
-            {mounted ? getStatusTitle(xp) : "Beginner 🌱"}
+            {getStatusTitle(xp)}
           </h3>
         </div>
       </section>
@@ -315,7 +256,7 @@ export default function Home({
             {STAGES.map((stage, sIdx) => {
               const stageLevels = LEVELS.filter((lvl) => stage.levelIds.includes(lvl.id));
               const isStageUnlocked =
-                sIdx === 0 || stageLevels.some((l) => displayUnlockedLevelIds.includes(l.id));
+                sIdx === 0 || stageLevels.some((l) => unlockedLevelIds.includes(l.id));
               const completedInStage = stageLevels.filter((l) =>
                 completedLevelIds.includes(l.id),
               ).length;
@@ -376,7 +317,7 @@ export default function Home({
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                           {stageLevels.map((lvl, index) => {
-                            const isLvlUnlocked = displayUnlockedLevelIds.includes(lvl.id);
+                            const isLvlUnlocked = unlockedLevelIds.includes(lvl.id);
                             const isLvlCompleted = completedLevelIds.includes(lvl.id);
 
                             return (
@@ -417,11 +358,11 @@ export default function Home({
                             onClick={() => {
                               const firstActive = stageLevels.find(
                                 (lvl) =>
-                                  displayUnlockedLevelIds.includes(lvl.id) &&
+                                  unlockedLevelIds.includes(lvl.id) &&
                                   !completedLevelIds.includes(lvl.id),
                               );
                               const fallback = stageLevels
-                                .filter((lvl) => displayUnlockedLevelIds.includes(lvl.id))
+                                .filter((lvl) => unlockedLevelIds.includes(lvl.id))
                                 .pop();
                               const targetLvl = firstActive || fallback || stageLevels[0];
                               if (targetLvl) {

@@ -22,7 +22,7 @@ export const CHARACTERS: Record<CharacterId, Character> = {
     name: "Minhaj",
     role: "Senior Engineer",
     color: "text-sky-400",
-    bgColor: "bg-surface-container-low border-sky-400/15",
+    bgColor: "bg-sky-500/10 border-sky-500/30",
     emoji: "👨‍💻",
   },
   tasnim: {
@@ -30,7 +30,7 @@ export const CHARACTERS: Record<CharacterId, Character> = {
     name: "Tasnim",
     role: "Type Architect",
     color: "text-violet-400",
-    bgColor: "bg-surface-container-low border-violet-400/15",
+    bgColor: "bg-violet-500/10 border-violet-500/30",
     emoji: "👩‍🔬",
   },
   jordan: {
@@ -38,7 +38,7 @@ export const CHARACTERS: Record<CharacterId, Character> = {
     name: "Jordan",
     role: "Security Lead",
     color: "text-amber-400",
-    bgColor: "bg-surface-container-low border-amber-400/15",
+    bgColor: "bg-amber-500/10 border-amber-500/30",
     emoji: "🛡️",
   },
   evans: {
@@ -46,7 +46,7 @@ export const CHARACTERS: Record<CharacterId, Character> = {
     name: "Evans",
     role: "Backend Engineer",
     color: "text-emerald-400",
-    bgColor: "bg-surface-container-low border-emerald-400/15",
+    bgColor: "bg-emerald-500/10 border-emerald-500/30",
     emoji: "⚙️",
   },
   apurba: {
@@ -54,7 +54,7 @@ export const CHARACTERS: Record<CharacterId, Character> = {
     name: "Apurba",
     role: "Frontend Developer",
     color: "text-rose-400",
-    bgColor: "bg-surface-container-low border-rose-400/15",
+    bgColor: "bg-rose-500/10 border-rose-500/30",
     emoji: "🎨",
   },
   salman: {
@@ -62,7 +62,7 @@ export const CHARACTERS: Record<CharacterId, Character> = {
     name: "Salman",
     role: "UI Engineer",
     color: "text-teal-400",
-    bgColor: "bg-surface-container-low border-teal-400/15",
+    bgColor: "bg-teal-500/10 border-teal-500/30",
     emoji: "✨",
   },
   imran: {
@@ -70,7 +70,7 @@ export const CHARACTERS: Record<CharacterId, Character> = {
     name: "Imran",
     role: "Senior Weaver",
     color: "text-primary",
-    bgColor: "bg-surface-container-low border-primary/15",
+    bgColor: "bg-primary/10 border-primary/30",
     emoji: "🔮",
   },
 };

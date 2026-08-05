@@ -11,6 +11,8 @@ import {
   BookOpen,
 } from "lucide-react";
 
+import { useGame } from "../context/GameContext";
+
 interface WizardSanctumProps {
   isOpen: boolean;
   onClose: () => void;
@@ -37,6 +39,8 @@ export default function WizardSanctum({
   unlockedBadges,
   unlockedLevels,
 }: WizardSanctumProps) {
+  const { exportJSON, importJSON, resetAllProgress } = useGame();
+
   const wizardTitle =
     WIZARD_TITLES[Math.min(WIZARD_TITLES.length - 1, Math.floor(xp / 200))] ||
     "Compiler Mage";
@@ -206,17 +210,65 @@ export default function WizardSanctum({
               )}
             </div>
 
-            {/* Info */}
-            <div className="p-4 bg-slate-900/40 border border-slate-850 rounded-xl space-y-2">
+            {/* Progress Actions: Export / Import / Reset */}
+            <div className="p-4 bg-slate-900/40 border border-slate-850 rounded-xl space-y-3">
               <h4 className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                 <BookOpen className="w-4 h-4 text-sky-400" />
-                How Progress Works
+                Data & Storage Management
               </h4>
               <p className="text-[10px] text-slate-500 leading-relaxed font-sans">
-                All progress is stored locally in your browser. No account or
-                login required — just open the app and continue your adventure
-                from where you left off.
+                Progress is stored locally. You can export your progress as a JSON file to transfer between devices or backup your journey.
               </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <button
+                  onClick={() => {
+                    const json = exportJSON();
+                    const blob = new Blob([json], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `ts_adventure_progress_${Date.now()}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 text-xs font-bold border border-sky-500/30 transition-colors cursor-pointer"
+                >
+                  Export Progress JSON
+                </button>
+                <label className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-750 text-slate-300 text-xs font-bold border border-slate-700 transition-colors cursor-pointer inline-block">
+                  Import Progress JSON
+                  <input
+                    type="file"
+                    accept=".json"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                          const content = ev.target?.result as string;
+                          if (content && importJSON(content)) {
+                            alert("Progress imported successfully!");
+                          } else {
+                            alert("Invalid progress file.");
+                          }
+                        };
+                        reader.readAsText(file);
+                      }
+                    }}
+                  />
+                </label>
+                <button
+                  onClick={() => {
+                    if (confirm("Are you sure you want to reset all progress? This action cannot be undone.")) {
+                      resetAllProgress();
+                    }
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold border border-rose-500/30 transition-colors cursor-pointer"
+                >
+                  Reset Progress
+                </button>
+              </div>
             </div>
           </div>
         </div>
