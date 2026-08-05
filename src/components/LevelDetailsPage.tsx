@@ -746,8 +746,21 @@ export const LevelDetailsPage: React.FC<LevelDetailsPageProps> = ({
             </div>
             {validationErrors.length > 0 &&
               validationErrors.map((err, i) => (
-                <div key={`err-${i}`} className="text-rose-400 font-semibold">
-                  ❌ {err}
+                <div key={`err-${i}`} className="flex items-center justify-between gap-2 py-0.5 text-rose-400 font-semibold flex-wrap">
+                  <span>❌ {err}</span>
+                  <button
+                    onClick={() => {
+                      playChime("click");
+                      setShowHints(false);
+                      setShowGrimoire(false);
+                      setShowSolution(false);
+                      setShowOracle(true);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 rounded-md border border-sky-500/30 text-[11px] font-sans font-bold transition-all cursor-pointer shadow-sm shrink-0"
+                  >
+                    <Sparkles className="w-3 h-3 text-sky-400" />
+                    <span>Ask Minhaj to explain this error</span>
+                  </button>
                 </div>
               ))}
             {terminalLogs.map((log, i) => (

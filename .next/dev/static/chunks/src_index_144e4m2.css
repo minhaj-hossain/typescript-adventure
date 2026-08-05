@@ -1803,6 +1803,16 @@
     }
   }
 
+  .bg-neutral-950\/15 {
+    background-color: #0a0a0a26;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-neutral-950\/15 {
+      background-color: color-mix(in oklab, var(--color-neutral-950) 15%, transparent);
+    }
+  }
+
   .bg-outline-variant\/30 {
     background-color: #4147514d;
   }
@@ -2206,6 +2216,10 @@
 
   .px-1 {
     padding-inline: var(--spacing);
+  }
+
+  .px-1\.5 {
+    padding-inline: calc(var(--spacing) * 1.5);
   }
 
   .px-2 {
@@ -2650,10 +2664,6 @@
 
   .uppercase {
     text-transform: uppercase;
-  }
-
-  .italic {
-    font-style: italic;
   }
 
   .line-through {

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { X, Zap, ArrowRight, Award, CheckCircle2 } from "lucide-react";
 import { Level, Stage } from "../types";
 import { CHECKPOINT_LEVEL_IDS } from "../data/characters";
@@ -21,9 +22,26 @@ export default function CompletionModal({
   nextLevel,
   onClose,
   onNext,
+  playChime,
 }: CompletionModalProps) {
   const isCheckpoint = CHECKPOINT_LEVEL_IDS.has(level.id);
   const checkpointBadge = CHECKPOINT_BADGES[level.id];
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        playChime("click");
+        onNext();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        playChime("click");
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onNext, onClose, playChime]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/85 backdrop-blur-md animate-fadeIn">
@@ -99,6 +117,7 @@ export default function CompletionModal({
             className="flex-1 py-3 bg-gradient-to-r from-primary via-secondary to-tertiary text-neutral-950 rounded-xl font-extrabold text-xs shadow-lg hover:scale-[1.02] transition-all cursor-pointer flex items-center justify-center gap-1.5"
           >
             <span>{nextLevel ? "Next Level" : "Back to Academy"}</span>
+            <span className="px-1.5 py-0.5 bg-neutral-950/15 rounded text-[10px] font-mono">(Enter)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

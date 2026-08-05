@@ -91,8 +91,8 @@ export default function Navigation({
             </span>
           </Link>
 
-          {/* Navigation Links */}
-          <div className="flex items-center gap-1 bg-surface-container/40 p-0.5 rounded-lg border border-outline-variant/20 ml-2">
+          {/* Navigation Links — Home only */}
+          <div className="flex items-center bg-surface-container/40 p-0.5 rounded-lg border border-outline-variant/20 ml-2">
             <Link
               href="/"
               className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
@@ -100,24 +100,6 @@ export default function Navigation({
               }`}
             >
               Home
-            </Link>
-            <Link
-              href="/playground"
-              className="px-2.5 py-1 text-xs font-bold text-on-surface-variant hover:text-on-surface rounded-md transition-all"
-            >
-              Playground
-            </Link>
-            <Link
-              href="/grimoire"
-              className="px-2.5 py-1 text-xs font-bold text-on-surface-variant hover:text-on-surface rounded-md transition-all"
-            >
-              Grimoire
-            </Link>
-            <Link
-              href="/progress"
-              className="px-2.5 py-1 text-xs font-bold text-on-surface-variant hover:text-on-surface rounded-md transition-all"
-            >
-              Stats
             </Link>
           </div>
         </div>
